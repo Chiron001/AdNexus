@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/sync/all",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/check-anomalies",
+      "schedule": "0 * * * *"
+    }
+  ]
+}
