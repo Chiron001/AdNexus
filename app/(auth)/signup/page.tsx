@@ -1,16 +1,26 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { CheckCircle2 } from 'lucide-react'
 
-export default function SignupPage() {
+const PLAN_LABELS: Record<string, { label: string; price: string; color: string }> = {
+  growth: { label: 'Growth', price: '₹2,999/mo', color: 'bg-blue-50 border-blue-200 text-blue-800' },
+  agency: { label: 'Agency', price: '₹9,999/mo', color: 'bg-purple-50 border-purple-200 text-purple-800' },
+}
+
+function SignupForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const plan = searchParams.get('plan') ?? 'free'
+  const planMeta = PLAN_LABELS[plan]
+
   const [fullName, setFullName] = useState('')
   const [companyName, setCompanyName] = useState('')
   const [email, setEmail] = useState('')
@@ -40,16 +50,29 @@ export default function SignupPage() {
     }
 
     if (data.user) {
-      const { error: profileError } = await supabase.from('profiles').insert({
+      await supabase.from('profiles').insert({
         id: data.user.id,
         email,
         full_name: fullName,
         company_name: companyName || null,
         plan: 'free',
       })
+    }
 
-      if (profileError) {
-        console.error('Profile creation error:', profileError)
+    if (plan !== 'free' && planMeta) {
+      try {
+        const res = await fetch('/api/subscriptions/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan }),
+        })
+        const json = await res.json()
+        if (json.payment_link) {
+          window.location.href = json.payment_link
+          return
+        }
+      } catch {
+        // fall through to dashboard if payment link fails
       }
     }
 
@@ -65,10 +88,21 @@ export default function SignupPage() {
           <p className="text-gray-500 mt-1">AI-powered ad account diagnostics</p>
         </div>
 
+        {planMeta && (
+          <div className={`flex items-center gap-2 px-4 py-3 rounded-lg border mb-4 text-sm font-medium ${planMeta.color}`}>
+            <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+            You&apos;re signing up for the <strong>{planMeta.label} plan</strong> — {planMeta.price}
+          </div>
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle>Create account</CardTitle>
-            <CardDescription>Start diagnosing your ad accounts in 2 minutes</CardDescription>
+            <CardDescription>
+              {planMeta
+                ? `Create your account and complete payment to activate ${planMeta.label}`
+                : 'Start diagnosing your ad accounts in 2 minutes'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSignup} className="space-y-4">
@@ -127,7 +161,9 @@ export default function SignupPage() {
               )}
 
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Creating account…' : 'Create account'}
+                {loading
+                  ? planMeta ? 'Creating account & preparing payment…' : 'Creating account…'
+                  : planMeta ? `Create account & pay ${planMeta.price}` : 'Create account'}
               </Button>
             </form>
 
@@ -139,7 +175,19 @@ export default function SignupPage() {
             </p>
           </CardContent>
         </Card>
+
+        <p className="text-center text-xs text-gray-400 mt-4">
+          By signing up you agree to our Terms of Service and Privacy Policy.
+        </p>
       </div>
     </div>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
   )
 }

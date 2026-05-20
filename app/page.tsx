@@ -190,7 +190,7 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <Button className="w-full mt-8" asChild>
-                  <Link href="/signup">Start Growth plan</Link>
+                  <Link href="/signup?plan=growth">Start Growth plan</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -216,7 +216,7 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <Button className="w-full mt-8 bg-purple-600 hover:bg-purple-700" asChild>
-                  <Link href="/signup">Start Agency plan</Link>
+                  <Link href="/signup?plan=agency">Start Agency plan</Link>
                 </Button>
               </CardContent>
             </Card>
