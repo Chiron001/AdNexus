@@ -121,7 +121,7 @@ export default async function DashboardPage() {
         </h2>
         <p className="text-gray-500 mt-1">
           {hasAccounts
-            ? 'Here&apos;s what needs your attention today.'
+            ? "Here's what needs your attention today."
             : 'Connect your first ad account to get started.'}
         </p>
       </div>

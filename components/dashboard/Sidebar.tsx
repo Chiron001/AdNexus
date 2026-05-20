@@ -26,9 +26,10 @@ const navItems = [
 interface SidebarProps {
   plan: 'free' | 'growth' | 'agency'
   userName: string
+  onNavigate?: () => void
 }
 
-export function Sidebar({ plan, userName }: SidebarProps) {
+export function Sidebar({ plan, userName, onNavigate }: SidebarProps) {
   const pathname = usePathname()
 
   const planColors = {
@@ -57,6 +58,7 @@ export function Sidebar({ plan, userName }: SidebarProps) {
             <Link
               key={href}
               href={href}
+              onClick={onNavigate}
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                 isActive
