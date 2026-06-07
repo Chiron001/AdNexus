@@ -262,10 +262,10 @@ export default function HomePage() {
       const p = Math.max(0, Math.min(1, scrolled / (total * 0.88)))
       // Zoom runs throughout entire scroll (1.0 → 1.3)
       scene.style.transform = `scale(${1 + p * 0.3})`
-      // Text fades in after zoom has progressed past halfway
+      // Text fades in after zoom has progressed, centered in sky
       const text = cinematicTextRef.current
       if (text) {
-        const fadeIn = Math.max(0, Math.min(1, (p - 0.52) / 0.2))
+        const fadeIn = Math.max(0, Math.min(1, (p - 0.38) / 0.18))
         const fadeOut = Math.max(0, Math.min(1, (0.92 - p) / 0.16))
         text.style.opacity = String(fadeIn * fadeOut)
       }
@@ -461,12 +461,11 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none" style={{ background:'linear-gradient(to bottom, transparent, #080808)' }} />
+        <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none" style={{ background:'linear-gradient(to bottom, transparent, #010810)' }} />
       </section>
 
-      {/* ── Cinematic scroll-zoom ───────────────────── */}
       {/* ── Cinematic scroll-zoom + 30 checks reveal ── */}
-      <div ref={cinematicRef} className="relative" style={{ height: '300vh', background: '#080808' }}>
+      <div ref={cinematicRef} className="relative" style={{ height: '300vh', background: '#010810' }}>
         <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#010810' }}>
 
           {/* Scalable sky scene */}
@@ -505,7 +504,7 @@ export default function HomePage() {
             </div>
 
             {/* Bottom fade to page */}
-            <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '22%', background: 'linear-gradient(180deg, transparent, rgba(8,8,8,0.92) 80%, #080808 100%)', zIndex: 4 }} />
+            <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '22%', background: 'linear-gradient(180deg, transparent, rgba(1,8,16,0.92) 80%, #010810 100%)', zIndex: 4 }} />
           </div>
         </div>
       </div>
