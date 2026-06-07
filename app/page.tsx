@@ -244,7 +244,6 @@ export default function HomePage() {
   const cinematicRef = useRef<HTMLDivElement>(null)
   const cinematicInnerRef = useRef<HTMLDivElement>(null)
   const cinematicSceneRef = useRef<HTMLDivElement>(null)
-  const cinematicTextRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     heroRef.current?.querySelectorAll('.hero-animate').forEach((el, i) => {
@@ -260,15 +259,7 @@ export default function HomePage() {
       const scrolled = -wrap.getBoundingClientRect().top
       const total = Math.max(wrap.offsetHeight - window.innerHeight, 1)
       const p = Math.max(0, Math.min(1, scrolled / (total * 0.88)))
-      // Zoom runs throughout entire scroll (1.0 → 1.3)
       scene.style.transform = `scale(${1 + p * 0.3})`
-      // Text fades in after zoom has progressed, centered in sky
-      const text = cinematicTextRef.current
-      if (text) {
-        const fadeIn = Math.max(0, Math.min(1, (p - 0.38) / 0.18))
-        const fadeOut = Math.max(0, Math.min(1, (0.92 - p) / 0.16))
-        text.style.opacity = String(fadeIn * fadeOut)
-      }
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -494,32 +485,31 @@ export default function HomePage() {
             {/* Soft edge vignette */}
             <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 110% 110% at 50% 40%, transparent 55%, rgba(1,6,8,0.5) 75%, rgba(1,4,6,0.88) 100%)', zIndex: 2 }} />
 
-            {/* Text — fades in after zoom has progressed, centered in sky */}
-            <div ref={cinematicTextRef} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0, pointerEvents: 'none', zIndex: 3 }}>
-              <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(120,220,160,0.8)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: '16px' }}>Always watching</p>
-              <h2 style={{ fontSize: 'clamp(2.4rem, 6vw, 4.8rem)', fontWeight: 900, color: '#fff', textAlign: 'center', letterSpacing: '-0.03em', lineHeight: 1.06, marginBottom: '20px', textShadow: '0 2px 48px rgba(0,0,0,0.9)' }}>
-                30 checks.<br />Every night.
-              </h2>
-              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.05rem', textAlign: 'center', maxWidth: '420px', lineHeight: 1.65, textShadow: '0 1px 24px rgba(0,0,0,0.95)', marginBottom: '36px' }}>While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                {[
-                  { val: '30', label: 'checks per account' },
-                  { val: '3', label: 'platforms monitored' },
-                  { val: '2am', label: 'runs every night' },
-                ].map(({ val, label }) => (
-                  <div key={val} style={{ padding: '10px 20px', borderRadius: '100px', border: '1px solid rgba(120,220,160,0.18)', background: 'rgba(8,30,16,0.55)', backdropFilter: 'blur(12px)', textAlign: 'center' }}>
-                    <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: 800, color: 'rgba(160,240,190,0.92)', lineHeight: 1.1 }}>{val}</span>
-                    <span style={{ display: 'block', fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', fontWeight: 500, letterSpacing: '0.04em', marginTop: '2px' }}>{label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Bottom fade to page */}
             <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '22%', background: 'linear-gradient(180deg, transparent, rgba(1,8,16,0.92) 80%, #010810 100%)', zIndex: 4 }} />
           </div>
         </div>
       </div>
+
+      {/* ── 30 checks ──────────────────────────────── */}
+      <section className="relative py-24 sm:py-32 px-5 sm:px-6 text-center overflow-hidden" style={{ background: 'linear-gradient(180deg, #010810 0%, #060d08 45%, #080808 100%)' }}>
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 0%, rgba(8,28,14,0.7) 0%, transparent 70%)' }} />
+        <div className="relative max-w-2xl mx-auto">
+          <p className="text-[11px] font-bold uppercase tracking-widest mb-5" style={{ color: 'rgba(120,220,160,0.8)' }}>Always watching</p>
+          <h2 className="font-black text-white mb-6" style={{ fontSize: 'clamp(2.4rem, 6vw, 4.8rem)', letterSpacing: '-0.03em', lineHeight: 1.06 }}>
+            30 checks.<br />Every night.
+          </h2>
+          <p className="text-lg text-gray-400 leading-relaxed max-w-md mx-auto mb-10">While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
+          <div className="flex gap-3 flex-wrap justify-center">
+            {[{ val:'30', label:'checks per account' },{ val:'3', label:'platforms monitored' },{ val:'2am', label:'runs every night' }].map(({ val, label }) => (
+              <div key={val} className="px-5 py-3 rounded-full border text-center" style={{ border:'1px solid rgba(120,220,160,0.2)', background:'rgba(8,28,16,0.5)' }}>
+                <span className="block text-xl font-black" style={{ color:'rgba(160,240,190,0.9)' }}>{val}</span>
+                <span className="block text-[0.7rem] text-gray-500 font-medium tracking-wide mt-0.5">{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ── Trusted by ─────────────────────────────── */}
       <section className="py-12 sm:py-14 border-y border-white/[0.05] overflow-hidden">
