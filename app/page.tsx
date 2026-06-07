@@ -244,7 +244,6 @@ export default function HomePage() {
   const cinematicRef = useRef<HTMLDivElement>(null)
   const cinematicInnerRef = useRef<HTMLDivElement>(null)
   const cinematicSceneRef = useRef<HTMLDivElement>(null)
-  const cinematicTextRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     heroRef.current?.querySelectorAll('.hero-animate').forEach((el, i) => {
@@ -260,14 +259,7 @@ export default function HomePage() {
       const scrolled = -wrap.getBoundingClientRect().top
       const total = Math.max(wrap.offsetHeight - window.innerHeight, 1)
       const p = Math.max(0, Math.min(1, scrolled / (total * 0.82)))
-      // Zoom into the garden as user scrolls
       scene.style.transform = `scale(${1 + p * 0.28})`
-      const text = cinematicTextRef.current
-      if (text) {
-        const fadeIn = Math.max(0, Math.min(1, (p - 0.35) / 0.2))
-        const fadeOut = Math.max(0, Math.min(1, (0.88 - p) / 0.18))
-        text.style.opacity = String(fadeIn * fadeOut)
-      }
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -516,17 +508,22 @@ export default function HomePage() {
             {/* Bottom fade — merges into the next section when sticky panel detaches */}
             <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '28%', background: 'linear-gradient(180deg, transparent 0%, rgba(8,8,8,0.88) 75%, #080808 100%)', zIndex: 4 }} />
 
-            {/* Text overlay — sits above scene, doesn't scale, fades in centered */}
-            <div ref={cinematicTextRef} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0, pointerEvents: 'none', zIndex: 3 }}>
-              <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(120,220,160,0.75)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: '14px' }}>Always watching</p>
-              <h2 style={{ fontSize: 'clamp(1.9rem, 5.5vw, 3.8rem)', fontWeight: 900, color: '#fff', textAlign: 'center', letterSpacing: '-0.025em', lineHeight: 1.08, marginBottom: '18px', textShadow: '0 2px 40px rgba(0,0,0,0.85)' }}>
-                30 checks.<br />Every night.
-              </h2>
-              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.05rem', textAlign: 'center', maxWidth: '420px', lineHeight: 1.6, textShadow: '0 1px 24px rgba(0,0,0,0.95)' }}>While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
-            </div>
           </div>
         </div>
       </div>
+
+      {/* ── 30 checks ──────────────────────────────── */}
+      <section className="relative py-28 sm:py-36 px-5 sm:px-6 overflow-hidden" style={{ background: 'linear-gradient(180deg, #080808 0%, #060d08 40%, #080808 100%)' }}>
+        {/* Subtle green ambient from garden above */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(8,30,14,0.6) 0%, transparent 65%)' }} />
+        <div className="relative max-w-2xl mx-auto text-center">
+          <p className="text-[11px] font-bold uppercase tracking-widest mb-5" style={{ color: 'rgba(120,220,160,0.75)' }}>Always watching</p>
+          <h2 className="font-black text-white text-center mb-6" style={{ fontSize: 'clamp(2.4rem, 6vw, 4.8rem)', letterSpacing: '-0.03em', lineHeight: 1.06 }}>
+            30 checks.<br />Every night.
+          </h2>
+          <p className="text-lg text-gray-400 leading-relaxed max-w-md mx-auto">While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
+        </div>
+      </section>
 
       {/* ── Trusted by ─────────────────────────────── */}
       <section className="py-12 sm:py-14 border-y border-white/[0.05] overflow-hidden">
