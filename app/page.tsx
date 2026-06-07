@@ -514,13 +514,13 @@ export default function HomePage() {
             {/* Soft vignette — atmospheric edge darkening, doesn't scale */}
             <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 100% 100% at 50% 50%, transparent 52%, rgba(1,6,8,0.45) 72%, rgba(1,6,8,0.82) 100%)', zIndex: 2 }} />
 
-            {/* Text overlay — sits above scene, doesn't scale, fades in lower third */}
-            <div ref={cinematicTextRef} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: '18%', opacity: 0, pointerEvents: 'none', zIndex: 3 }}>
+            {/* Text overlay — sits above scene, doesn't scale, fades in centered */}
+            <div ref={cinematicTextRef} style={{ position: 'absolute', top: '50%', left: 0, right: 0, transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: 0, pointerEvents: 'none', zIndex: 3 }}>
               <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(120,220,160,0.75)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: '14px' }}>Always watching</p>
-              <h2 style={{ fontSize: 'clamp(1.9rem, 5.5vw, 3.8rem)', fontWeight: 900, color: '#fff', textAlign: 'center', letterSpacing: '-0.025em', lineHeight: 1.08, marginBottom: '18px', textShadow: '0 2px 40px rgba(0,0,0,0.8)' }}>
+              <h2 style={{ fontSize: 'clamp(1.9rem, 5.5vw, 3.8rem)', fontWeight: 900, color: '#fff', textAlign: 'center', letterSpacing: '-0.025em', lineHeight: 1.08, marginBottom: '18px', textShadow: '0 2px 40px rgba(0,0,0,0.85)' }}>
                 30 checks.<br />Every night.
               </h2>
-              <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.05rem', textAlign: 'center', maxWidth: '420px', lineHeight: 1.6, textShadow: '0 1px 20px rgba(0,0,0,0.9)' }}>While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.05rem', textAlign: 'center', maxWidth: '420px', lineHeight: 1.6, textShadow: '0 1px 24px rgba(0,0,0,0.95)' }}>While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
             </div>
           </div>
         </div>
@@ -1070,9 +1070,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ──────────────────────────────────── */}
-      <footer className="pt-12 pb-8 px-5 sm:px-6 relative overflow-hidden" style={{ backgroundImage:`url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center 80%', backgroundColor:'#020308' }}>
-        {/* Dark overlay — keeps content readable while mountain photo subtly shows through */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, rgba(2,2,12,0.93) 0%, rgba(2,3,10,0.90) 50%, rgba(3,4,14,0.95) 100%)', zIndex: 0 }} />
+      <footer className="pt-12 pb-8 px-5 sm:px-6 relative overflow-hidden" style={{ backgroundImage:`url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center 70%', backgroundColor:'#020308' }}>
+        {/* Bridge gradient — top matches CTA section's dark-red bottom, fades into mountain photo */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, rgba(22,4,4,0.90) 0%, rgba(8,2,6,0.78) 18%, rgba(3,3,12,0.72) 45%, rgba(3,4,16,0.82) 80%, rgba(2,3,14,0.90) 100%)', zIndex: 0 }} />
         {/* Night sky ambient — two soft light sources like dock lamps */}
         <div className="absolute pointer-events-none" style={{ bottom:'20%', left:'28%', width:'280px', height:'280px', borderRadius:'50%', background:'radial-gradient(circle, rgba(60,100,180,0.12) 0%, transparent 70%)', filter:'blur(50px)' }} />
         <div className="absolute pointer-events-none" style={{ bottom:'20%', right:'28%', width:'280px', height:'280px', borderRadius:'50%', background:'radial-gradient(circle, rgba(60,100,180,0.10) 0%, transparent 70%)', filter:'blur(50px)' }} />
@@ -1080,17 +1080,17 @@ export default function HomePage() {
         <div className="absolute pointer-events-none" style={{ bottom:0, left:'20%', right:'20%', height:'140px', background:'radial-gradient(ellipse, rgba(40,80,140,0.18) 0%, transparent 70%)', filter:'blur(35px)' }} />
         {/* Subtle water reflection shimmer */}
         <div className="absolute pointer-events-none" style={{ bottom:'2%', left:'35%', right:'35%', height:'60px', background:'radial-gradient(ellipse, rgba(80,130,200,0.08) 0%, transparent 70%)', filter:'blur(15px)' }} />
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto relative" style={{ zIndex: 1 }}>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-8 mb-10">
             <div className="col-span-2 sm:col-span-1">
               <Link href="/" className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/25"><Zap className="w-4 h-4 text-white" /></div>
                 <span className="text-sm font-bold text-white">AdNexus</span>
               </Link>
-              <p className="text-xs text-gray-500 leading-relaxed mb-4">AI-powered ad diagnostics for Indian D2C brands and performance agencies.</p>
+              <p className="text-xs text-gray-300 leading-relaxed mb-4">AI-powered ad diagnostics for Indian D2C brands and performance agencies.</p>
               <div className="flex gap-2">
                 {['in','tw','yt'].map((s) => (
-                  <div key={s} className="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-[10px] text-gray-500 uppercase font-bold hover:bg-white/[0.10] hover:text-gray-300 transition-colors cursor-pointer">{s}</div>
+                  <div key={s} className="w-8 h-8 rounded-lg bg-white/[0.10] border border-white/[0.15] flex items-center justify-center text-[10px] text-gray-300 uppercase font-bold hover:bg-white/[0.18] hover:text-white transition-colors cursor-pointer">{s}</div>
                 ))}
               </div>
             </div>
@@ -1101,19 +1101,19 @@ export default function HomePage() {
               { title:'Account',  links:[{l:'Sign up free',h:'/signup'},{l:'Sign in',h:'/login'},{l:'Growth plan',h:'/signup?plan=growth'},{l:'Agency plan',h:'/signup?plan=agency'},{l:'Custom / Enterprise',h:'/contact'}] },
             ].map(({ title, links }) => (
               <div key={title}>
-                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-4">{title}</p>
-                <ul className="space-y-2.5">{links.map(({ l, h }) => <li key={l}><Link href={h} className="text-sm text-gray-500 hover:text-gray-300 transition-colors">{l}</Link></li>)}</ul>
+                <p className="text-[11px] font-bold text-gray-200 uppercase tracking-widest mb-4">{title}</p>
+                <ul className="space-y-2.5">{links.map(({ l, h }) => <li key={l}><Link href={h} className="text-sm text-gray-400 hover:text-white transition-colors">{l}</Link></li>)}</ul>
               </div>
             ))}
           </div>
-          <div className="border-t border-white/[0.05] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-gray-600">© 2026 AdNexus. Built for Indian D2C brands and agencies.</p>
-            <div className="flex gap-4 sm:gap-5">{['Privacy Policy','Terms of Service','Cookie Policy'].map((l) => <a key={l} href="#" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">{l}</a>)}</div>
+          <div className="border-t border-white/[0.12] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-gray-400">© 2026 AdNexus. Built for Indian D2C brands and agencies.</p>
+            <div className="flex gap-4 sm:gap-5">{['Privacy Policy','Terms of Service','Cookie Policy'].map((l) => <a key={l} href="#" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">{l}</a>)}</div>
           </div>
         </div>
 
         {/* Large brand wordmark — like InsiderOne footer */}
-        <div className="overflow-hidden border-t border-white/[0.03] mt-6">
+        <div className="overflow-hidden border-t border-white/[0.10] mt-6 relative" style={{ zIndex: 1 }}>
           <p className="text-center font-black text-white select-none pointer-events-none leading-none tracking-tight"
              style={{ fontSize:'clamp(4rem, 14vw, 11rem)', opacity:0.055, letterSpacing:'-0.03em', marginBottom:'-0.15em' }}>
             ADNEXUS
