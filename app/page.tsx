@@ -259,7 +259,8 @@ export default function HomePage() {
       const scrolled = -wrap.getBoundingClientRect().top
       const total = Math.max(wrap.offsetHeight - window.innerHeight, 1)
       const p = Math.max(0, Math.min(1, scrolled / (total * 0.68)))
-      const inset = Math.max(72 * (1 - p), 0)
+      const maxInset = window.innerWidth < 768 ? 14 : 68
+      const inset = Math.max(maxInset * (1 - p), 0)
       inner.style.top = `${inset}px`
       inner.style.left = `${inset}px`
       inner.style.right = `${inset}px`
@@ -270,7 +271,6 @@ export default function HomePage() {
         const fadeIn = Math.max(0, Math.min(1, (p - 0.18) / 0.28))
         const fadeOut = Math.max(0, Math.min(1, (0.88 - p) / 0.28))
         text.style.opacity = String(fadeIn * fadeOut)
-        text.style.transform = `translateY(${14 * (1 - Math.min(p / 0.28, 1))}px)`
       }
     }
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -468,7 +468,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Cinematic scroll-zoom ───────────────────── */}
-      <div ref={cinematicRef} className="relative" style={{ height: '260vh', background: '#010608' }}>
+      <div ref={cinematicRef} className="relative" style={{ height: '180vh', background: '#010608' }}>
         <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#010608' }}>
           {/* Dark outer ring — visible as "frame" when scene is inset */}
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 130% 130% at 50% 50%, transparent 45%, rgba(1,6,8,0.7) 68%, #010608 88%)', zIndex: 2 }} />
@@ -478,7 +478,7 @@ export default function HomePage() {
             ref={cinematicInnerRef}
             style={{
               position: 'absolute',
-              top: '72px', left: '72px', right: '72px', bottom: '72px',
+              top: '68px', left: '68px', right: '68px', bottom: '68px',
               borderRadius: '28px',
               overflow: 'hidden',
               zIndex: 1,
@@ -518,7 +518,7 @@ export default function HomePage() {
             <div style={{ position: 'absolute', bottom: '6%', left: '30%', right: '30%', height: '10%', background: 'radial-gradient(ellipse, rgba(60,140,90,0.07) 0%, transparent 70%)', filter: 'blur(10px)', pointerEvents: 'none' }} />
 
             {/* Text overlay — fades in while scrolling */}
-            <div ref={cinematicTextRef} style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0, pointerEvents: 'none' }}>
+            <div ref={cinematicTextRef} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0, pointerEvents: 'none' }}>
               <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(120,220,160,0.75)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: '14px' }}>Always watching</p>
               <h2 style={{ fontSize: 'clamp(1.9rem, 5.5vw, 3.8rem)', fontWeight: 900, color: '#fff', textAlign: 'center', letterSpacing: '-0.025em', lineHeight: 1.08, marginBottom: '18px' }}>
                 30 checks.<br />Every night.
@@ -847,7 +847,7 @@ export default function HomePage() {
               <p className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto">No onboarding call. No setup fee. Connect, diagnose, and fix today.</p>
             </div>
             {/* Step circle track — desktop only, above the cards */}
-            <div className="stagger-child hidden sm:grid sm:grid-cols-3 gap-6 mb-2">
+            <div className="stagger-child hidden sm:grid sm:grid-cols-3 gap-6 mb-8">
               {[
                 { num:'1', ring:'ring-blue-500/30',   bg:'bg-blue-500',   lineGrad:'from-blue-500/50 to-purple-500/50',  showLine:true  },
                 { num:'2', ring:'ring-purple-500/30', bg:'bg-purple-500', lineGrad:'from-purple-500/50 to-green-500/50', showLine:true  },
@@ -1073,7 +1073,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ──────────────────────────────────── */}
-      <footer className="border-t border-white/[0.06] pt-12 pb-8 px-5 sm:px-6 relative overflow-hidden" style={{ background:'linear-gradient(180deg, #020308 0%, #030610 40%, #040a14 70%, #030810 100%)' }}>
+      <footer className="pt-12 pb-8 px-5 sm:px-6 relative overflow-hidden" style={{ background:'linear-gradient(180deg, #020308 0%, #030610 40%, #040a14 70%, #030810 100%)' }}>
+        {/* Transition gradient — blends CTA dark-red bottom into footer navy */}
+        <div className="absolute pointer-events-none" style={{ top: 0, left: 0, right: 0, height: '90px', background: 'linear-gradient(180deg, rgba(22,4,4,0.92) 0%, rgba(8,2,2,0.55) 45%, transparent 100%)', zIndex: 0 }} />
         {/* Night sky ambient — two soft light sources like dock lamps */}
         <div className="absolute pointer-events-none" style={{ bottom:'20%', left:'28%', width:'280px', height:'280px', borderRadius:'50%', background:'radial-gradient(circle, rgba(60,100,180,0.12) 0%, transparent 70%)', filter:'blur(50px)' }} />
         <div className="absolute pointer-events-none" style={{ bottom:'20%', right:'28%', width:'280px', height:'280px', borderRadius:'50%', background:'radial-gradient(circle, rgba(60,100,180,0.10) 0%, transparent 70%)', filter:'blur(50px)' }} />
