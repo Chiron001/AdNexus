@@ -456,7 +456,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Cinematic scroll-zoom + 30 checks reveal ── */}
-      <div ref={cinematicRef} className="relative" style={{ height: '220vh', background: '#010810' }}>
+      <div ref={cinematicRef} className="relative" style={{ height: '165vh', background: '#010810' }}>
         <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#010810' }}>
 
           {/* Scalable sky scene */}
@@ -485,8 +485,8 @@ export default function HomePage() {
             {/* Soft edge vignette */}
             <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 110% 110% at 50% 40%, transparent 55%, rgba(1,6,8,0.5) 75%, rgba(1,4,6,0.88) 100%)', zIndex: 2 }} />
 
-            {/* Bottom fade to page */}
-            <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '22%', background: 'linear-gradient(180deg, transparent, rgba(1,8,16,0.92) 80%, #010810 100%)', zIndex: 4 }} />
+            {/* Bottom fade to page — tall enough to cover horizon glow */}
+            <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '42%', background: 'linear-gradient(180deg, transparent 0%, rgba(1,8,16,0.6) 45%, rgba(1,8,16,0.97) 80%, #010810 100%)', zIndex: 4 }} />
           </div>
         </div>
       </div>
