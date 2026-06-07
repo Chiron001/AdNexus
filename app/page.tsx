@@ -4,8 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
 import {
   ArrowRight, CheckCircle2, Activity, Bell, FileText,
-  Cpu, Shield, TrendingUp, Star, ChevronRight, Zap,
-  ChevronLeft, BarChart3,
+  Cpu, Shield, TrendingUp, Star, ChevronRight, Zap, BarChart3,
 } from 'lucide-react'
 import { LandingNav } from '@/components/landing/LandingNav'
 
@@ -90,17 +89,6 @@ function Carousel({ items, renderItem }: {
           </div>
         ))}
       </div>
-      {/* Nav buttons */}
-      {active > 0 && (
-        <button onClick={() => goTo(active - 1)} className="absolute left-2 top-1/2 -translate-y-8 w-8 h-8 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-white backdrop-blur-sm">
-          <ChevronLeft className="w-4 h-4" />
-        </button>
-      )}
-      {active < items.length - 1 && (
-        <button onClick={() => goTo(active + 1)} className="absolute right-2 top-1/2 -translate-y-8 w-8 h-8 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-white backdrop-blur-sm">
-          <ChevronRight className="w-4 h-4" />
-        </button>
-      )}
       {/* Dots */}
       <div className="flex justify-center gap-1.5 mt-4 pb-1">
         {items.map((_, i) => (
@@ -120,6 +108,30 @@ const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
   dur: `${4 + (i % 5)}s`,
   delay: `${((i * 0.4) % 4).toFixed(1)}s`,
 }))
+
+/* ── Hero tab data ─────────────────────────────── */
+interface HeroPlatformEntry {
+  color: string; score: number; scoreColor: string; issues: number; risk: string
+  items: Array<{ tag: string; issue: string; val: string; c: string }>
+}
+type HeroTab = 'Meta' | 'Google' | 'Amazon'
+const HERO_PLATFORM_DATA: Record<HeroTab, HeroPlatformEntry> = {
+  Meta:   { color:'#2563eb', score:64, scoreColor:'text-amber-400', issues:12, risk:'₹1,17,000', items:[
+    {tag:'Critical',issue:'Creative fatigue — Ad Set #4',    val:'₹42K',c:'bg-red-500/15 text-red-400'},
+    {tag:'Critical',issue:'Broken pixel tracking',           val:'₹38K',c:'bg-red-500/15 text-red-400'},
+    {tag:'High',    issue:'Frequency cap exceeded — 3 sets', val:'₹21K',c:'bg-amber-500/15 text-amber-400'},
+  ]},
+  Google: { color:'#16a34a', score:58, scoreColor:'text-red-400',   issues: 8, risk:'₹84,000', items:[
+    {tag:'Critical',issue:'Conversion tracking broken',           val:'₹31K',c:'bg-red-500/15 text-red-400'},
+    {tag:'High',    issue:'Keyword cannibalization — 14 pairs',   val:'₹28K',c:'bg-amber-500/15 text-amber-400'},
+    {tag:'Medium',  issue:'Quality score below 4 — 11 keywords',  val:'₹16K',c:'bg-yellow-500/15 text-yellow-500'},
+  ]},
+  Amazon: { color:'#ea580c', score:71, scoreColor:'text-green-400', issues: 5, risk:'₹52,000', items:[
+    {tag:'High',  issue:'ACOS above target — Auto campaigns', val:'₹22K',c:'bg-amber-500/15 text-amber-400'},
+    {tag:'High',  issue:'Auto vs manual overlap — 8 ASINs',   val:'₹18K',c:'bg-amber-500/15 text-amber-400'},
+    {tag:'Medium',issue:'Zero-conversion ASINs — 3 products', val:'₹12K',c:'bg-yellow-500/15 text-yellow-500'},
+  ]},
+}
 
 /* ── Data ──────────────────────────────────────── */
 const BRANDS = ['Nykaa','Mamaearth','boAt','WOW Skin','Lenskart','Bewakoof','Clovia','mCaffeine','Plum','The Moms Co','Sugar Cosmetics','Noise','Himalaya','Dabur','OZiva','Marico']
@@ -169,6 +181,8 @@ export default function HomePage() {
   const s1 = useReveal(), s2 = useReveal(), s3 = useReveal(), s4 = useReveal()
   const s5 = useReveal(), s6 = useReveal(), s7 = useReveal(), s8 = useReveal(), s9 = useReveal()
   const c1 = useCounter(30), c2 = useCounter(3), c3 = useCounter(62), c4 = useCounter(1000)
+  const [heroTab, setHeroTab] = useState<HeroTab>('Meta')
+  const heroData = HERO_PLATFORM_DATA[heroTab]
 
   useEffect(() => {
     heroRef.current?.querySelectorAll('.hero-animate').forEach((el, i) => {
@@ -177,8 +191,18 @@ export default function HomePage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#080808] text-white overflow-x-hidden relative">
       <LandingNav />
+
+      {/* Ambient aurora — sits behind all sections, scrolls with page */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+        <div className="aurora-orb" style={{ width:'900px', height:'700px', top:'3%',  left:'12%',  background:'rgba(37,99,235,0.07)',   animation:'orbFloat1 20s ease-in-out infinite' }} />
+        <div className="aurora-orb" style={{ width:'700px', height:'800px', top:'28%', right:'-6%', background:'rgba(124,58,237,0.055)', animation:'orbFloat2 26s -5s ease-in-out infinite' }} />
+        <div className="aurora-orb" style={{ width:'600px', height:'600px', top:'58%', left:'-4%',  background:'rgba(5,150,105,0.045)',  animation:'orbFloat3 18s -3s ease-in-out infinite' }} />
+        <div className="aurora-orb" style={{ width:'800px', height:'500px', top:'82%', right:'8%',  background:'rgba(37,99,235,0.05)',   animation:'orbFloat4 22s -9s ease-in-out infinite' }} />
+      </div>
+      {/* Grain texture — premium tactile feel */}
+      <div className="noise-overlay" />
 
       {/* ── Hero ───────────────────────────────────── */}
       <section
@@ -313,10 +337,11 @@ export default function HomePage() {
           <div className="lg:hidden mt-8 rounded-2xl border border-white/[0.08] overflow-hidden animate-fade-up" style={{ background:'rgba(10,10,14,0.97)', animationDelay:'0.6s' }}>
             {/* Tabs */}
             <div className="flex gap-0 border-b border-white/[0.06]">
-              {[{l:'Meta',c:'#2563eb'},{l:'Google',c:'#16a34a'},{l:'Amazon',c:'#ea580c'}].map(({ l, c }, i) => (
-                <button key={l} className={`flex-1 py-3 text-xs font-bold transition-colors ${i === 0 ? 'text-white' : 'text-gray-500'}`}
-                  style={i === 0 ? { borderBottom:`2px solid ${c}` } : {}}>
-                  {l}
+              {(['Meta','Google','Amazon'] as HeroTab[]).map((tab) => (
+                <button key={tab} onClick={() => setHeroTab(tab)}
+                  className={`flex-1 py-3 text-xs font-bold transition-colors ${heroTab === tab ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                  style={heroTab === tab ? { borderBottom:`2px solid ${HERO_PLATFORM_DATA[tab].color}` } : {}}>
+                  {tab}
                 </button>
               ))}
             </div>
@@ -325,22 +350,18 @@ export default function HomePage() {
               <div>
                 <p className="text-xs text-gray-500 mb-0.5">Account Health Score</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-amber-400">64</span>
+                  <span className={`text-3xl font-black ${heroData.scoreColor}`}>{heroData.score}</span>
                   <span className="text-xs text-gray-600">/100</span>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-xs text-red-400 font-semibold">12 issues found</p>
-                <p className="text-xs text-gray-600">₹1,17,000/mo at risk</p>
+                <p className="text-xs text-red-400 font-semibold">{heroData.issues} issues found</p>
+                <p className="text-xs text-gray-600">{heroData.risk}/mo at risk</p>
               </div>
             </div>
             {/* Issues */}
             <div className="px-3 pb-3 space-y-1.5">
-              {[
-                {tag:'Critical',issue:'Creative fatigue — Ad Set #4',val:'₹42K',c:'bg-red-500/15 text-red-400'},
-                {tag:'Critical',issue:'Broken pixel tracking — Google',val:'₹38K',c:'bg-red-500/15 text-red-400'},
-                {tag:'High',issue:'Frequency cap exceeded — 3 sets',val:'₹21K',c:'bg-amber-500/15 text-amber-400'},
-              ].map(({ tag, issue, val, c }) => (
+              {heroData.items.map(({ tag, issue, val, c }) => (
                 <div key={issue} className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04]">
                   <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold shrink-0 ${c}`}>{tag}</span>
                   <p className="text-xs text-gray-300 flex-1 truncate">{issue}</p>
@@ -373,32 +394,22 @@ export default function HomePage() {
 
       {/* ── Stats ──────────────────────────────────── */}
       <section className="border-b border-white/[0.05]" style={{ background:'radial-gradient(ellipse 80% 100% at 50% 50%, rgba(37,99,235,0.07) 0%, transparent 70%)' }}>
-        <div className="max-w-5xl mx-auto">
-          {/* Mobile: 2x2 grid with large numbers */}
-          <div className="grid grid-cols-2 md:hidden">
+        <div className="max-w-5xl mx-auto px-5 sm:px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4">
             {[
               { refData:c1, val:`${c1.count}+`, label:'Diagnostic checks per account' },
-              { refData:c2, val:c2.count,        label:'Ad platforms fully supported' },
+              { refData:c2, val:`${c2.count}`,   label:'Ad platforms fully supported' },
               { refData:c3, val:`${c3.count}%`,  label:'Avg wasted spend recovered' },
-              { refData:c4, val:`${c4.count}+`,  label:'D2C brands already on AdNexus' },
+              { refData:c4, val:`${c4.count}+`,  label:'D2C brands on AdNexus' },
             ].map(({ refData, val, label }, i) => (
-              <div key={label} ref={refData.ref} className={`p-6 text-center ${i % 2 === 0 ? 'border-r' : ''} ${i < 2 ? 'border-b' : ''} border-white/[0.05]`}>
-                <div className="text-4xl font-black text-white mb-1 tabular-nums">{val}</div>
-                <p className="text-xs text-gray-500 leading-snug">{label}</p>
-              </div>
-            ))}
-          </div>
-          {/* Desktop: horizontal */}
-          <div className="hidden md:grid md:grid-cols-4 gap-0 px-6 py-14 text-center">
-            {[
-              { refData:c1, val:`${c1.count}+`, label:'Diagnostic checks' },
-              { refData:c2, val:c2.count,        label:'Ad platforms covered' },
-              { refData:c3, val:`${c3.count}%`,  label:'Avg wasted spend recovered' },
-              { refData:c4, val:`${c4.count}+`,  label:'D2C brands trust AdNexus' },
-            ].map(({ refData, val, label }) => (
-              <div key={label} ref={refData.ref}>
-                <div className="text-5xl font-black text-white mb-2 tabular-nums">{val}</div>
-                <p className="text-sm text-gray-500">{label}</p>
+              <div key={label} ref={refData.ref}
+                className={`p-7 md:py-14 text-center border-white/[0.05]
+                  ${i % 2 === 0 ? 'border-r' : ''}
+                  ${i < 2 ? 'border-b md:border-b-0' : ''}
+                  ${i < 3 ? 'md:border-r' : ''}
+                `}>
+                <div className="text-4xl md:text-5xl font-black text-white mb-1.5 tabular-nums">{val}</div>
+                <p className="text-[11px] md:text-sm text-gray-500 leading-snug">{label}</p>
               </div>
             ))}
           </div>
@@ -751,7 +762,7 @@ export default function HomePage() {
               <h2 className="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight mb-4">All your ad data in one place</h2>
               <p className="text-gray-400 text-base max-w-xl mx-auto">OAuth only. No credentials stored. Data stays fresh. Team stays informed.</p>
             </div>
-            <div className="stagger-child flex flex-wrap items-center justify-center gap-3 mb-8">
+            <div className="stagger-child grid grid-cols-3 md:grid-cols-6 gap-3 mb-8">
               {[
                 {name:'Meta Ads',letter:'M',color:'from-blue-600 to-blue-700',desc:'Facebook & Instagram'},
                 {name:'Google Ads',letter:'G',color:'from-green-600 to-green-700',desc:'Search & Shopping'},
