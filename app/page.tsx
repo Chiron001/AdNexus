@@ -492,7 +492,7 @@ export default function HomePage() {
       </div>
 
       {/* ── 30 checks ──────────────────────────────── */}
-      <section className="relative py-24 sm:py-32 px-5 sm:px-6 text-center overflow-hidden" style={{ background: 'linear-gradient(180deg, #010810 0%, #010d0c 35%, #060d08 65%, #080808 100%)' }}>
+      <section className="relative py-12 sm:py-16 px-5 sm:px-6 text-center overflow-hidden" style={{ background: 'linear-gradient(180deg, #010810 0%, #010d0c 35%, #060d08 65%, #080808 100%)' }}>
         {/* Stars — continuity from cinematic sky above */}
         {GARDEN_STARS.filter((_, i) => i % 3 === 0).map((s, i) => (
           <div key={i} className="star-twinkle absolute pointer-events-none" style={{
@@ -1109,7 +1109,7 @@ export default function HomePage() {
         </div>
 
         {/* Large brand wordmark — like InsiderOne footer */}
-        <div className="overflow-hidden border-t border-white/[0.10] mt-6 relative" style={{ zIndex: 1 }}>
+        <div className="overflow-hidden mt-6 relative" style={{ zIndex: 1 }}>
           <p className="text-center font-black text-white select-none pointer-events-none leading-none tracking-tight"
              style={{ fontSize:'clamp(4rem, 14vw, 11rem)', opacity:0.055, letterSpacing:'-0.03em', marginBottom:'-0.15em' }}>
             ADNEXUS
