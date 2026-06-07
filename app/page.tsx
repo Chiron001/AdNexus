@@ -244,6 +244,7 @@ export default function HomePage() {
   const cinematicRef = useRef<HTMLDivElement>(null)
   const cinematicInnerRef = useRef<HTMLDivElement>(null)
   const cinematicSceneRef = useRef<HTMLDivElement>(null)
+  const cinematicTextRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     heroRef.current?.querySelectorAll('.hero-animate').forEach((el, i) => {
@@ -258,8 +259,16 @@ export default function HomePage() {
       if (!wrap || !scene) return
       const scrolled = -wrap.getBoundingClientRect().top
       const total = Math.max(wrap.offsetHeight - window.innerHeight, 1)
-      const p = Math.max(0, Math.min(1, scrolled / (total * 0.82)))
-      scene.style.transform = `scale(${1 + p * 0.28})`
+      const p = Math.max(0, Math.min(1, scrolled / (total * 0.88)))
+      // Zoom runs throughout entire scroll (1.0 → 1.3)
+      scene.style.transform = `scale(${1 + p * 0.3})`
+      // Text fades in after zoom has progressed past halfway
+      const text = cinematicTextRef.current
+      if (text) {
+        const fadeIn = Math.max(0, Math.min(1, (p - 0.52) / 0.2))
+        const fadeOut = Math.max(0, Math.min(1, (0.92 - p) / 0.16))
+        text.style.opacity = String(fadeIn * fadeOut)
+      }
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -456,27 +465,19 @@ export default function HomePage() {
       </section>
 
       {/* ── Cinematic scroll-zoom ───────────────────── */}
-      <div ref={cinematicRef} className="relative" style={{ height: '180vh', background: '#080808' }}>
-        <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#010608' }}>
+      {/* ── Cinematic scroll-zoom + 30 checks reveal ── */}
+      <div ref={cinematicRef} className="relative" style={{ height: '300vh', background: '#080808' }}>
+        <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#010810' }}>
 
-          {/* Scene container — full screen from start, overflow hidden for scale clip */}
-          <div
-            ref={cinematicInnerRef}
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', zIndex: 1 }}
-          >
-            {/* Scalable scene — this element gets scale(1→1.28) on scroll */}
-            <div
-              ref={cinematicSceneRef}
-              style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, transformOrigin: 'center center', willChange: 'transform' }}
-            >
-              {/* Sky gradient */}
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, #010810 0%, #010d0c 40%, #020f09 62%, #020c07 78%, #010905 100%)' }} />
-
+          {/* Scalable sky scene */}
+          <div ref={cinematicInnerRef} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', zIndex: 1 }}>
+            <div ref={cinematicSceneRef} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, transformOrigin: 'center center', willChange: 'transform' }}>
+              {/* Sky gradient — deep night, no horizon elements */}
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, #010810 0%, #010d0c 35%, #011008 60%, #010d06 80%, #010a05 100%)' }} />
               {/* Moonlight ambient */}
-              <div style={{ position: 'absolute', top: '8%', left: '16%', width: '220px', height: '220px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(180,220,170,0.10) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', top: '8%', left: '16%', width: '260px', height: '260px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(180,225,170,0.12) 0%, transparent 70%)', filter: 'blur(48px)', pointerEvents: 'none' }} />
               {/* Moon disc */}
-              <div style={{ position: 'absolute', top: '11%', left: '19%', width: '36px', height: '36px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(235,242,215,0.88) 0%, rgba(170,205,155,0.4) 55%, transparent 100%)', filter: 'blur(2px)', pointerEvents: 'none' }} />
-
+              <div style={{ position: 'absolute', top: '11%', left: '19%', width: '40px', height: '40px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(240,248,220,0.92) 0%, rgba(175,210,155,0.45) 55%, transparent 100%)', filter: 'blur(2px)', pointerEvents: 'none' }} />
               {/* Stars */}
               {GARDEN_STARS.map((s, i) => (
                 <div key={i} className="star-twinkle" style={{
@@ -487,43 +488,27 @@ export default function HomePage() {
                   opacity: s.op,
                 }} />
               ))}
-
-              {/* Ground mist / horizon */}
-              <div style={{ position: 'absolute', bottom: '32%', left: 0, right: 0, height: '10%', background: 'rgba(8,30,18,0.35)', filter: 'blur(14px)', pointerEvents: 'none' }} />
-
-              {/* Far treeline */}
-              <svg style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', pointerEvents: 'none' }} viewBox="0 0 1440 340" preserveAspectRatio="none" height="46%">
-                <path d="M0,340 L0,195 L35,180 L55,192 L85,162 L110,178 L145,148 L170,165 L208,132 L235,150 L272,120 L298,138 L335,112 L362,130 L398,105 L425,122 L462,98 L490,115 L525,92 L555,110 L592,86 L620,104 L658,80 L685,98 L722,76 L748,94 L785,72 L812,90 L850,68 L876,86 L912,64 L940,82 L976,60 L1002,78 L1038,56 L1065,74 L1102,58 L1128,75 L1162,55 L1190,72 L1225,52 L1252,70 L1288,54 L1315,72 L1350,58 L1378,74 L1410,62 L1440,76 L1440,340 Z" fill="#010d06" opacity="0.95"/>
-                <path d="M0,340 L0,250 L55,232 L90,245 L132,222 L168,238 L212,215 L248,230 L292,210 L328,226 L372,205 L408,220 L452,200 L488,216 L532,196 L568,212 L612,192 L648,208 L692,190 L728,205 L772,186 L808,202 L852,183 L888,198 L932,180 L968,196 L1012,178 L1048,194 L1092,175 L1128,191 L1172,174 L1208,189 L1252,172 L1288,188 L1332,172 L1368,188 L1440,178 L1440,340 Z" fill="#010a05"/>
-              </svg>
-
-              {/* Water reflection band */}
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '22%', background: 'linear-gradient(180deg, transparent, rgba(3,18,11,0.7) 45%, rgba(1,8,5,0.96) 100%)', pointerEvents: 'none' }} />
-              {/* Water shimmer */}
-              <div style={{ position: 'absolute', bottom: '6%', left: '30%', right: '30%', height: '10%', background: 'radial-gradient(ellipse, rgba(60,140,90,0.07) 0%, transparent 70%)', filter: 'blur(10px)', pointerEvents: 'none' }} />
+              {/* Horizon glow — subtle green ground light, no mountains */}
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '30%', background: 'linear-gradient(180deg, transparent, rgba(4,18,10,0.6) 60%, rgba(2,12,6,0.95) 100%)', pointerEvents: 'none' }} />
             </div>
 
-            {/* Soft vignette — atmospheric edge darkening, doesn't scale */}
-            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 100% 100% at 50% 50%, transparent 52%, rgba(1,6,8,0.45) 72%, rgba(1,6,8,0.82) 100%)', zIndex: 2 }} />
-            {/* Bottom fade — merges into the next section when sticky panel detaches */}
-            <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '28%', background: 'linear-gradient(180deg, transparent 0%, rgba(8,8,8,0.88) 75%, #080808 100%)', zIndex: 4 }} />
+            {/* Soft edge vignette */}
+            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 110% 110% at 50% 40%, transparent 55%, rgba(1,6,8,0.5) 75%, rgba(1,4,6,0.88) 100%)', zIndex: 2 }} />
 
+            {/* Text — fades in after zoom has progressed, centered in sky */}
+            <div ref={cinematicTextRef} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0, pointerEvents: 'none', zIndex: 3 }}>
+              <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(120,220,160,0.8)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: '16px' }}>Always watching</p>
+              <h2 style={{ fontSize: 'clamp(2.4rem, 6vw, 4.8rem)', fontWeight: 900, color: '#fff', textAlign: 'center', letterSpacing: '-0.03em', lineHeight: 1.06, marginBottom: '20px', textShadow: '0 2px 48px rgba(0,0,0,0.9)' }}>
+                30 checks.<br />Every night.
+              </h2>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.05rem', textAlign: 'center', maxWidth: '420px', lineHeight: 1.65, textShadow: '0 1px 24px rgba(0,0,0,0.95)' }}>While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
+            </div>
+
+            {/* Bottom fade to page */}
+            <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '22%', background: 'linear-gradient(180deg, transparent, rgba(8,8,8,0.92) 80%, #080808 100%)', zIndex: 4 }} />
           </div>
         </div>
       </div>
-
-      {/* ── 30 checks ──────────────────────────────── */}
-      <section className="relative py-28 sm:py-36 px-5 sm:px-6 overflow-hidden" style={{ background: 'linear-gradient(180deg, #080808 0%, #060d08 40%, #080808 100%)' }}>
-        {/* Subtle green ambient from garden above */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(8,30,14,0.6) 0%, transparent 65%)' }} />
-        <div className="relative max-w-2xl mx-auto text-center">
-          <p className="text-[11px] font-bold uppercase tracking-widest mb-5" style={{ color: 'rgba(120,220,160,0.75)' }}>Always watching</p>
-          <h2 className="font-black text-white text-center mb-6" style={{ fontSize: 'clamp(2.4rem, 6vw, 4.8rem)', letterSpacing: '-0.03em', lineHeight: 1.06 }}>
-            30 checks.<br />Every night.
-          </h2>
-          <p className="text-lg text-gray-400 leading-relaxed max-w-md mx-auto">While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
-        </div>
-      </section>
 
       {/* ── Trusted by ─────────────────────────────── */}
       <section className="py-12 sm:py-14 border-y border-white/[0.05] overflow-hidden">
