@@ -264,8 +264,8 @@ export default function HomePage() {
       scene.style.transform = `scale(${1 + p * 0.28})`
       const text = cinematicTextRef.current
       if (text) {
-        const fadeIn = Math.max(0, Math.min(1, (p - 0.28) / 0.28))
-        const fadeOut = Math.max(0, Math.min(1, (0.9 - p) / 0.2))
+        const fadeIn = Math.max(0, Math.min(1, (p - 0.1) / 0.22))
+        const fadeOut = Math.max(0, Math.min(1, (0.88 - p) / 0.2))
         text.style.opacity = String(fadeIn * fadeOut)
       }
     }
@@ -464,7 +464,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Cinematic scroll-zoom ───────────────────── */}
-      <div ref={cinematicRef} className="relative" style={{ height: '180vh', background: '#010608' }}>
+      <div ref={cinematicRef} className="relative" style={{ height: '180vh', background: '#080808' }}>
         <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#010608' }}>
 
           {/* Scene container — full screen from start, overflow hidden for scale clip */}
@@ -513,9 +513,11 @@ export default function HomePage() {
 
             {/* Soft vignette — atmospheric edge darkening, doesn't scale */}
             <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 100% 100% at 50% 50%, transparent 52%, rgba(1,6,8,0.45) 72%, rgba(1,6,8,0.82) 100%)', zIndex: 2 }} />
+            {/* Bottom fade — merges into the next section when sticky panel detaches */}
+            <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '28%', background: 'linear-gradient(180deg, transparent 0%, rgba(8,8,8,0.88) 75%, #080808 100%)', zIndex: 4 }} />
 
             {/* Text overlay — sits above scene, doesn't scale, fades in centered */}
-            <div ref={cinematicTextRef} style={{ position: 'absolute', top: '50%', left: 0, right: 0, transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: 0, pointerEvents: 'none', zIndex: 3 }}>
+            <div ref={cinematicTextRef} style={{ position: 'absolute', top: '42%', left: 0, right: 0, transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: 0, pointerEvents: 'none', zIndex: 3 }}>
               <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(120,220,160,0.75)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: '14px' }}>Always watching</p>
               <h2 style={{ fontSize: 'clamp(1.9rem, 5.5vw, 3.8rem)', fontWeight: 900, color: '#fff', textAlign: 'center', letterSpacing: '-0.025em', lineHeight: 1.08, marginBottom: '18px', textShadow: '0 2px 40px rgba(0,0,0,0.85)' }}>
                 30 checks.<br />Every night.
@@ -1009,7 +1011,7 @@ export default function HomePage() {
 
       {/* ── CTA ─────────────────────────────────────── */}
       <section className="relative pt-28 sm:pt-36 pb-0 px-5 sm:px-6 overflow-hidden"
-        style={{ backgroundColor:'#03040a', backgroundImage:`url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center 65%' }}>
+        style={{ backgroundColor:'#03040a', backgroundImage:`url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center center', backgroundAttachment:'fixed' }}>
 
         {/* Dark sky gradient overlay — lets mountain photo show through in middle */}
         <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, rgba(3,4,10,0.97) 0%, rgba(3,4,10,0.55) 38%, rgba(3,4,10,0.32) 58%, rgba(20,6,4,0.72) 78%, rgba(30,4,4,0.97) 100%)' }} />
@@ -1070,7 +1072,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ──────────────────────────────────── */}
-      <footer className="pt-12 pb-8 px-5 sm:px-6 relative overflow-hidden" style={{ backgroundImage:`url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center 70%', backgroundColor:'#020308' }}>
+      <footer className="pt-12 pb-8 px-5 sm:px-6 relative overflow-hidden" style={{ backgroundImage:`url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center center', backgroundAttachment:'fixed', backgroundColor:'#020308' }}>
         {/* Bridge gradient — top matches CTA section's dark-red bottom, fades into mountain photo */}
         <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, rgba(22,4,4,0.90) 0%, rgba(8,2,6,0.78) 18%, rgba(3,3,12,0.72) 45%, rgba(3,4,16,0.82) 80%, rgba(2,3,14,0.90) 100%)', zIndex: 0 }} />
         {/* Night sky ambient — two soft light sources like dock lamps */}
