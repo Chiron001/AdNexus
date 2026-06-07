@@ -362,91 +362,173 @@ export function LandingNav() {
       <div
         className={`fixed inset-0 z-[60] lg:hidden transition-opacity duration-300 ${mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
       >
-        {/* Backdrop */}
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-
-        {/* Panel — slides in from right */}
+        {/* Full-screen panel — slides in from left, InsiderOne style */}
         <div
-          className={`absolute top-0 right-0 bottom-0 w-full max-w-sm flex flex-col transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
-          style={{ background: 'rgba(6,6,8,0.99)', backdropFilter: 'blur(24px)', borderLeft: '1px solid rgba(255,255,255,0.06)' }}
+          className={`absolute inset-0 flex flex-col transition-transform duration-[360ms] ease-out ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+          style={{ background: '#040407' }}
         >
           {/* Panel header */}
-          <div className="flex items-center justify-between px-5 h-16 border-b border-white/[0.06] shrink-0">
-            <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-              <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center">
-                <Zap className="w-3.5 h-3.5 text-white" />
+          <div className="flex items-center justify-between px-5 h-16 border-b border-white/[0.08] shrink-0">
+            <Link href="/" className="flex items-center gap-2.5" onClick={() => setMobileOpen(false)}>
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <Zap className="w-4 h-4 text-white" />
               </div>
-              <span className="text-sm font-bold text-white">AdNexus</span>
+              <span className="text-[15px] font-bold text-white tracking-tight">AdNexus</span>
             </Link>
             <button
               onClick={() => setMobileOpen(false)}
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/[0.06] text-gray-400 hover:text-white transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-400 hover:text-white transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Nav links */}
-          <nav className="flex-1 overflow-y-auto px-3 py-5 space-y-0.5">
-            {([
-              { label: 'Platform',   sub: ['Platform Overview', 'AdNexus AI', 'Meta Ads', 'Google Ads', 'Amazon Ads', 'Health Scoring'] },
-              { label: 'Industries', sub: ['D2C E-commerce', 'Fashion & Lifestyle', 'Health & Wellness', 'Agencies'] },
-              { label: 'Customers',  href: '/customers' },
-              { label: 'Resources',  sub: ['Blog', 'Case Studies', 'Guides & Playbooks', 'Help Center'] },
-              { label: 'Pricing',    href: '/#pricing' },
-            ] as Array<{ label: string; sub?: string[]; href?: string }>).map(({ label, sub, href }) =>
-              sub ? (
-                <div key={label}>
-                  <button
-                    onClick={() => setMobileExpanded(mobileExpanded === label ? null : label)}
-                    className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-left hover:bg-white/[0.04] transition-colors"
-                  >
-                    <span className="text-[15px] font-medium text-gray-200">{label}</span>
-                    <ChevronDown className={`w-4.5 h-4.5 text-gray-500 transition-transform duration-200 ${mobileExpanded === label ? 'rotate-180' : ''}`} />
-                  </button>
-                  <div className={`overflow-hidden transition-all duration-300 ${mobileExpanded === label ? 'max-h-60' : 'max-h-0'}`}>
-                    <div className="pb-2 ml-4 border-l border-white/[0.06] pl-4 space-y-0.5">
-                      {sub.map((item) => (
-                        <Link
-                          key={item}
-                          href="#"
-                          onClick={() => setMobileOpen(false)}
-                          className="block py-2 text-sm text-gray-400 hover:text-white transition-colors"
-                        >
-                          {item}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
+          {/* Nav links — large uppercase with dividers */}
+          <nav className="flex-1 overflow-y-auto">
+
+            {/* Platform */}
+            <div className="border-b border-white/[0.07]">
+              <button
+                onClick={() => setMobileExpanded(mobileExpanded === 'Platform' ? null : 'Platform')}
+                className="w-full flex items-center justify-between px-5 py-5 group"
+              >
+                <span className="text-[1.55rem] font-black uppercase tracking-tight text-white group-hover:text-blue-300 transition-colors">Platform</span>
+                <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${mobileExpanded === 'Platform' ? 'rotate-180 text-blue-400' : ''}`} />
+              </button>
+              <div className={`overflow-hidden transition-all duration-300 ${mobileExpanded === 'Platform' ? 'max-h-[600px]' : 'max-h-0'}`}>
+                <div className="px-5 pb-6">
+                  <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-3">OVERVIEW</p>
+                  {[
+                    { icon: LayoutGrid, label: 'Platform Overview', desc: 'The complete ad health OS for D2C brands', color: 'text-blue-400',   bg: 'bg-blue-500/10' },
+                    { icon: Cpu,        label: 'AdNexus AI',         desc: 'Claude-powered fix recommendations',       color: 'text-purple-400', bg: 'bg-purple-500/10' },
+                  ].map(({ icon: Icon, label, desc, color, bg }) => (
+                    <Link key={label} href="/platform" onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3.5 py-3 rounded-xl hover:bg-white/[0.04] px-2 -mx-2 transition-colors">
+                      <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
+                        <Icon className={`w-5 h-5 ${color}`} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">{label}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+                      </div>
+                    </Link>
+                  ))}
+                  <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mt-5 mb-3">CAPABILITIES</p>
+                  {[
+                    { icon: Activity,   label: 'Diagnostic Engine', desc: '30 checks per sync',   color: 'text-cyan-400',   bg: 'bg-cyan-500/10' },
+                    { icon: Bell,       label: 'Real-time Alerts',  desc: 'Instant email alerts', color: 'text-amber-400',  bg: 'bg-amber-500/10' },
+                    { icon: FileText,   label: 'Audit Reports',     desc: 'White-label PDFs',     color: 'text-green-400',  bg: 'bg-green-500/10' },
+                    { icon: Shield,     label: 'Health Scoring',    desc: 'Per-platform score',   color: 'text-rose-400',   bg: 'bg-rose-500/10' },
+                  ].map(({ icon: Icon, label, desc, color, bg }) => (
+                    <Link key={label} href="/platform" onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3.5 py-3 rounded-xl hover:bg-white/[0.04] px-2 -mx-2 transition-colors">
+                      <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
+                        <Icon className={`w-5 h-5 ${color}`} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">{label}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-              ) : (
-                <Link
-                  key={label}
-                  href={href ?? '/'}
-                  onClick={() => setMobileOpen(false)}
-                  className="block px-4 py-3.5 text-[15px] font-medium text-gray-200 rounded-xl hover:bg-white/[0.04] transition-colors"
-                >
-                  {label}
-                </Link>
-              )
-            )}
+              </div>
+            </div>
+
+            {/* Industries */}
+            <div className="border-b border-white/[0.07]">
+              <button
+                onClick={() => setMobileExpanded(mobileExpanded === 'Industries' ? null : 'Industries')}
+                className="w-full flex items-center justify-between px-5 py-5 group"
+              >
+                <span className="text-[1.55rem] font-black uppercase tracking-tight text-white group-hover:text-blue-300 transition-colors">Industries</span>
+                <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${mobileExpanded === 'Industries' ? 'rotate-180 text-blue-400' : ''}`} />
+              </button>
+              <div className={`overflow-hidden transition-all duration-300 ${mobileExpanded === 'Industries' ? 'max-h-[500px]' : 'max-h-0'}`}>
+                <div className="px-5 pb-6">
+                  <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-3">INDUSTRIES WE SERVE</p>
+                  {[
+                    { icon: ShoppingBag, label: 'D2C E-commerce',      desc: 'Brands selling direct to consumer', color: 'text-blue-400',   bg: 'bg-blue-500/10' },
+                    { icon: Globe,       label: 'Fashion & Lifestyle',  desc: 'Apparel, beauty, accessories',      color: 'text-pink-400',   bg: 'bg-pink-500/10' },
+                    { icon: Heart,       label: 'Health & Wellness',    desc: 'Supplements and personal care',     color: 'text-red-400',    bg: 'bg-red-500/10' },
+                    { icon: Briefcase,   label: 'Performance Agencies', desc: 'Agencies managing multiple brands', color: 'text-purple-400', bg: 'bg-purple-500/10' },
+                  ].map(({ icon: Icon, label, desc, color, bg }) => (
+                    <Link key={label} href="/customers" onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3.5 py-3 rounded-xl hover:bg-white/[0.04] px-2 -mx-2 transition-colors">
+                      <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
+                        <Icon className={`w-5 h-5 ${color}`} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">{label}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Customers — direct link */}
+            <Link href="/customers" onClick={() => setMobileOpen(false)}
+              className="flex items-center justify-between px-5 py-5 border-b border-white/[0.07] group">
+              <span className="text-[1.55rem] font-black uppercase tracking-tight text-white group-hover:text-blue-300 transition-colors">Customers</span>
+              <ChevronRight className="w-5 h-5 text-gray-600" />
+            </Link>
+
+            {/* Resources */}
+            <div className="border-b border-white/[0.07]">
+              <button
+                onClick={() => setMobileExpanded(mobileExpanded === 'Resources' ? null : 'Resources')}
+                className="w-full flex items-center justify-between px-5 py-5 group"
+              >
+                <span className="text-[1.55rem] font-black uppercase tracking-tight text-white group-hover:text-blue-300 transition-colors">Resources</span>
+                <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${mobileExpanded === 'Resources' ? 'rotate-180 text-blue-400' : ''}`} />
+              </button>
+              <div className={`overflow-hidden transition-all duration-300 ${mobileExpanded === 'Resources' ? 'max-h-[450px]' : 'max-h-0'}`}>
+                <div className="px-5 pb-6">
+                  <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-3">LEARN & GROW</p>
+                  {[
+                    { icon: BookOpen,      label: 'Blog',          desc: 'Insights and tips for ad performance', color: 'text-blue-400',   bg: 'bg-blue-500/10' },
+                    { icon: PlayCircle,    label: 'Platform Tour',  desc: 'See AdNexus in action',                color: 'text-green-400',  bg: 'bg-green-500/10' },
+                    { icon: FileText,      label: 'Case Studies',   desc: 'Real brand results and stories',       color: 'text-purple-400', bg: 'bg-purple-500/10' },
+                    { icon: MessageSquare, label: 'Help Center',    desc: 'Docs, guides and support',             color: 'text-amber-400',  bg: 'bg-amber-500/10' },
+                  ].map(({ icon: Icon, label, desc, color, bg }) => (
+                    <Link key={label} href="#" onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3.5 py-3 rounded-xl hover:bg-white/[0.04] px-2 -mx-2 transition-colors">
+                      <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
+                        <Icon className={`w-5 h-5 ${color}`} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">{label}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Pricing — direct link */}
+            <Link href="/#pricing" onClick={() => setMobileOpen(false)}
+              className="flex items-center justify-between px-5 py-5 border-b border-white/[0.07] group">
+              <span className="text-[1.55rem] font-black uppercase tracking-tight text-white group-hover:text-blue-300 transition-colors">Pricing</span>
+              <ChevronRight className="w-5 h-5 text-gray-600" />
+            </Link>
           </nav>
 
           {/* Bottom CTAs */}
-          <div className="px-4 pt-4 pb-8 border-t border-white/[0.06] space-y-2.5 shrink-0">
-            <Link
-              href="/signup"
-              onClick={() => setMobileOpen(false)}
-              className="btn-blue flex items-center justify-center gap-2 w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm transition-colors"
-            >
+          <div className="px-5 py-6 border-t border-white/[0.08] space-y-3 shrink-0">
+            <Link href="/login" onClick={() => setMobileOpen(false)}
+              className="block text-center text-sm font-medium text-gray-400 hover:text-white transition-colors py-2">
+              Login
+            </Link>
+            <Link href="/signup" onClick={() => setMobileOpen(false)}
+              className="btn-blue flex items-center justify-center gap-2 w-full py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold rounded-2xl text-[15px] shadow-lg shadow-blue-500/20 transition-opacity hover:opacity-90">
               Get started free <ArrowRight className="w-4 h-4" />
             </Link>
-            <Link
-              href="/login"
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center justify-center w-full py-3.5 border border-white/[0.10] text-gray-300 text-sm font-medium rounded-xl hover:bg-white/[0.04] transition-colors"
-            >
-              Sign in
+            <Link href="/platform" onClick={() => setMobileOpen(false)}
+              className="flex items-center justify-center w-full py-4 border border-white/[0.15] text-white text-[15px] font-semibold rounded-2xl hover:bg-white/[0.05] transition-colors">
+              Platform Tour
             </Link>
           </div>
         </div>

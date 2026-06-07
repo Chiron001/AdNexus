@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
 import {
   ArrowRight, CheckCircle2, Activity, Bell, FileText,
-  Cpu, Shield, TrendingUp, Star, ChevronRight, Zap, BarChart3,
+  Cpu, Shield, TrendingUp, Star, ChevronRight, ChevronDown, Zap, BarChart3,
 } from 'lucide-react'
 import { LandingNav } from '@/components/landing/LandingNav'
 
@@ -99,6 +99,25 @@ function Carousel({ items, renderItem }: {
   )
 }
 
+/* ── Star fields (static) ──────────────────────── */
+const GARDEN_STARS = Array.from({ length: 130 }, (_, i) => ({
+  x: (i * 31 + 13) % 100,
+  y: (i * 19 + 7) % 60,
+  r: i % 7 === 0 ? 1.4 : i % 3 === 0 ? 0.9 : 0.6,
+  op: 0.12 + (i % 6) * 0.07,
+  dur: `${1.8 + (i % 5) * 0.65}s`,
+  del: `${(i * 0.22) % 4}s`,
+}))
+
+const CTA_STARS = Array.from({ length: 100 }, (_, i) => ({
+  x: (i * 37 + 5) % 100,
+  y: (i * 23 + 9) % 65,
+  r: i % 8 === 0 ? 1.4 : 0.7,
+  op: 0.18 + (i % 5) * 0.1,
+  dur: `${2 + (i % 4) * 0.9}s`,
+  del: `${(i * 0.28) % 4}s`,
+}))
+
 /* ── Particles (static, defined outside component) ─ */
 const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
   left: `${(i * 19 + 7) % 100}%`,
@@ -180,6 +199,38 @@ const TESTIMONIALS = [
   { role:'Founder',              company:'Skincare Brand',      quote:'As a solo founder without a dedicated performance team, AdNexus is like having a senior media buyer watching my accounts 24/7. Worth every rupee.',             avatar:'N', color:'from-amber-600 to-yellow-600'  },
 ]
 
+/* ── Pricing plans ─────────────────────────────── */
+const PRICING_PLANS = [
+  {
+    name: 'Free', price: '0', per: 'forever',
+    desc: 'For brands getting started with ad diagnostics.',
+    features: ['1 ad account', '10 diagnostic checks', 'Weekly digest email', 'Basic health score'],
+    allFeatures: ['Meta Ads support', 'Manual scan trigger', 'Issue summary dashboard', 'Community support'],
+    cta: 'Start for free', href: '/signup', highlight: false, custom: false,
+  },
+  {
+    name: 'Growth', price: '2,999', per: 'per month',
+    desc: 'For brands running serious ad budgets across platforms.',
+    features: ['5 ad accounts', 'All 30 diagnostic checks', 'Daily auto-syncs', 'AI-written fixes'],
+    allFeatures: ['Meta, Google & Amazon', 'PDF audit reports', 'Instant email alerts', 'Revenue impact per issue', '90-day issue history', 'Slack notifications'],
+    cta: 'Start Growth plan', href: '/signup?plan=growth', highlight: true, custom: false,
+  },
+  {
+    name: 'Agency', price: '9,999', per: 'per month',
+    desc: 'For agencies managing multiple client ad accounts.',
+    features: ['15 ad accounts', 'All Growth features', 'White-label PDFs', 'Priority support'],
+    allFeatures: ['API access', 'Team collaboration', 'Client portal', 'Custom branding', 'Issue assignment', 'Multi-user roles', 'Dedicated onboarding', 'SLA commitment'],
+    cta: 'Start Agency plan', href: '/signup?plan=agency', highlight: false, custom: false,
+  },
+  {
+    name: 'Custom', price: 'Custom', per: 'contact for pricing',
+    desc: 'For enterprise brands and large agencies with bespoke needs.',
+    features: ['Unlimited ad accounts', 'All Agency features', 'Dedicated account manager', 'Custom integrations'],
+    allFeatures: ['Custom SLA', 'On-premise option', 'Security audit', 'Team training', 'Custom reporting', 'Enterprise SSO', 'Priority engineering', 'Quarterly reviews'],
+    cta: 'Contact us', href: '/contact', highlight: false, custom: true,
+  },
+]
+
 /* ── Page ──────────────────────────────────────── */
 export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null)
@@ -187,12 +238,43 @@ export default function HomePage() {
   const s5 = useReveal(), s6 = useReveal(), s7 = useReveal(), s8 = useReveal(), s9 = useReveal()
   const c1 = useCounter(30), c2 = useCounter(3), c3 = useCounter(62), c4 = useCounter(1000)
   const [heroTab, setHeroTab] = useState<HeroTab>('Meta')
+  const [expandedPlan, setExpandedPlan] = useState<string | null>(null)
   const heroData = HERO_PLATFORM_DATA[heroTab]
+
+  const cinematicRef = useRef<HTMLDivElement>(null)
+  const cinematicInnerRef = useRef<HTMLDivElement>(null)
+  const cinematicTextRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     heroRef.current?.querySelectorAll('.hero-animate').forEach((el, i) => {
       ;(el as HTMLElement).style.animationDelay = `${i * 0.13}s`
     })
+  }, [])
+
+  useEffect(() => {
+    const onScroll = () => {
+      const wrap = cinematicRef.current
+      const inner = cinematicInnerRef.current
+      if (!wrap || !inner) return
+      const scrolled = -wrap.getBoundingClientRect().top
+      const total = Math.max(wrap.offsetHeight - window.innerHeight, 1)
+      const p = Math.max(0, Math.min(1, scrolled / (total * 0.68)))
+      const inset = Math.max(72 * (1 - p), 0)
+      inner.style.top = `${inset}px`
+      inner.style.left = `${inset}px`
+      inner.style.right = `${inset}px`
+      inner.style.bottom = `${inset}px`
+      inner.style.borderRadius = `${Math.max(28 * (1 - p), 0)}px`
+      const text = cinematicTextRef.current
+      if (text) {
+        const fadeIn = Math.max(0, Math.min(1, (p - 0.18) / 0.28))
+        const fadeOut = Math.max(0, Math.min(1, (0.88 - p) / 0.28))
+        text.style.opacity = String(fadeIn * fadeOut)
+        text.style.transform = `translateY(${14 * (1 - Math.min(p / 0.28, 1))}px)`
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   return (
@@ -384,6 +466,68 @@ export default function HomePage() {
 
         <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none" style={{ background:'linear-gradient(to bottom, transparent, #080808)' }} />
       </section>
+
+      {/* ── Cinematic scroll-zoom ───────────────────── */}
+      <div ref={cinematicRef} className="relative" style={{ height: '260vh', background: '#010608' }}>
+        <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#010608' }}>
+          {/* Dark outer ring — visible as "frame" when scene is inset */}
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 130% 130% at 50% 50%, transparent 45%, rgba(1,6,8,0.7) 68%, #010608 88%)', zIndex: 2 }} />
+
+          {/* Scene — starts inset, zooms to fill */}
+          <div
+            ref={cinematicInnerRef}
+            style={{
+              position: 'absolute',
+              top: '72px', left: '72px', right: '72px', bottom: '72px',
+              borderRadius: '28px',
+              overflow: 'hidden',
+              zIndex: 1,
+            }}
+          >
+            {/* Sky gradient */}
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, #010810 0%, #010d0c 40%, #020f09 62%, #020c07 78%, #010905 100%)' }} />
+
+            {/* Moonlight ambient */}
+            <div style={{ position: 'absolute', top: '8%', left: '16%', width: '220px', height: '220px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(180,220,170,0.10) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+            {/* Moon disc */}
+            <div style={{ position: 'absolute', top: '11%', left: '19%', width: '36px', height: '36px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(235,242,215,0.88) 0%, rgba(170,205,155,0.4) 55%, transparent 100%)', filter: 'blur(2px)', pointerEvents: 'none' }} />
+
+            {/* Stars */}
+            {GARDEN_STARS.map((s, i) => (
+              <div key={i} className="star-twinkle" style={{
+                position: 'absolute', left: `${s.x}%`, top: `${s.y}%`,
+                width: `${s.r * 2}px`, height: `${s.r * 2}px`, borderRadius: '50%',
+                background: '#e8f0e0', pointerEvents: 'none',
+                ['--star-op' as string]: s.op, ['--star-dur' as string]: s.dur, ['--star-delay' as string]: s.del,
+                opacity: s.op,
+              }} />
+            ))}
+
+            {/* Ground mist / horizon */}
+            <div style={{ position: 'absolute', bottom: '32%', left: 0, right: 0, height: '10%', background: 'rgba(8,30,18,0.35)', filter: 'blur(14px)', pointerEvents: 'none' }} />
+
+            {/* Far treeline */}
+            <svg style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', pointerEvents: 'none' }} viewBox="0 0 1440 340" preserveAspectRatio="none" height="46%">
+              <path d="M0,340 L0,195 L35,180 L55,192 L85,162 L110,178 L145,148 L170,165 L208,132 L235,150 L272,120 L298,138 L335,112 L362,130 L398,105 L425,122 L462,98 L490,115 L525,92 L555,110 L592,86 L620,104 L658,80 L685,98 L722,76 L748,94 L785,72 L812,90 L850,68 L876,86 L912,64 L940,82 L976,60 L1002,78 L1038,56 L1065,74 L1102,58 L1128,75 L1162,55 L1190,72 L1225,52 L1252,70 L1288,54 L1315,72 L1350,58 L1378,74 L1410,62 L1440,76 L1440,340 Z" fill="#010d06" opacity="0.95"/>
+              <path d="M0,340 L0,250 L55,232 L90,245 L132,222 L168,238 L212,215 L248,230 L292,210 L328,226 L372,205 L408,220 L452,200 L488,216 L532,196 L568,212 L612,192 L648,208 L692,190 L728,205 L772,186 L808,202 L852,183 L888,198 L932,180 L968,196 L1012,178 L1048,194 L1092,175 L1128,191 L1172,174 L1208,189 L1252,172 L1288,188 L1332,172 L1368,188 L1440,178 L1440,340 Z" fill="#010a05"/>
+            </svg>
+
+            {/* Water reflection band */}
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '22%', background: 'linear-gradient(180deg, transparent, rgba(3,18,11,0.7) 45%, rgba(1,8,5,0.96) 100%)', pointerEvents: 'none' }} />
+            {/* Water shimmer */}
+            <div style={{ position: 'absolute', bottom: '6%', left: '30%', right: '30%', height: '10%', background: 'radial-gradient(ellipse, rgba(60,140,90,0.07) 0%, transparent 70%)', filter: 'blur(10px)', pointerEvents: 'none' }} />
+
+            {/* Text overlay — fades in while scrolling */}
+            <div ref={cinematicTextRef} style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0, pointerEvents: 'none' }}>
+              <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(120,220,160,0.75)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: '14px' }}>Always watching</p>
+              <h2 style={{ fontSize: 'clamp(1.9rem, 5.5vw, 3.8rem)', fontWeight: 900, color: '#fff', textAlign: 'center', letterSpacing: '-0.025em', lineHeight: 1.08, marginBottom: '18px' }}>
+                30 checks.<br />Every night.
+              </h2>
+              <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.05rem', textAlign: 'center', maxWidth: '420px', lineHeight: 1.6 }}>While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* ── Trusted by ─────────────────────────────── */}
       <section className="py-8 border-y border-white/[0.05] overflow-hidden">
@@ -709,11 +853,11 @@ export default function HomePage() {
                 { num:'2', ring:'ring-purple-500/30', bg:'bg-purple-500', lineGrad:'from-purple-500/50 to-green-500/50', showLine:true  },
                 { num:'3', ring:'ring-green-500/30',  bg:'bg-green-500',  lineGrad:'',                                   showLine:false },
               ].map(({ num, ring, bg, lineGrad, showLine }) => (
-                <div key={num} className="relative flex items-center">
+                <div key={num} className="relative flex justify-center items-center">
                   <div className={`w-9 h-9 rounded-full ${bg} ring-4 ${ring} ring-offset-1 ring-offset-[#080808] flex items-center justify-center text-white text-sm font-black relative z-10 shadow-lg shrink-0`}>{num}</div>
                   {showLine && (
                     <div className={`absolute top-1/2 -translate-y-1/2 h-px bg-gradient-to-r ${lineGrad} opacity-60`}
-                      style={{ left:'40px', right:'-24px' }} />
+                      style={{ left:'calc(50% + 18px)', right:'calc(-50% - 24px)' }} />
                   )}
                 </div>
               ))}
@@ -741,54 +885,83 @@ export default function HomePage() {
 
       {/* ── Pricing ─────────────────────────────────── */}
       <section id="pricing" className="py-16 sm:py-20 px-5 sm:px-6 border-t border-white/[0.06]">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div ref={s7} className="reveal">
             <div className="text-center mb-10 sm:mb-14 stagger-child">
               <p className="text-[11px] font-bold text-blue-500 uppercase tracking-widest mb-3">Simple pricing</p>
               <h2 className="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight mb-4">Start free. Scale when you grow.</h2>
               <p className="text-gray-400 text-base max-w-xl mx-auto">No long-term contracts. No per-seat fees. Cancel anytime.</p>
             </div>
-            {/* Desktop */}
-            <div className="hidden md:grid md:grid-cols-3 gap-5">
-              {[
-                { name:'Free',   price:'0',     per:'forever',   desc:'For brands getting started.',          features:['1 ad account','10 diagnostic checks','Weekly digest','Basic health score'],                                              cta:'Start for free',    href:'/signup',              h:false },
-                { name:'Growth', price:'2,999', per:'per month', desc:'For brands running serious budgets.',  features:['5 ad accounts','All 30 checks','Daily syncs','AI-written fixes','PDF audit reports','Instant email alerts'],             cta:'Start Growth plan', href:'/signup?plan=growth', h:true },
-                { name:'Agency', price:'9,999', per:'per month', desc:'For agencies managing multiple clients.', features:['Unlimited accounts','All Growth features','White-label PDFs','Priority support','API access','Team collaboration'], cta:'Start Agency plan', href:'/signup?plan=agency', h:false },
-              ].map(({ name, price, per, desc, features, cta, href, h }) => (
-                <div key={name} className={`stagger-child relative p-7 rounded-2xl border flex flex-col ${h ? 'border-blue-500/40 bg-blue-600/[0.07]' : 'border-white/[0.07] bg-white/[0.02] glow-card'}`}>
-                  {h && <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-bold rounded-full shadow-lg shadow-blue-500/25">Most popular</span>}
+            {/* Desktop — 4 columns */}
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {PRICING_PLANS.map(({ name, price, per, desc, features, allFeatures, cta, href, highlight, custom }) => (
+                <div key={name} className={`stagger-child relative p-6 rounded-2xl border flex flex-col ${highlight ? 'border-blue-500/40 bg-blue-600/[0.07]' : custom ? 'border-amber-500/25 bg-amber-500/[0.04] glow-card' : 'border-white/[0.07] bg-white/[0.02] glow-card'}`}>
+                  {highlight && <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-bold rounded-full shadow-lg shadow-blue-500/25 whitespace-nowrap">Most popular</span>}
                   <p className="text-sm font-semibold text-gray-400 mb-2">{name}</p>
-                  <div className="flex items-baseline gap-0.5"><span className="text-sm text-gray-500">₹</span><span className="text-4xl font-black text-white tabular-nums">{price}</span></div>
+                  {custom ? (
+                    <div className="text-3xl font-black text-white mb-0.5">Custom</div>
+                  ) : (
+                    <div className="flex items-baseline gap-0.5"><span className="text-sm text-gray-500">₹</span><span className="text-3xl font-black text-white tabular-nums">{price}</span></div>
+                  )}
                   <p className="text-xs text-gray-500 mt-1 mb-3">{per}</p>
-                  <p className="text-sm text-gray-400 mb-6 leading-relaxed">{desc}</p>
-                  <ul className="space-y-2.5 flex-1 mb-6">{features.map((f) => <li key={f} className="flex items-center gap-2.5 text-sm text-gray-400"><CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" />{f}</li>)}</ul>
-                  <Link href={href} className={`btn-blue w-full py-3 text-sm font-bold rounded-xl text-center transition-colors ${h ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'border border-white/[0.12] hover:bg-white/[0.06] text-white'}`}>{cta}</Link>
+                  <p className="text-sm text-gray-400 mb-5 leading-relaxed">{desc}</p>
+                  <ul className="space-y-2 flex-1 mb-4">
+                    {features.map((f) => <li key={f} className="flex items-center gap-2 text-sm text-gray-400"><CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" />{f}</li>)}
+                  </ul>
+                  {/* Expandable allFeatures */}
+                  <button
+                    onClick={() => setExpandedPlan(expandedPlan === name ? null : name)}
+                    className="flex items-center justify-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors py-2 border-t border-white/[0.06] mb-4"
+                  >
+                    {expandedPlan === name ? 'Show less' : 'See all features'}
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${expandedPlan === name ? 'rotate-180' : ''}`} />
+                  </button>
+                  <div className={`overflow-hidden transition-all duration-300 ${expandedPlan === name ? 'max-h-64 mb-4' : 'max-h-0'}`}>
+                    <ul className="space-y-2">
+                      {allFeatures.map((f) => <li key={f} className="flex items-center gap-2 text-sm text-gray-500"><CheckCircle2 className="w-3 h-3 text-blue-500/50 shrink-0" />{f}</li>)}
+                    </ul>
+                  </div>
+                  <Link href={href} className={`btn-blue w-full py-3 text-sm font-bold rounded-xl text-center transition-colors mt-auto ${highlight ? 'bg-blue-600 hover:bg-blue-500 text-white' : custom ? 'bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/30 text-amber-300' : 'border border-white/[0.12] hover:bg-white/[0.06] text-white'}`}>{cta}</Link>
                 </div>
               ))}
             </div>
             {/* Mobile carousel */}
             <div className="md:hidden">
               <Carousel
-                items={[
-                  { name:'Free',   price:'0',     per:'forever',   desc:'For brands getting started.',         features:['1 ad account','10 diagnostic checks','Weekly digest','Basic health score'],                                               cta:'Start for free',    href:'/signup',              h:false },
-                  { name:'Growth', price:'2,999', per:'per month', desc:'For brands running serious budgets.', features:['5 ad accounts','All 30 checks','Daily syncs','AI-written fixes','PDF audit reports','Instant email alerts'],              cta:'Start Growth plan', href:'/signup?plan=growth',  h:true  },
-                  { name:'Agency', price:'9,999', per:'per month', desc:'For agencies managing multiple clients.',features:['Unlimited accounts','All Growth features','White-label PDFs','Priority support','API access','Team collaboration'],   cta:'Start Agency plan', href:'/signup?plan=agency',  h:false },
-                ]}
+                items={PRICING_PLANS}
                 renderItem={(item) => {
-                  const { name, price, per, desc, features, cta, href, h } = item as { name:string; price:string; per:string; desc:string; features:string[]; cta:string; href:string; h:boolean }
+                  const { name, price, per, desc, features, allFeatures, cta, href, highlight, custom } = item as typeof PRICING_PLANS[0]
                   return (
-                    <div className={`p-6 rounded-2xl border flex flex-col mx-2 ${h ? 'border-blue-500/40 bg-blue-600/[0.07]' : 'border-white/[0.07] bg-white/[0.02]'}`}>
-                      {h && (
+                    <div className={`p-6 rounded-2xl border flex flex-col mx-2 ${highlight ? 'border-blue-500/40 bg-blue-600/[0.07]' : custom ? 'border-amber-500/25 bg-amber-500/[0.04]' : 'border-white/[0.07] bg-white/[0.02]'}`}>
+                      {highlight && (
                         <div className="flex justify-center mb-3">
-                          <span className="px-3 py-0.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-bold rounded-full shadow-lg shadow-blue-500/25">Most popular</span>
+                          <span className="px-3 py-0.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-bold rounded-full">Most popular</span>
                         </div>
                       )}
                       <p className="text-sm font-semibold text-gray-400 mb-2">{name}</p>
-                      <div className="flex items-baseline gap-0.5 mb-1"><span className="text-sm text-gray-500">₹</span><span className="text-4xl font-black text-white">{price}</span></div>
+                      {custom ? (
+                        <div className="text-4xl font-black text-white mb-0.5">Custom</div>
+                      ) : (
+                        <div className="flex items-baseline gap-0.5 mb-1"><span className="text-sm text-gray-500">₹</span><span className="text-4xl font-black text-white">{price}</span></div>
+                      )}
                       <p className="text-xs text-gray-500 mb-3">{per}</p>
                       <p className="text-sm text-gray-400 mb-4 leading-relaxed">{desc}</p>
-                      <ul className="space-y-2 mb-6">{features.map((f) => <li key={f} className="flex items-center gap-2 text-sm text-gray-400"><CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" />{f}</li>)}</ul>
-                      <Link href={href} className={`btn-blue w-full py-3 text-sm font-bold rounded-xl text-center ${h ? 'bg-blue-600 text-white' : 'border border-white/[0.12] text-white'}`}>{cta}</Link>
+                      <ul className="space-y-2 mb-4">
+                        {features.map((f) => <li key={f} className="flex items-center gap-2 text-sm text-gray-400"><CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" />{f}</li>)}
+                      </ul>
+                      <button
+                        onClick={() => setExpandedPlan(expandedPlan === name ? null : name)}
+                        className="flex items-center justify-center gap-1.5 text-xs font-semibold text-blue-400 py-2 border-t border-white/[0.06] mb-4"
+                      >
+                        {expandedPlan === name ? 'Show less' : 'See all features'}
+                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${expandedPlan === name ? 'rotate-180' : ''}`} />
+                      </button>
+                      <div className={`overflow-hidden transition-all duration-300 ${expandedPlan === name ? 'max-h-64 mb-4' : 'max-h-0'}`}>
+                        <ul className="space-y-2">
+                          {allFeatures.map((f) => <li key={f} className="flex items-center gap-2 text-sm text-gray-500"><CheckCircle2 className="w-3 h-3 text-blue-500/50 shrink-0" />{f}</li>)}
+                        </ul>
+                      </div>
+                      <Link href={href} className={`btn-blue w-full py-3 text-sm font-bold rounded-xl text-center mt-auto ${highlight ? 'bg-blue-600 text-white' : custom ? 'bg-amber-600/20 border border-amber-500/30 text-amber-300' : 'border border-white/[0.12] text-white'}`}>{cta}</Link>
                     </div>
                   )
                 }}
@@ -838,36 +1011,47 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ─────────────────────────────────────── */}
-      <section className="relative pt-28 sm:pt-36 pb-0 px-5 sm:px-6 overflow-hidden" style={{ background:'#03040a' }}>
-        {/* Sky gradient */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, #03040a 0%, #06091a 35%, #0c0610 65%, #180807 85%, #200404 100%)' }} />
+      <section className="relative pt-28 sm:pt-36 pb-0 px-5 sm:px-6 overflow-hidden"
+        style={{ backgroundColor:'#03040a', backgroundImage:`url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center 65%' }}>
+
+        {/* Dark sky gradient overlay — lets mountain photo show through in middle */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, rgba(3,4,10,0.97) 0%, rgba(3,4,10,0.55) 38%, rgba(3,4,10,0.32) 58%, rgba(20,6,4,0.72) 78%, rgba(30,4,4,0.97) 100%)' }} />
 
         {/* Grid overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.018]" style={{ backgroundImage:'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize:'52px 52px' }} />
 
-        {/* Orange-red core glow */}
-        <div className="absolute pointer-events-none" style={{ bottom:'12%', left:'50%', transform:'translateX(-50%)', width:'700px', height:'260px', background:'radial-gradient(ellipse, rgba(239,68,68,0.45) 0%, rgba(251,146,60,0.25) 35%, rgba(124,45,18,0.1) 60%, transparent 80%)', filter:'blur(50px)' }} />
-
-        {/* Water ripple rings */}
-        {[0,1,2,3,4].map((i) => (
-          <div key={i} className="absolute pointer-events-none" style={{
-            bottom:'14%', left:'50%', transform:'translateX(-50%)',
-            width:`${280 + i*80}px`, height:`${90 + i*28}px`,
-            borderRadius:'50%',
-            border:'1px solid',
-            borderColor: i < 2 ? 'rgba(251,146,60,0.55)' : 'rgba(251,146,60,0.2)',
-            animation:`waterRipple 4s ${i * 0.8}s ease-out infinite`,
+        {/* Night stars — in the sky portion of the photo */}
+        {CTA_STARS.map((s, i) => (
+          <div key={i} className="star-twinkle absolute pointer-events-none" style={{
+            left: `${s.x}%`, top: `${s.y}%`,
+            width: `${s.r * 2}px`, height: `${s.r * 2}px`, borderRadius: '50%',
+            background: '#fff',
+            ['--star-op' as string]: s.op, ['--star-dur' as string]: s.dur, ['--star-delay' as string]: s.del,
+            opacity: s.op,
           }} />
         ))}
 
-        {/* Bright center dot */}
-        <div className="absolute pointer-events-none" style={{ bottom:'14%', left:'50%', transform:'translateX(-50%)', width:'18px', height:'9px', borderRadius:'50%', background:'radial-gradient(circle, rgba(255,220,150,1) 0%, rgba(251,146,60,0.6) 50%, transparent 100%)', filter:'blur(2px)' }} />
+        {/* Water ripple core glow — teal/cyan, realistic water color */}
+        <div className="absolute pointer-events-none" style={{ bottom:'28%', left:'50%', transform:'translateX(-50%)', width:'600px', height:'180px', background:'radial-gradient(ellipse, rgba(80,200,170,0.22) 0%, rgba(40,160,130,0.10) 40%, transparent 70%)', filter:'blur(40px)' }} />
 
-        {/* Mountain silhouette SVG */}
-        <svg className="absolute bottom-0 left-0 w-full pointer-events-none" viewBox="0 0 1440 220" preserveAspectRatio="none" style={{ height:'40%' }}>
-          <path d="M0,220 L0,160 L120,110 L280,145 L420,70 L560,120 L700,45 L840,100 L980,55 L1120,110 L1260,75 L1360,115 L1440,90 L1440,220 Z" fill="#0a0608" />
-          <path d="M0,220 L0,185 L180,155 L350,175 L520,130 L680,160 L840,125 L1000,150 L1160,120 L1320,148 L1440,130 L1440,220 Z" fill="#060404" />
-        </svg>
+        {/* Water ripple rings — realistic water colors, centered via marginLeft */}
+        {[0,1,2,3,4,5].map((i) => {
+          const w = 140 + i * 88
+          const h = 44 + i * 28
+          return (
+            <div key={i} className="absolute pointer-events-none" style={{
+              bottom:'28%', left:'50%', marginLeft:`-${w/2}px`,
+              width:`${w}px`, height:`${h}px`,
+              borderRadius:'50%',
+              border:'1px solid',
+              borderColor: i < 2 ? 'rgba(120,230,200,0.6)' : i < 4 ? 'rgba(80,190,160,0.32)' : 'rgba(60,160,130,0.14)',
+              animation:`waterRipple ${3.5 + i * 0.1}s ${i * 0.62}s ease-out infinite`,
+            }} />
+          )
+        })}
+
+        {/* Water drop center point */}
+        <div className="absolute pointer-events-none" style={{ bottom:'28%', left:'50%', transform:'translateX(-50%)', width:'10px', height:'5px', borderRadius:'50%', background:'radial-gradient(circle, rgba(200,255,240,1) 0%, rgba(100,220,185,0.7) 50%, transparent 100%)', filter:'blur(1px)' }} />
 
         <div ref={s9} className="reveal relative max-w-3xl mx-auto text-center pb-32 sm:pb-40">
           <p className="text-[11px] font-bold text-orange-400/80 uppercase tracking-widest mb-4">Get started today</p>
@@ -889,7 +1073,14 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ──────────────────────────────────── */}
-      <footer className="border-t border-white/[0.06] pt-12 pb-8 px-5 sm:px-6" style={{ background:'#050507' }}>
+      <footer className="border-t border-white/[0.06] pt-12 pb-8 px-5 sm:px-6 relative overflow-hidden" style={{ background:'linear-gradient(180deg, #020308 0%, #030610 40%, #040a14 70%, #030810 100%)' }}>
+        {/* Night sky ambient — two soft light sources like dock lamps */}
+        <div className="absolute pointer-events-none" style={{ bottom:'20%', left:'28%', width:'280px', height:'280px', borderRadius:'50%', background:'radial-gradient(circle, rgba(60,100,180,0.12) 0%, transparent 70%)', filter:'blur(50px)' }} />
+        <div className="absolute pointer-events-none" style={{ bottom:'20%', right:'28%', width:'280px', height:'280px', borderRadius:'50%', background:'radial-gradient(circle, rgba(60,100,180,0.10) 0%, transparent 70%)', filter:'blur(50px)' }} />
+        {/* Horizon glow */}
+        <div className="absolute pointer-events-none" style={{ bottom:0, left:'20%', right:'20%', height:'140px', background:'radial-gradient(ellipse, rgba(40,80,140,0.18) 0%, transparent 70%)', filter:'blur(35px)' }} />
+        {/* Subtle water reflection shimmer */}
+        <div className="absolute pointer-events-none" style={{ bottom:'2%', left:'35%', right:'35%', height:'60px', background:'radial-gradient(ellipse, rgba(80,130,200,0.08) 0%, transparent 70%)', filter:'blur(15px)' }} />
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-8 mb-10">
             <div className="col-span-2 sm:col-span-1">
@@ -908,7 +1099,7 @@ export default function HomePage() {
               { title:'Platform', links:[{l:'Platform Overview',h:'/platform'},{l:'Meta Ads',h:'/platform#meta'},{l:'Google Ads',h:'/platform#google'},{l:'Amazon Ads',h:'/platform#amazon'},{l:'AI Diagnostics',h:'/platform#ai'}] },
               { title:'Company',  links:[{l:'Features',h:'/#features'},{l:'Customers',h:'/customers'},{l:'Pricing',h:'/#pricing'},{l:'Resources',h:'/#resources'}] },
               { title:'Resources',links:[{l:'Case Studies',h:'/customers'},{l:'Blog',h:'#'},{l:'Guides',h:'#'},{l:'Help Center',h:'#'}] },
-              { title:'Account',  links:[{l:'Sign up free',h:'/signup'},{l:'Sign in',h:'/login'},{l:'Growth plan',h:'/signup?plan=growth'},{l:'Agency plan',h:'/signup?plan=agency'}] },
+              { title:'Account',  links:[{l:'Sign up free',h:'/signup'},{l:'Sign in',h:'/login'},{l:'Growth plan',h:'/signup?plan=growth'},{l:'Agency plan',h:'/signup?plan=agency'},{l:'Custom / Enterprise',h:'/contact'}] },
             ].map(({ title, links }) => (
               <div key={title}>
                 <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-4">{title}</p>
