@@ -492,8 +492,19 @@ export default function HomePage() {
       </div>
 
       {/* ── 30 checks ──────────────────────────────── */}
-      <section className="relative py-24 sm:py-32 px-5 sm:px-6 text-center overflow-hidden" style={{ background: 'linear-gradient(180deg, #010810 0%, #060d08 45%, #080808 100%)' }}>
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 0%, rgba(8,28,14,0.7) 0%, transparent 70%)' }} />
+      <section className="relative py-24 sm:py-32 px-5 sm:px-6 text-center overflow-hidden" style={{ background: 'linear-gradient(180deg, #010810 0%, #010d0c 35%, #060d08 65%, #080808 100%)' }}>
+        {/* Stars — continuity from cinematic sky above */}
+        {GARDEN_STARS.filter((_, i) => i % 3 === 0).map((s, i) => (
+          <div key={i} className="star-twinkle absolute pointer-events-none" style={{
+            left: `${s.x}%`, top: `${(s.y * 0.6)}%`,
+            width: `${s.r * 2}px`, height: `${s.r * 2}px`, borderRadius: '50%',
+            background: '#e8f0e0',
+            ['--star-op' as string]: s.op, ['--star-dur' as string]: s.dur, ['--star-delay' as string]: s.del,
+            opacity: s.op,
+          }} />
+        ))}
+        {/* Soft moonlight carry-over from above */}
+        <div className="absolute pointer-events-none" style={{ top: 0, left: '15%', width: '200px', height: '180px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(180,225,170,0.07) 0%, transparent 70%)', filter: 'blur(40px)' }} />
         <div className="relative max-w-2xl mx-auto">
           <p className="text-[11px] font-bold uppercase tracking-widest mb-5" style={{ color: 'rgba(120,220,160,0.8)' }}>Always watching</p>
           <h2 className="font-black text-white mb-6" style={{ fontSize: 'clamp(2.4rem, 6vw, 4.8rem)', letterSpacing: '-0.03em', lineHeight: 1.06 }}>
@@ -994,10 +1005,10 @@ export default function HomePage() {
 
       {/* ── CTA ─────────────────────────────────────── */}
       <section className="relative pt-28 sm:pt-36 pb-0 px-5 sm:px-6 overflow-hidden"
-        style={{ backgroundColor:'#03040a', backgroundImage:`url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center center', backgroundAttachment:'fixed' }}>
+        style={{ backgroundColor:'#03040a', backgroundImage:`url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center center', backgroundAttachment:'fixed' }}>
 
-        {/* Dark sky gradient overlay — lets mountain photo show through in middle */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, rgba(3,4,10,0.97) 0%, rgba(3,4,10,0.55) 38%, rgba(3,4,10,0.32) 58%, rgba(20,6,4,0.72) 78%, rgba(30,4,4,0.97) 100%)' }} />
+        {/* Dark overlay — lets night sky show through in middle */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, rgba(2,3,12,0.96) 0%, rgba(2,3,12,0.48) 35%, rgba(2,3,12,0.28) 55%, rgba(2,3,14,0.70) 78%, rgba(1,2,12,0.97) 100%)' }} />
 
         {/* Grid overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.018]" style={{ backgroundImage:'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize:'52px 52px' }} />
@@ -1055,9 +1066,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ──────────────────────────────────── */}
-      <footer className="pt-12 pb-8 px-5 sm:px-6 relative overflow-hidden" style={{ backgroundImage:`url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center center', backgroundAttachment:'fixed', backgroundColor:'#020308' }}>
+      <footer className="pt-12 pb-8 px-5 sm:px-6 relative overflow-hidden" style={{ backgroundImage:`url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center center', backgroundAttachment:'fixed', backgroundColor:'#020308' }}>
         {/* Bridge gradient — top matches CTA section's dark-red bottom, fades into mountain photo */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, rgba(22,4,4,0.90) 0%, rgba(8,2,6,0.78) 18%, rgba(3,3,12,0.72) 45%, rgba(3,4,16,0.82) 80%, rgba(2,3,14,0.90) 100%)', zIndex: 0 }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, rgba(1,2,12,0.94) 0%, rgba(2,3,14,0.78) 25%, rgba(2,4,16,0.70) 50%, rgba(2,4,16,0.82) 80%, rgba(1,3,14,0.94) 100%)', zIndex: 0 }} />
         {/* Night sky ambient — two soft light sources like dock lamps */}
         <div className="absolute pointer-events-none" style={{ bottom:'20%', left:'28%', width:'280px', height:'280px', borderRadius:'50%', background:'radial-gradient(circle, rgba(60,100,180,0.12) 0%, transparent 70%)', filter:'blur(50px)' }} />
         <div className="absolute pointer-events-none" style={{ bottom:'20%', right:'28%', width:'280px', height:'280px', borderRadius:'50%', background:'radial-gradient(circle, rgba(60,100,180,0.10) 0%, transparent 70%)', filter:'blur(50px)' }} />
