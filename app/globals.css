@@ -422,6 +422,26 @@
 /* ── Section stacking above aurora ──────────────── */
 section, footer, nav { position: relative; z-index: 1; }
 
+/* ── Testimonial marquee (reverse) ──────────────── */
+@keyframes marqueeReverse {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.animate-marquee-reverse { animation: marqueeReverse 48s linear infinite; }
+.animate-marquee-reverse:hover { animation-play-state: paused; }
+
+/* Fade edges on marquee rows */
+.marquee-fade {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+}
+
+/* ── CTA water ripple rings ──────────────────────── */
+@keyframes waterRipple {
+  0%   { transform: scale(0.2); opacity: 0.75; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
 /* ── Noise grain overlay ─────────────────────────── */
 .noise-overlay {
   position: fixed;

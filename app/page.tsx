@@ -170,9 +170,14 @@ const CASE_STUDIES = [
 ]
 
 const TESTIMONIALS = [
-  { role:'Performance Marketer', company:'D2C Brand',         quote:'I used to spend 2 hours every Monday on manual audits. AdNexus does the same in 2 minutes and catches things I missed.', avatar:'P', color:'from-blue-600 to-indigo-600' },
-  { role:'Head of Growth',       company:'E-commerce Brand',  quote:'The revenue impact ranking is what sold me. I know exactly which problem to fix first and what it costs every day it sits unfixed.', avatar:'H', color:'from-purple-600 to-pink-600' },
-  { role:'Agency Founder',       company:'Performance Agency',quote:'We manage 18 client accounts. AdNexus lets us catch issues before clients notice. That has been huge for retention.', avatar:'F', color:'from-emerald-600 to-teal-600' },
+  { role:'Performance Marketer', company:'D2C Brand',           quote:'I used to spend 2 hours every Monday on manual audits. AdNexus does the same in 2 minutes and catches things I missed.',                                       avatar:'P', color:'from-blue-600 to-indigo-600'   },
+  { role:'Head of Growth',       company:'E-commerce Brand',    quote:'The revenue impact ranking is what sold me. I know exactly which problem to fix first and what it costs every day it sits unfixed.',                            avatar:'H', color:'from-purple-600 to-pink-600'   },
+  { role:'Agency Founder',       company:'Performance Agency',  quote:'We manage 18 client accounts. AdNexus lets us catch issues before clients notice. That has been huge for retention.',                                            avatar:'F', color:'from-emerald-600 to-teal-600'  },
+  { role:'Growth Lead',          company:'Fashion D2C',         quote:'Our Meta spend was bleeding ₹40K/month on a fatigued creative. AdNexus caught it on day one. The tool paid for itself in the first week.',                      avatar:'G', color:'from-rose-600 to-orange-600'  },
+  { role:'Co-founder & CMO',     company:'Health Brand',        quote:'Keyword cannibalization on Google was something we never had time to audit. Now AdNexus checks it every single day while we sleep.',                            avatar:'C', color:'from-cyan-600 to-blue-600'    },
+  { role:'Media Buyer',          company:'D2C Accessories',     quote:'I recommended AdNexus to every founder I know. Three months in, our ROAS is up 2.8x. The AI fixes are specific and they actually work.',                        avatar:'M', color:'from-violet-600 to-purple-600' },
+  { role:'Digital Marketing Head',company:'Lifestyle Brand',   quote:'Amazon ACOS was 68% on our auto campaigns. AdNexus flagged it in the first sync. Now we are at 32% — the margin difference is insane.',                         avatar:'D', color:'from-green-600 to-emerald-600' },
+  { role:'Founder',              company:'Skincare Brand',      quote:'As a solo founder without a dedicated performance team, AdNexus is like having a senior media buyer watching my accounts 24/7. Worth every rupee.',             avatar:'N', color:'from-amber-600 to-yellow-600'  },
 ]
 
 /* ── Page ──────────────────────────────────────── */
@@ -628,19 +633,22 @@ export default function HomePage() {
       </section>
 
       {/* ── Testimonials ────────────────────────────── */}
-      <section className="py-16 sm:py-20 px-5 sm:px-6 border-t border-white/[0.06]" style={{ background:'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(37,99,235,0.05) 0%, transparent 70%)' }}>
-        <div className="max-w-5xl mx-auto">
-          <div ref={s5} className="reveal">
-            <div className="text-center mb-10 sm:mb-12 stagger-child">
-              <p className="text-[11px] font-bold text-blue-500 uppercase tracking-widest mb-3">Loved by brands</p>
-              <h2 className="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight mb-4">Built for people running ads</h2>
-              <p className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto">From solo performance marketers to agencies managing 25 brand accounts.</p>
-            </div>
-            <div className="hidden md:grid md:grid-cols-3 gap-5">
-              {TESTIMONIALS.map(({ role, company, quote, avatar, color }) => (
-                <div key={role} className="stagger-child glow-card p-6 rounded-2xl border border-white/[0.07] bg-white/[0.02]">
-                  <div className="flex mb-4">{[...Array(5)].map((_,i) => <Star key={i} className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />)}</div>
-                  <p className="text-sm text-gray-300 leading-relaxed mb-6">"{quote}"</p>
+      <section className="py-16 sm:py-20 border-t border-white/[0.06] overflow-hidden" style={{ background:'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(37,99,235,0.05) 0%, transparent 70%)' }}>
+        <div ref={s5} className="reveal">
+          <div className="text-center mb-10 sm:mb-12 px-5 sm:px-6 stagger-child">
+            <p className="text-[11px] font-bold text-blue-500 uppercase tracking-widest mb-3">Loved by brands</p>
+            <h2 className="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight mb-4">Built for people running ads</h2>
+            <p className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto">From solo performance marketers to agencies managing 25 brand accounts.</p>
+          </div>
+
+          {/* Desktop: dual-row infinite marquee */}
+          <div className="stagger-child hidden md:block space-y-4 marquee-fade">
+            {/* Row 1 — scroll left */}
+            <div className="flex gap-4 animate-marquee">
+              {[...TESTIMONIALS, ...TESTIMONIALS].map(({ role, company, quote, avatar, color }, i) => (
+                <div key={i} className="w-[340px] flex-shrink-0 p-6 rounded-2xl border border-white/[0.07] bg-white/[0.02] hover:border-white/[0.14] transition-colors">
+                  <div className="flex mb-3">{[...Array(5)].map((_,j) => <Star key={j} className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />)}</div>
+                  <p className="text-sm text-gray-300 leading-relaxed mb-5">"{quote}"</p>
                   <div className="flex items-center gap-3">
                     <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${color} flex items-center justify-center text-sm font-bold text-white shrink-0`}>{avatar}</div>
                     <div><p className="text-sm font-semibold text-white">{role}</p><p className="text-xs text-gray-500">{company}</p></div>
@@ -648,24 +656,39 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-            <div className="md:hidden">
-              <Carousel
-                items={TESTIMONIALS}
-                renderItem={(item) => {
-                  const { role, company, quote, avatar, color } = item as typeof TESTIMONIALS[0]
-                  return (
-                    <div className="p-6 rounded-2xl border border-white/[0.07] bg-white/[0.02] mx-2">
-                      <div className="flex mb-4">{[...Array(5)].map((_,i) => <Star key={i} className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />)}</div>
-                      <p className="text-sm text-gray-300 leading-relaxed mb-6">"{quote}"</p>
-                      <div className="flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${color} flex items-center justify-center text-sm font-bold text-white shrink-0`}>{avatar}</div>
-                        <div><p className="text-sm font-semibold text-white">{role}</p><p className="text-xs text-gray-500">{company}</p></div>
-                      </div>
-                    </div>
-                  )
-                }}
-              />
+            {/* Row 2 — scroll right (offset by 4) */}
+            <div className="flex gap-4 animate-marquee-reverse">
+              {[...TESTIMONIALS.slice(4), ...TESTIMONIALS.slice(0,4), ...TESTIMONIALS.slice(4), ...TESTIMONIALS.slice(0,4)].map(({ role, company, quote, avatar, color }, i) => (
+                <div key={i} className="w-[340px] flex-shrink-0 p-6 rounded-2xl border border-white/[0.07] bg-white/[0.02] hover:border-white/[0.14] transition-colors">
+                  <div className="flex mb-3">{[...Array(5)].map((_,j) => <Star key={j} className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />)}</div>
+                  <p className="text-sm text-gray-300 leading-relaxed mb-5">"{quote}"</p>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${color} flex items-center justify-center text-sm font-bold text-white shrink-0`}>{avatar}</div>
+                    <div><p className="text-sm font-semibold text-white">{role}</p><p className="text-xs text-gray-500">{company}</p></div>
+                  </div>
+                </div>
+              ))}
             </div>
+          </div>
+
+          {/* Mobile: carousel */}
+          <div className="md:hidden px-5">
+            <Carousel
+              items={TESTIMONIALS}
+              renderItem={(item) => {
+                const { role, company, quote, avatar, color } = item as typeof TESTIMONIALS[0]
+                return (
+                  <div className="p-6 rounded-2xl border border-white/[0.07] bg-white/[0.02] mx-2">
+                    <div className="flex mb-4">{[...Array(5)].map((_,i) => <Star key={i} className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />)}</div>
+                    <p className="text-sm text-gray-300 leading-relaxed mb-6">"{quote}"</p>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${color} flex items-center justify-center text-sm font-bold text-white shrink-0`}>{avatar}</div>
+                      <div><p className="text-sm font-semibold text-white">{role}</p><p className="text-xs text-gray-500">{company}</p></div>
+                    </div>
+                  </div>
+                )
+              }}
+            />
           </div>
         </div>
       </section>
@@ -679,17 +702,35 @@ export default function HomePage() {
               <h2 className="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight mb-4">From connect to fix in 10 minutes</h2>
               <p className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto">No onboarding call. No setup fee. Connect, diagnose, and fix today.</p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 relative">
-              <div className="hidden sm:block absolute top-10 left-[33%] right-[33%] h-px bg-gradient-to-r from-blue-500/40 via-purple-500/40 to-green-500/40 line-draw" />
+            {/* Step circle track — desktop only, above the cards */}
+            <div className="stagger-child hidden sm:grid sm:grid-cols-3 gap-6 mb-2">
               {[
-                { step:'01', title:'Connect your accounts',        desc:'One-click OAuth for Meta, Google, and Amazon. No credentials stored.',             accent:'border-blue-500/25 bg-blue-500/04', dot:'bg-blue-500' },
-                { step:'02', title:'Get your diagnostic report',   desc:'30 checks run immediately. Every issue ranked by rupee cost.',                    accent:'border-purple-500/25 bg-purple-500/04', dot:'bg-purple-500' },
-                { step:'03', title:'Apply the AI-written fix',     desc:'Context-aware fixes from Claude AI. One click to resolve. Results in days.',     accent:'border-green-500/25 bg-green-500/04', dot:'bg-green-500' },
+                { num:'1', ring:'ring-blue-500/30',   bg:'bg-blue-500',   lineGrad:'from-blue-500/50 to-purple-500/50',  showLine:true  },
+                { num:'2', ring:'ring-purple-500/30', bg:'bg-purple-500', lineGrad:'from-purple-500/50 to-green-500/50', showLine:true  },
+                { num:'3', ring:'ring-green-500/30',  bg:'bg-green-500',  lineGrad:'',                                   showLine:false },
+              ].map(({ num, ring, bg, lineGrad, showLine }) => (
+                <div key={num} className="relative flex items-center">
+                  <div className={`w-9 h-9 rounded-full ${bg} ring-4 ${ring} ring-offset-1 ring-offset-[#080808] flex items-center justify-center text-white text-sm font-black relative z-10 shadow-lg shrink-0`}>{num}</div>
+                  {showLine && (
+                    <div className={`absolute top-1/2 -translate-y-1/2 h-px bg-gradient-to-r ${lineGrad} opacity-60`}
+                      style={{ left:'40px', right:'-24px' }} />
+                  )}
+                </div>
+              ))}
+            </div>
+            {/* Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+              {[
+                { step:'01', title:'Connect your accounts',      desc:'One-click OAuth for Meta, Google, and Amazon. No credentials stored.',           accent:'border-blue-500/30',   dot:'bg-blue-500'   },
+                { step:'02', title:'Get your diagnostic report', desc:'30 checks run immediately. Every issue ranked by rupee cost.',                   accent:'border-purple-500/30', dot:'bg-purple-500' },
+                { step:'03', title:'Apply the AI-written fix',   desc:'Context-aware fixes from Claude AI. One click to resolve. Results in days.',    accent:'border-green-500/30',  dot:'bg-green-500'  },
               ].map(({ step, title, desc, accent, dot }) => (
-                <div key={step} className={`stagger-child relative p-6 sm:p-7 rounded-2xl border ${accent}`}>
-                  <div className={`w-3 h-3 rounded-full ${dot} mb-5 shadow-lg`} />
-                  <div className="text-5xl sm:text-6xl font-black text-white/5 absolute top-5 right-5 leading-none select-none">{step}</div>
-                  <h3 className="font-bold text-white mb-3 pr-8 text-base sm:text-[1rem]">{title}</h3>
+                <div key={step} className={`stagger-child relative p-6 sm:p-7 rounded-2xl border ${accent}`}
+                  style={{ background:'rgba(10,12,18,0.9)' }}>
+                  {/* Dot — mobile only (desktop uses the track above) */}
+                  <div className={`sm:hidden w-3 h-3 rounded-full ${dot} mb-5 shadow-lg`} />
+                  <div className="text-5xl sm:text-6xl font-black text-white/[0.05] absolute top-5 right-5 leading-none select-none">{step}</div>
+                  <h3 className="font-bold text-white mb-3 pr-8 text-base">{title}</h3>
                   <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
                 </div>
               ))}
@@ -736,8 +777,12 @@ export default function HomePage() {
                 renderItem={(item) => {
                   const { name, price, per, desc, features, cta, href, h } = item as { name:string; price:string; per:string; desc:string; features:string[]; cta:string; href:string; h:boolean }
                   return (
-                    <div className={`relative p-6 rounded-2xl border flex flex-col mx-2 ${h ? 'border-blue-500/40 bg-blue-600/[0.07]' : 'border-white/[0.07] bg-white/[0.02]'}`}>
-                      {h && <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">Most popular</span>}
+                    <div className={`p-6 rounded-2xl border flex flex-col mx-2 ${h ? 'border-blue-500/40 bg-blue-600/[0.07]' : 'border-white/[0.07] bg-white/[0.02]'}`}>
+                      {h && (
+                        <div className="flex justify-center mb-3">
+                          <span className="px-3 py-0.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-bold rounded-full shadow-lg shadow-blue-500/25">Most popular</span>
+                        </div>
+                      )}
                       <p className="text-sm font-semibold text-gray-400 mb-2">{name}</p>
                       <div className="flex items-baseline gap-0.5 mb-1"><span className="text-sm text-gray-500">₹</span><span className="text-4xl font-black text-white">{price}</span></div>
                       <p className="text-xs text-gray-500 mb-3">{per}</p>
@@ -762,7 +807,7 @@ export default function HomePage() {
               <h2 className="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight mb-4">All your ad data in one place</h2>
               <p className="text-gray-400 text-base max-w-xl mx-auto">OAuth only. No credentials stored. Data stays fresh. Team stays informed.</p>
             </div>
-            <div className="stagger-child grid grid-cols-3 md:grid-cols-6 gap-3 mb-8">
+            <div className="stagger-child grid grid-cols-2 md:grid-cols-6 gap-3 mb-8">
               {[
                 {name:'Meta Ads',letter:'M',color:'from-blue-600 to-blue-700',desc:'Facebook & Instagram'},
                 {name:'Google Ads',letter:'G',color:'from-green-600 to-green-700',desc:'Search & Shopping'},
@@ -793,11 +838,39 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ─────────────────────────────────────── */}
-      <section className="relative py-24 sm:py-32 px-5 sm:px-6 overflow-hidden" style={{ background:'linear-gradient(180deg, #080808 0%, #090f1e 50%, #080808 100%)' }}>
-        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage:'linear-gradient(rgba(255,255,255,0.01) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.01) 1px, transparent 1px)', backgroundSize:'48px 48px' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] rounded-full opacity-[0.22] pointer-events-none" style={{ background:'radial-gradient(circle, rgba(37,99,235,1) 0%, transparent 70%)', filter:'blur(70px)' }} />
-        <div ref={s9} className="reveal relative max-w-3xl mx-auto text-center">
-          <p className="text-[11px] font-bold text-blue-400 uppercase tracking-widest mb-4">Get started today</p>
+      <section className="relative pt-28 sm:pt-36 pb-0 px-5 sm:px-6 overflow-hidden" style={{ background:'#03040a' }}>
+        {/* Sky gradient */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, #03040a 0%, #06091a 35%, #0c0610 65%, #180807 85%, #200404 100%)' }} />
+
+        {/* Grid overlay */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.018]" style={{ backgroundImage:'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize:'52px 52px' }} />
+
+        {/* Orange-red core glow */}
+        <div className="absolute pointer-events-none" style={{ bottom:'12%', left:'50%', transform:'translateX(-50%)', width:'700px', height:'260px', background:'radial-gradient(ellipse, rgba(239,68,68,0.45) 0%, rgba(251,146,60,0.25) 35%, rgba(124,45,18,0.1) 60%, transparent 80%)', filter:'blur(50px)' }} />
+
+        {/* Water ripple rings */}
+        {[0,1,2,3,4].map((i) => (
+          <div key={i} className="absolute pointer-events-none" style={{
+            bottom:'14%', left:'50%', transform:'translateX(-50%)',
+            width:`${280 + i*80}px`, height:`${90 + i*28}px`,
+            borderRadius:'50%',
+            border:'1px solid',
+            borderColor: i < 2 ? 'rgba(251,146,60,0.55)' : 'rgba(251,146,60,0.2)',
+            animation:`waterRipple 4s ${i * 0.8}s ease-out infinite`,
+          }} />
+        ))}
+
+        {/* Bright center dot */}
+        <div className="absolute pointer-events-none" style={{ bottom:'14%', left:'50%', transform:'translateX(-50%)', width:'18px', height:'9px', borderRadius:'50%', background:'radial-gradient(circle, rgba(255,220,150,1) 0%, rgba(251,146,60,0.6) 50%, transparent 100%)', filter:'blur(2px)' }} />
+
+        {/* Mountain silhouette SVG */}
+        <svg className="absolute bottom-0 left-0 w-full pointer-events-none" viewBox="0 0 1440 220" preserveAspectRatio="none" style={{ height:'40%' }}>
+          <path d="M0,220 L0,160 L120,110 L280,145 L420,70 L560,120 L700,45 L840,100 L980,55 L1120,110 L1260,75 L1360,115 L1440,90 L1440,220 Z" fill="#0a0608" />
+          <path d="M0,220 L0,185 L180,155 L350,175 L520,130 L680,160 L840,125 L1000,150 L1160,120 L1320,148 L1440,130 L1440,220 Z" fill="#060404" />
+        </svg>
+
+        <div ref={s9} className="reveal relative max-w-3xl mx-auto text-center pb-32 sm:pb-40">
+          <p className="text-[11px] font-bold text-orange-400/80 uppercase tracking-widest mb-4">Get started today</p>
           <h2 className="text-[2.2rem] sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6">
             Be unstoppable<br />
             <span className="text-gradient animate-gradient">with AdNexus</span>
@@ -844,9 +917,17 @@ export default function HomePage() {
             ))}
           </div>
           <div className="border-t border-white/[0.05] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-gray-600">2026 AdNexus. Built for Indian D2C brands and agencies.</p>
+            <p className="text-xs text-gray-600">© 2026 AdNexus. Built for Indian D2C brands and agencies.</p>
             <div className="flex gap-4 sm:gap-5">{['Privacy Policy','Terms of Service','Cookie Policy'].map((l) => <a key={l} href="#" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">{l}</a>)}</div>
           </div>
+        </div>
+
+        {/* Large brand wordmark — like InsiderOne footer */}
+        <div className="overflow-hidden border-t border-white/[0.03] mt-6">
+          <p className="text-center font-black text-white select-none pointer-events-none leading-none tracking-tight"
+             style={{ fontSize:'clamp(4rem, 14vw, 11rem)', opacity:0.055, letterSpacing:'-0.03em', marginBottom:'-0.15em' }}>
+            ADNEXUS
+          </p>
         </div>
       </footer>
     </div>
