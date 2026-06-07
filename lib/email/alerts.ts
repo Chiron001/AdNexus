@@ -1,6 +1,10 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+let _resend: Resend | null = null
+function getResend(): Resend {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY ?? 're_placeholder')
+  return _resend
+}
 const FROM = 'AdNexus <alerts@adnexus.in>'
 
 interface AnomalyAlert {
@@ -19,7 +23,7 @@ export async function sendAnomalyAlert(
   const subject = getAnomalySubject(anomaly)
   const html = getAnomalyHtml(userName, anomaly)
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject,
@@ -35,7 +39,7 @@ export async function sendNewIssuesAlert(
   const criticalCount = issues.filter((i) => i.severity === 'critical').length
   const highCount = issues.filter((i) => i.severity === 'high').length
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: `AdNexus: ${criticalCount + highCount} critical/high issues detected`,
@@ -96,7 +100,7 @@ export async function sendWeeklyDigest(
     topIssue?: { title: string; platform: string }
   }
 ): Promise<void> {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: 'Your AdNexus Weekly Digest',
@@ -138,7 +142,7 @@ export async function sendWeeklyDigest(
 }
 
 export async function sendPaymentFailedAlert(email: string, amountInr: number): Promise<void> {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: 'AdNexus: Payment failed — action required',
