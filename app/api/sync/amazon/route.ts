@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { fetchCampaignList, requestSearchTermReport, waitForReport } from '@/lib/amazon/api'

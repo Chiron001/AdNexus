@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { fetchCampaignInsights, fetchAdSets, fetchCreativePerformance, extractConversions, extractRevenue } from '@/lib/meta/api'
