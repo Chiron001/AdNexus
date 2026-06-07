@@ -465,7 +465,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Cinematic scroll-zoom + 30 checks reveal ── */}
-      <div ref={cinematicRef} className="relative" style={{ height: '300vh', background: '#010810' }}>
+      <div ref={cinematicRef} className="relative" style={{ height: '220vh', background: '#010810' }}>
         <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#010810' }}>
 
           {/* Scalable sky scene */}
@@ -500,7 +500,19 @@ export default function HomePage() {
               <h2 style={{ fontSize: 'clamp(2.4rem, 6vw, 4.8rem)', fontWeight: 900, color: '#fff', textAlign: 'center', letterSpacing: '-0.03em', lineHeight: 1.06, marginBottom: '20px', textShadow: '0 2px 48px rgba(0,0,0,0.9)' }}>
                 30 checks.<br />Every night.
               </h2>
-              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.05rem', textAlign: 'center', maxWidth: '420px', lineHeight: 1.65, textShadow: '0 1px 24px rgba(0,0,0,0.95)' }}>While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.05rem', textAlign: 'center', maxWidth: '420px', lineHeight: 1.65, textShadow: '0 1px 24px rgba(0,0,0,0.95)', marginBottom: '36px' }}>While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                {[
+                  { val: '30', label: 'checks per account' },
+                  { val: '3', label: 'platforms monitored' },
+                  { val: '2am', label: 'runs every night' },
+                ].map(({ val, label }) => (
+                  <div key={val} style={{ padding: '10px 20px', borderRadius: '100px', border: '1px solid rgba(120,220,160,0.18)', background: 'rgba(8,30,16,0.55)', backdropFilter: 'blur(12px)', textAlign: 'center' }}>
+                    <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: 800, color: 'rgba(160,240,190,0.92)', lineHeight: 1.1 }}>{val}</span>
+                    <span style={{ display: 'block', fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', fontWeight: 500, letterSpacing: '0.04em', marginTop: '2px' }}>{label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Bottom fade to page */}
