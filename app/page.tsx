@@ -243,6 +243,7 @@ export default function HomePage() {
 
   const cinematicRef = useRef<HTMLDivElement>(null)
   const cinematicInnerRef = useRef<HTMLDivElement>(null)
+  const cinematicSceneRef = useRef<HTMLDivElement>(null)
   const cinematicTextRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -254,22 +255,17 @@ export default function HomePage() {
   useEffect(() => {
     const onScroll = () => {
       const wrap = cinematicRef.current
-      const inner = cinematicInnerRef.current
-      if (!wrap || !inner) return
+      const scene = cinematicSceneRef.current
+      if (!wrap || !scene) return
       const scrolled = -wrap.getBoundingClientRect().top
       const total = Math.max(wrap.offsetHeight - window.innerHeight, 1)
-      const p = Math.max(0, Math.min(1, scrolled / (total * 0.68)))
-      const maxInset = window.innerWidth < 768 ? 14 : 68
-      const inset = Math.max(maxInset * (1 - p), 0)
-      inner.style.top = `${inset}px`
-      inner.style.left = `${inset}px`
-      inner.style.right = `${inset}px`
-      inner.style.bottom = `${inset}px`
-      inner.style.borderRadius = `${Math.max(28 * (1 - p), 0)}px`
+      const p = Math.max(0, Math.min(1, scrolled / (total * 0.82)))
+      // Zoom into the garden as user scrolls
+      scene.style.transform = `scale(${1 + p * 0.28})`
       const text = cinematicTextRef.current
       if (text) {
-        const fadeIn = Math.max(0, Math.min(1, (p - 0.18) / 0.28))
-        const fadeOut = Math.max(0, Math.min(1, (0.88 - p) / 0.28))
+        const fadeIn = Math.max(0, Math.min(1, (p - 0.28) / 0.28))
+        const fadeOut = Math.max(0, Math.min(1, (0.9 - p) / 0.2))
         text.style.opacity = String(fadeIn * fadeOut)
       }
     }
@@ -470,70 +466,71 @@ export default function HomePage() {
       {/* ── Cinematic scroll-zoom ───────────────────── */}
       <div ref={cinematicRef} className="relative" style={{ height: '180vh', background: '#010608' }}>
         <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#010608' }}>
-          {/* Dark outer ring — visible as "frame" when scene is inset */}
-          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 130% 130% at 50% 50%, transparent 45%, rgba(1,6,8,0.7) 68%, #010608 88%)', zIndex: 2 }} />
 
-          {/* Scene — starts inset, zooms to fill */}
+          {/* Scene container — full screen from start, overflow hidden for scale clip */}
           <div
             ref={cinematicInnerRef}
-            style={{
-              position: 'absolute',
-              top: '68px', left: '68px', right: '68px', bottom: '68px',
-              borderRadius: '28px',
-              overflow: 'hidden',
-              zIndex: 1,
-            }}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', zIndex: 1 }}
           >
-            {/* Sky gradient */}
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, #010810 0%, #010d0c 40%, #020f09 62%, #020c07 78%, #010905 100%)' }} />
+            {/* Scalable scene — this element gets scale(1→1.28) on scroll */}
+            <div
+              ref={cinematicSceneRef}
+              style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, transformOrigin: 'center center', willChange: 'transform' }}
+            >
+              {/* Sky gradient */}
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, #010810 0%, #010d0c 40%, #020f09 62%, #020c07 78%, #010905 100%)' }} />
 
-            {/* Moonlight ambient */}
-            <div style={{ position: 'absolute', top: '8%', left: '16%', width: '220px', height: '220px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(180,220,170,0.10) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-            {/* Moon disc */}
-            <div style={{ position: 'absolute', top: '11%', left: '19%', width: '36px', height: '36px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(235,242,215,0.88) 0%, rgba(170,205,155,0.4) 55%, transparent 100%)', filter: 'blur(2px)', pointerEvents: 'none' }} />
+              {/* Moonlight ambient */}
+              <div style={{ position: 'absolute', top: '8%', left: '16%', width: '220px', height: '220px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(180,220,170,0.10) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+              {/* Moon disc */}
+              <div style={{ position: 'absolute', top: '11%', left: '19%', width: '36px', height: '36px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(235,242,215,0.88) 0%, rgba(170,205,155,0.4) 55%, transparent 100%)', filter: 'blur(2px)', pointerEvents: 'none' }} />
 
-            {/* Stars */}
-            {GARDEN_STARS.map((s, i) => (
-              <div key={i} className="star-twinkle" style={{
-                position: 'absolute', left: `${s.x}%`, top: `${s.y}%`,
-                width: `${s.r * 2}px`, height: `${s.r * 2}px`, borderRadius: '50%',
-                background: '#e8f0e0', pointerEvents: 'none',
-                ['--star-op' as string]: s.op, ['--star-dur' as string]: s.dur, ['--star-delay' as string]: s.del,
-                opacity: s.op,
-              }} />
-            ))}
+              {/* Stars */}
+              {GARDEN_STARS.map((s, i) => (
+                <div key={i} className="star-twinkle" style={{
+                  position: 'absolute', left: `${s.x}%`, top: `${s.y}%`,
+                  width: `${s.r * 2}px`, height: `${s.r * 2}px`, borderRadius: '50%',
+                  background: '#e8f0e0', pointerEvents: 'none',
+                  ['--star-op' as string]: s.op, ['--star-dur' as string]: s.dur, ['--star-delay' as string]: s.del,
+                  opacity: s.op,
+                }} />
+              ))}
 
-            {/* Ground mist / horizon */}
-            <div style={{ position: 'absolute', bottom: '32%', left: 0, right: 0, height: '10%', background: 'rgba(8,30,18,0.35)', filter: 'blur(14px)', pointerEvents: 'none' }} />
+              {/* Ground mist / horizon */}
+              <div style={{ position: 'absolute', bottom: '32%', left: 0, right: 0, height: '10%', background: 'rgba(8,30,18,0.35)', filter: 'blur(14px)', pointerEvents: 'none' }} />
 
-            {/* Far treeline */}
-            <svg style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', pointerEvents: 'none' }} viewBox="0 0 1440 340" preserveAspectRatio="none" height="46%">
-              <path d="M0,340 L0,195 L35,180 L55,192 L85,162 L110,178 L145,148 L170,165 L208,132 L235,150 L272,120 L298,138 L335,112 L362,130 L398,105 L425,122 L462,98 L490,115 L525,92 L555,110 L592,86 L620,104 L658,80 L685,98 L722,76 L748,94 L785,72 L812,90 L850,68 L876,86 L912,64 L940,82 L976,60 L1002,78 L1038,56 L1065,74 L1102,58 L1128,75 L1162,55 L1190,72 L1225,52 L1252,70 L1288,54 L1315,72 L1350,58 L1378,74 L1410,62 L1440,76 L1440,340 Z" fill="#010d06" opacity="0.95"/>
-              <path d="M0,340 L0,250 L55,232 L90,245 L132,222 L168,238 L212,215 L248,230 L292,210 L328,226 L372,205 L408,220 L452,200 L488,216 L532,196 L568,212 L612,192 L648,208 L692,190 L728,205 L772,186 L808,202 L852,183 L888,198 L932,180 L968,196 L1012,178 L1048,194 L1092,175 L1128,191 L1172,174 L1208,189 L1252,172 L1288,188 L1332,172 L1368,188 L1440,178 L1440,340 Z" fill="#010a05"/>
-            </svg>
+              {/* Far treeline */}
+              <svg style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', pointerEvents: 'none' }} viewBox="0 0 1440 340" preserveAspectRatio="none" height="46%">
+                <path d="M0,340 L0,195 L35,180 L55,192 L85,162 L110,178 L145,148 L170,165 L208,132 L235,150 L272,120 L298,138 L335,112 L362,130 L398,105 L425,122 L462,98 L490,115 L525,92 L555,110 L592,86 L620,104 L658,80 L685,98 L722,76 L748,94 L785,72 L812,90 L850,68 L876,86 L912,64 L940,82 L976,60 L1002,78 L1038,56 L1065,74 L1102,58 L1128,75 L1162,55 L1190,72 L1225,52 L1252,70 L1288,54 L1315,72 L1350,58 L1378,74 L1410,62 L1440,76 L1440,340 Z" fill="#010d06" opacity="0.95"/>
+                <path d="M0,340 L0,250 L55,232 L90,245 L132,222 L168,238 L212,215 L248,230 L292,210 L328,226 L372,205 L408,220 L452,200 L488,216 L532,196 L568,212 L612,192 L648,208 L692,190 L728,205 L772,186 L808,202 L852,183 L888,198 L932,180 L968,196 L1012,178 L1048,194 L1092,175 L1128,191 L1172,174 L1208,189 L1252,172 L1288,188 L1332,172 L1368,188 L1440,178 L1440,340 Z" fill="#010a05"/>
+              </svg>
 
-            {/* Water reflection band */}
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '22%', background: 'linear-gradient(180deg, transparent, rgba(3,18,11,0.7) 45%, rgba(1,8,5,0.96) 100%)', pointerEvents: 'none' }} />
-            {/* Water shimmer */}
-            <div style={{ position: 'absolute', bottom: '6%', left: '30%', right: '30%', height: '10%', background: 'radial-gradient(ellipse, rgba(60,140,90,0.07) 0%, transparent 70%)', filter: 'blur(10px)', pointerEvents: 'none' }} />
+              {/* Water reflection band */}
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '22%', background: 'linear-gradient(180deg, transparent, rgba(3,18,11,0.7) 45%, rgba(1,8,5,0.96) 100%)', pointerEvents: 'none' }} />
+              {/* Water shimmer */}
+              <div style={{ position: 'absolute', bottom: '6%', left: '30%', right: '30%', height: '10%', background: 'radial-gradient(ellipse, rgba(60,140,90,0.07) 0%, transparent 70%)', filter: 'blur(10px)', pointerEvents: 'none' }} />
+            </div>
 
-            {/* Text overlay — fades in while scrolling */}
-            <div ref={cinematicTextRef} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0, pointerEvents: 'none' }}>
+            {/* Soft vignette — atmospheric edge darkening, doesn't scale */}
+            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 100% 100% at 50% 50%, transparent 52%, rgba(1,6,8,0.45) 72%, rgba(1,6,8,0.82) 100%)', zIndex: 2 }} />
+
+            {/* Text overlay — sits above scene, doesn't scale, fades in lower third */}
+            <div ref={cinematicTextRef} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: '18%', opacity: 0, pointerEvents: 'none', zIndex: 3 }}>
               <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(120,220,160,0.75)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: '14px' }}>Always watching</p>
-              <h2 style={{ fontSize: 'clamp(1.9rem, 5.5vw, 3.8rem)', fontWeight: 900, color: '#fff', textAlign: 'center', letterSpacing: '-0.025em', lineHeight: 1.08, marginBottom: '18px' }}>
+              <h2 style={{ fontSize: 'clamp(1.9rem, 5.5vw, 3.8rem)', fontWeight: 900, color: '#fff', textAlign: 'center', letterSpacing: '-0.025em', lineHeight: 1.08, marginBottom: '18px', textShadow: '0 2px 40px rgba(0,0,0,0.8)' }}>
                 30 checks.<br />Every night.
               </h2>
-              <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.05rem', textAlign: 'center', maxWidth: '420px', lineHeight: 1.6 }}>While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
+              <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.05rem', textAlign: 'center', maxWidth: '420px', lineHeight: 1.6, textShadow: '0 1px 20px rgba(0,0,0,0.9)' }}>While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* ── Trusted by ─────────────────────────────── */}
-      <section className="py-8 border-y border-white/[0.05] overflow-hidden">
-        <p className="text-center text-[10px] sm:text-[11px] uppercase tracking-widest text-gray-600 font-bold mb-5">Trusted by D2C brands across India</p>
+      <section className="py-12 sm:py-14 border-y border-white/[0.05] overflow-hidden">
+        <p className="text-center text-[10px] sm:text-[11px] uppercase tracking-widest text-gray-600 font-bold mb-7">Trusted by D2C brands across India</p>
         <div className="flex">
-          <div className="animate-marquee flex gap-12 items-center whitespace-nowrap">
+          <div className="animate-marquee flex gap-16 items-center whitespace-nowrap">
             {[...BRANDS, ...BRANDS].map((brand, i) => (
               <span key={i} className="text-xs font-bold text-gray-700 hover:text-gray-500 transition-colors cursor-default tracking-widest uppercase">{brand}</span>
             ))}
@@ -1073,9 +1070,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ──────────────────────────────────── */}
-      <footer className="pt-12 pb-8 px-5 sm:px-6 relative overflow-hidden" style={{ background:'linear-gradient(180deg, #020308 0%, #030610 40%, #040a14 70%, #030810 100%)' }}>
-        {/* Transition gradient — blends CTA dark-red bottom into footer navy */}
-        <div className="absolute pointer-events-none" style={{ top: 0, left: 0, right: 0, height: '90px', background: 'linear-gradient(180deg, rgba(22,4,4,0.92) 0%, rgba(8,2,2,0.55) 45%, transparent 100%)', zIndex: 0 }} />
+      <footer className="pt-12 pb-8 px-5 sm:px-6 relative overflow-hidden" style={{ backgroundImage:`url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center 80%', backgroundColor:'#020308' }}>
+        {/* Dark overlay — keeps content readable while mountain photo subtly shows through */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, rgba(2,2,12,0.93) 0%, rgba(2,3,10,0.90) 50%, rgba(3,4,14,0.95) 100%)', zIndex: 0 }} />
         {/* Night sky ambient — two soft light sources like dock lamps */}
         <div className="absolute pointer-events-none" style={{ bottom:'20%', left:'28%', width:'280px', height:'280px', borderRadius:'50%', background:'radial-gradient(circle, rgba(60,100,180,0.12) 0%, transparent 70%)', filter:'blur(50px)' }} />
         <div className="absolute pointer-events-none" style={{ bottom:'20%', right:'28%', width:'280px', height:'280px', borderRadius:'50%', background:'radial-gradient(circle, rgba(60,100,180,0.10) 0%, transparent 70%)', filter:'blur(50px)' }} />
