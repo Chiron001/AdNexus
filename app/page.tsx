@@ -517,7 +517,7 @@ export default function HomePage() {
             <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '28%', background: 'linear-gradient(180deg, transparent 0%, rgba(8,8,8,0.88) 75%, #080808 100%)', zIndex: 4 }} />
 
             {/* Text overlay — sits above scene, doesn't scale, fades in centered */}
-            <div ref={cinematicTextRef} style={{ position: 'absolute', top: '42%', left: 0, right: 0, transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: 0, pointerEvents: 'none', zIndex: 3 }}>
+            <div ref={cinematicTextRef} style={{ position: 'absolute', top: '50%', left: 0, right: 0, transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: 0, pointerEvents: 'none', zIndex: 3 }}>
               <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(120,220,160,0.75)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: '14px' }}>Always watching</p>
               <h2 style={{ fontSize: 'clamp(1.9rem, 5.5vw, 3.8rem)', fontWeight: 900, color: '#fff', textAlign: 'center', letterSpacing: '-0.025em', lineHeight: 1.08, marginBottom: '18px', textShadow: '0 2px 40px rgba(0,0,0,0.85)' }}>
                 30 checks.<br />Every night.
