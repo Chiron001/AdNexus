@@ -51,12 +51,13 @@ function useCounter(target: number, duration = 1800) {
 }
 
 /* ── Touch carousel ────────────────────────────── */
-function Carousel({ items, renderItem }: {
+function Carousel({ items, renderItem, initialIndex = 0 }: {
   items: unknown[]
   renderItem: (item: unknown, i: number) => React.ReactNode
+  initialIndex?: number
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [active, setActive] = useState(0)
+  const [active, setActive] = useState(initialIndex)
 
   const onScroll = useCallback(() => {
     const el = ref.current
@@ -70,6 +71,15 @@ function Carousel({ items, renderItem }: {
     el.addEventListener('scroll', onScroll, { passive: true })
     return () => el.removeEventListener('scroll', onScroll)
   }, [onScroll])
+
+  useEffect(() => {
+    if (initialIndex === 0) return
+    setTimeout(() => {
+      const el = ref.current
+      if (!el) return
+      el.scrollLeft = initialIndex * el.clientWidth
+    }, 50)
+  }, [])
 
   const goTo = (i: number) => {
     if (!ref.current) return
@@ -117,6 +127,17 @@ const CTA_STARS = Array.from({ length: 100 }, (_, i) => ({
   dur: `${2 + (i % 4) * 0.9}s`,
   del: `${(i * 0.28) % 4}s`,
 }))
+
+const SCAN_CHECKS = [
+  { text: 'Creative fatigue — Ad Set #4',       val: '₹42K', c: 'bg-red-500/15 text-red-400' },
+  { text: 'Broken pixel tracking',              val: '₹38K', c: 'bg-red-500/15 text-red-400' },
+  { text: 'Frequency cap exceeded — 3 sets',   val: '₹21K', c: 'bg-amber-500/15 text-amber-400' },
+  { text: 'Keyword cannibalization — 14 pairs', val: '₹18K', c: 'bg-amber-500/15 text-amber-400' },
+  { text: 'High ACOS — Auto campaigns',         val: '₹12K', c: 'bg-yellow-500/15 text-yellow-500' },
+  { text: 'Zero-conversion ASINs',              val: '₹9K',  c: 'bg-yellow-500/15 text-yellow-500' },
+]
+
+const AI_FIX_TEXT = 'Pause 3 fatigued creatives, upload 2 fresh variants with different visual angles, set frequency cap to 3/week. Expected: +0.8x ROAS recovery in 7 days.'
 
 /* ── Particles (static, defined outside component) ─ */
 const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
@@ -236,9 +257,13 @@ export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null)
   const s1 = useReveal(), s2 = useReveal(), s3 = useReveal(), s4 = useReveal()
   const s5 = useReveal(), s6 = useReveal(), s7 = useReveal(), s8 = useReveal(), s9 = useReveal()
+  const sAI = useReveal()
   const c1 = useCounter(30), c2 = useCounter(3), c3 = useCounter(62), c4 = useCounter(1000)
   const [heroTab, setHeroTab] = useState<HeroTab>('Meta')
   const [expandedPlan, setExpandedPlan] = useState<string | null>(null)
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const [scanStep, setScanStep] = useState(0)
+  const [aiTypedIdx, setAiTypedIdx] = useState(0)
   const heroData = HERO_PLATFORM_DATA[heroTab]
 
   const cinematicRef = useRef<HTMLDivElement>(null)
@@ -249,6 +274,15 @@ export default function HomePage() {
     heroRef.current?.querySelectorAll('.hero-animate').forEach((el, i) => {
       ;(el as HTMLElement).style.animationDelay = `${i * 0.13}s`
     })
+  }, [])
+
+  useEffect(() => {
+    const onScrollProgress = () => {
+      const el = document.documentElement
+      setScrollProgress(el.scrollTop / (el.scrollHeight - el.clientHeight))
+    }
+    window.addEventListener('scroll', onScrollProgress, { passive: true })
+    return () => window.removeEventListener('scroll', onScrollProgress)
   }, [])
 
   useEffect(() => {
@@ -265,9 +299,26 @@ export default function HomePage() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  useEffect(() => {
+    const t = setInterval(() => setScanStep(p => (p + 1) % 6), 1600)
+    return () => clearInterval(t)
+  }, [])
+
+  useEffect(() => {
+    if (aiTypedIdx >= AI_FIX_TEXT.length) {
+      const t = setTimeout(() => setAiTypedIdx(0), 2200)
+      return () => clearTimeout(t)
+    }
+    const t = setTimeout(() => setAiTypedIdx(p => p + 1), 38)
+    return () => clearTimeout(t)
+  }, [aiTypedIdx])
+
   return (
     <div className="min-h-screen bg-[#080808] text-white overflow-x-hidden relative">
       <LandingNav />
+
+      {/* Scroll progress bar */}
+      <div className="scroll-progress" style={{ width: `${scrollProgress * 100}%` }} />
 
       {/* Ambient aurora — sits behind all sections, scrolls with page */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
@@ -278,6 +329,8 @@ export default function HomePage() {
       </div>
       {/* Grain texture — premium tactile feel */}
       <div className="noise-overlay" />
+      {/* Fixed night star field — subtle depth layer */}
+      <div className="night-star-field" />
 
       {/* ── Hero ───────────────────────────────────── */}
       <section
@@ -313,7 +366,7 @@ export default function HomePage() {
                 The leading Ad Account Diagnostics Platform
               </div>
 
-              <h1 className="hero-animate animate-fade-up text-[2.6rem] sm:text-5xl lg:text-[4.2rem] font-extrabold tracking-tight leading-[1.06] mb-5">
+              <h1 className="hero-animate animate-fade-up text-[2rem] sm:text-5xl lg:text-[4.2rem] font-extrabold tracking-tight leading-[1.06] mb-5">
                 Move from spend
                 <br />
                 to{' '}
@@ -355,6 +408,8 @@ export default function HomePage() {
             {/* Right — floating UI (desktop only) */}
             <div className="relative hidden lg:block h-[520px]">
               <div className="animate-float absolute top-0 right-0 w-80 rounded-2xl border border-white/[0.09] overflow-hidden shadow-2xl shadow-black/70" style={{ background:'rgba(10,10,14,0.97)', backdropFilter:'blur(20px)' }}>
+                {/* Diagnostic scan line */}
+                <div className="scan-line" />
                 <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
@@ -456,7 +511,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Cinematic scroll-zoom + 30 checks reveal ── */}
-      <div ref={cinematicRef} className="relative" style={{ height: '165vh', background: '#010810' }}>
+      <div ref={cinematicRef} className="relative" style={{ height: '120vh', background: '#010810' }}>
         <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#010810' }}>
 
           {/* Scalable sky scene */}
@@ -492,7 +547,7 @@ export default function HomePage() {
       </div>
 
       {/* ── 30 checks ──────────────────────────────── */}
-      <section className="relative py-12 sm:py-16 px-5 sm:px-6 text-center overflow-hidden" style={{ background: 'linear-gradient(180deg, #010810 0%, #010d0c 35%, #060d08 65%, #080808 100%)' }}>
+      <section className="relative py-20 sm:py-28 px-5 sm:px-6 text-center overflow-hidden" style={{ background: 'linear-gradient(180deg, #010810 0%, #010d0c 35%, #060d08 65%, #080808 100%)' }}>
         {/* Stars — continuity from cinematic sky above */}
         {GARDEN_STARS.filter((_, i) => i % 3 === 0).map((s, i) => (
           <div key={i} className="star-twinkle absolute pointer-events-none" style={{
@@ -507,13 +562,13 @@ export default function HomePage() {
         <div className="absolute pointer-events-none" style={{ top: 0, left: '15%', width: '200px', height: '180px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(180,225,170,0.07) 0%, transparent 70%)', filter: 'blur(40px)' }} />
         <div className="relative max-w-2xl mx-auto">
           <p className="text-[11px] font-bold uppercase tracking-widest mb-5" style={{ color: 'rgba(120,220,160,0.8)' }}>Always watching</p>
-          <h2 className="font-black text-white mb-6" style={{ fontSize: 'clamp(2.4rem, 6vw, 4.8rem)', letterSpacing: '-0.03em', lineHeight: 1.06 }}>
+          <h2 className="font-black text-white mb-6" style={{ fontSize: 'clamp(2rem, 6vw, 4.8rem)', letterSpacing: '-0.03em', lineHeight: 1.06 }}>
             30 checks.<br />Every night.
           </h2>
-          <p className="text-lg text-gray-400 leading-relaxed max-w-md mx-auto mb-10">While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
-          <div className="flex gap-3 flex-wrap justify-center">
+          <p className="text-sm sm:text-lg text-gray-400 leading-relaxed max-w-md mx-auto mb-10">While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
+          <div className="flex gap-2 flex-nowrap justify-center">
             {[{ val:'30', label:'checks per account' },{ val:'3', label:'platforms monitored' },{ val:'2am', label:'runs every night' }].map(({ val, label }) => (
-              <div key={val} className="px-5 py-3 rounded-full border text-center" style={{ border:'1px solid rgba(120,220,160,0.2)', background:'rgba(8,28,16,0.5)' }}>
+              <div key={val} className="px-3 py-2.5 rounded-full border text-center flex-1 max-w-[140px]" style={{ border:'1px solid rgba(120,220,160,0.2)', background:'rgba(8,28,16,0.5)' }}>
                 <span className="block text-xl font-black" style={{ color:'rgba(160,240,190,0.9)' }}>{val}</span>
                 <span className="block text-[0.7rem] text-gray-500 font-medium tracking-wide mt-0.5">{label}</span>
               </div>
@@ -523,7 +578,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Trusted by ─────────────────────────────── */}
-      <section className="py-12 sm:py-14 border-y border-white/[0.05] overflow-hidden">
+      <section className="py-16 sm:py-20 overflow-hidden">
         <p className="text-center text-[10px] sm:text-[11px] uppercase tracking-widest text-gray-600 font-bold mb-7">Trusted by D2C brands across India</p>
         <div className="flex">
           <div className="animate-marquee flex gap-16 items-center whitespace-nowrap">
@@ -535,7 +590,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Stats ──────────────────────────────────── */}
-      <section className="border-b border-white/[0.05]" style={{ background:'radial-gradient(ellipse 80% 100% at 50% 50%, rgba(37,99,235,0.07) 0%, transparent 70%)' }}>
+      <section style={{ background:'radial-gradient(ellipse 80% 100% at 50% 50%, rgba(37,99,235,0.07) 0%, transparent 70%)' }}>
         <div className="max-w-5xl mx-auto px-5 sm:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4">
             {[
@@ -550,7 +605,7 @@ export default function HomePage() {
                   ${i < 2 ? 'border-b md:border-b-0' : ''}
                   ${i < 3 ? 'md:border-r' : ''}
                 `}>
-                <div className="text-4xl md:text-5xl font-black text-white mb-1.5 tabular-nums">{val}</div>
+                <div className="text-4xl md:text-5xl font-black text-white mb-1.5 tabular-nums num-glow">{val}</div>
                 <p className="text-[11px] md:text-sm text-gray-500 leading-snug">{label}</p>
               </div>
             ))}
@@ -559,12 +614,12 @@ export default function HomePage() {
       </section>
 
       {/* ── One Platform ───────────────────────────── */}
-      <section id="platform" className="py-16 sm:py-20 px-5 sm:px-6">
+      <section id="platform" className="py-20 sm:py-28 px-5 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <div ref={s1} className="reveal">
-            <div className="text-center mb-10 sm:mb-14 stagger-child">
+            <div className="text-center mb-14 sm:mb-20 stagger-child">
               <p className="text-[11px] font-bold text-blue-500 uppercase tracking-widest mb-3">One platform</p>
-              <h2 className="text-[1.9rem] sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">Every ad channel.<br className="sm:hidden" /> Infinite clarity.</h2>
+              <h2 className="text-[1.55rem] sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">Every ad channel.<br className="sm:hidden" /> Infinite clarity.</h2>
               <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">The most complete diagnostics platform for Meta, Google, and Amazon. Your entire ad health in one dashboard, updated every day.</p>
             </div>
 
@@ -606,13 +661,13 @@ export default function HomePage() {
       </section>
 
       {/* ── Meet AdNexus AI ─────────────────────────── */}
-      <section className="py-16 sm:py-20 px-5 sm:px-6 border-t border-white/[0.06]" style={{ background:'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(124,58,237,0.08) 0%, transparent 70%)' }}>
+      <section className="py-20 sm:py-28 px-5 sm:px-6" style={{ background:'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(124,58,237,0.08) 0%, transparent 70%)' }}>
         <div className="max-w-6xl mx-auto">
           <div ref={s2} className="reveal">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center">
               <div className="stagger-child order-2 lg:order-1">
                 <p className="text-[11px] font-bold text-purple-400 uppercase tracking-widest mb-3">Meet AdNexus AI</p>
-                <h2 className="text-[1.9rem] sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-5">The intelligence behind every diagnosis</h2>
+                <h2 className="text-[1.55rem] sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-5">The intelligence behind every diagnosis</h2>
                 <p className="text-gray-400 text-base sm:text-lg leading-relaxed mb-8">Drive faster action across all three platforms with autonomous AI trained on performance marketing data.</p>
                 <div className="space-y-5">
                   {[
@@ -662,13 +717,13 @@ export default function HomePage() {
       </section>
 
       {/* ── What brands achieve — photo-card style ── */}
-      <section id="results" className="py-16 sm:py-20 px-5 sm:px-6 border-t border-white/[0.06]">
+      <section id="results" className="py-20 sm:py-28 px-5 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <div ref={s3} className="reveal">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10 stagger-child">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-14 stagger-child">
               <div>
                 <p className="text-[11px] font-bold text-blue-500 uppercase tracking-widest mb-2">What brands achieve</p>
-                <h2 className="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight">Results in the numbers</h2>
+                <h2 className="text-[1.55rem] sm:text-4xl font-extrabold tracking-tight">Results in the numbers</h2>
               </div>
               <Link href="/customers" className="inline-flex items-center gap-1 text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors shrink-0">
                 All case studies <ChevronRight className="w-4 h-4" />
@@ -733,15 +788,15 @@ export default function HomePage() {
       </section>
 
       {/* ── Features ────────────────────────────────── */}
-      <section id="features" className="py-16 sm:py-20 px-5 sm:px-6 border-t border-white/[0.06]">
+      <section id="features" className="py-20 sm:py-28 px-5 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <div ref={s4} className="reveal">
-            <div className="text-center mb-10 sm:mb-14 stagger-child">
+            <div className="text-center mb-14 sm:mb-20 stagger-child">
               <p className="text-[11px] font-bold text-blue-500 uppercase tracking-widest mb-3">Diagnostic breadth</p>
-              <h2 className="text-[1.9rem] sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">For unstoppable ad performance</h2>
+              <h2 className="text-[1.55rem] sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">For unstoppable ad performance</h2>
               <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">From 5L to 5Cr monthly spend, AdNexus covers every failure mode that costs brands money.</p>
             </div>
-            <div className="hidden md:grid md:grid-cols-3 gap-4">
+            <div className="hidden md:grid md:grid-cols-3 gap-5">
               {FEATURE_CARDS.map(({ icon:Icon, color, bg, title, desc }) => (
                 <div key={title} className="stagger-child glow-card p-6 rounded-2xl border border-white/[0.07] bg-white/[0.02]">
                   <div className={`w-11 h-11 ${bg} rounded-xl flex items-center justify-center mb-4 border`}><Icon className={`w-5 h-5 ${color}`} /></div>
@@ -770,11 +825,11 @@ export default function HomePage() {
       </section>
 
       {/* ── Testimonials ────────────────────────────── */}
-      <section className="py-16 sm:py-20 border-t border-white/[0.06] overflow-hidden" style={{ background:'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(37,99,235,0.05) 0%, transparent 70%)' }}>
+      <section className="py-20 sm:py-28 overflow-hidden" style={{ background:'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(37,99,235,0.05) 0%, transparent 70%)' }}>
         <div ref={s5} className="reveal">
-          <div className="text-center mb-10 sm:mb-12 px-5 sm:px-6 stagger-child">
+          <div className="text-center mb-14 sm:mb-20 px-5 sm:px-6 stagger-child">
             <p className="text-[11px] font-bold text-blue-500 uppercase tracking-widest mb-3">Loved by brands</p>
-            <h2 className="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight mb-4">Built for people running ads</h2>
+            <h2 className="text-[1.55rem] sm:text-4xl font-extrabold tracking-tight mb-4">Built for people running ads</h2>
             <p className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto">From solo performance marketers to agencies managing 25 brand accounts.</p>
           </div>
 
@@ -831,12 +886,12 @@ export default function HomePage() {
       </section>
 
       {/* ── How it works ────────────────────────────── */}
-      <section className="py-16 sm:py-20 px-5 sm:px-6 border-t border-white/[0.06]">
+      <section className="py-20 sm:py-28 px-5 sm:px-6">
         <div className="max-w-5xl mx-auto">
           <div ref={s6} className="reveal">
-            <div className="text-center mb-10 sm:mb-14 stagger-child">
+            <div className="text-center mb-14 sm:mb-20 stagger-child">
               <p className="text-[11px] font-bold text-blue-500 uppercase tracking-widest mb-3">How it works</p>
-              <h2 className="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight mb-4">From connect to fix in 10 minutes</h2>
+              <h2 className="text-[1.55rem] sm:text-4xl font-extrabold tracking-tight mb-4">From connect to fix in 10 minutes</h2>
               <p className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto">No onboarding call. No setup fee. Connect, diagnose, and fix today.</p>
             </div>
             {/* Step circle track — desktop only, above the cards */}
@@ -877,12 +932,12 @@ export default function HomePage() {
       </section>
 
       {/* ── Pricing ─────────────────────────────────── */}
-      <section id="pricing" className="py-16 sm:py-20 px-5 sm:px-6 border-t border-white/[0.06]">
+      <section id="pricing" className="py-20 sm:py-28 px-5 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <div ref={s7} className="reveal">
-            <div className="text-center mb-10 sm:mb-14 stagger-child">
+            <div className="text-center mb-14 sm:mb-20 stagger-child">
               <p className="text-[11px] font-bold text-blue-500 uppercase tracking-widest mb-3">Simple pricing</p>
-              <h2 className="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight mb-4">Start free. Scale when you grow.</h2>
+              <h2 className="text-[1.55rem] sm:text-4xl font-extrabold tracking-tight mb-4">Start free. Scale when you grow.</h2>
               <p className="text-gray-400 text-base max-w-xl mx-auto">No long-term contracts. No per-seat fees. Cancel anytime.</p>
             </div>
             {/* Desktop — 4 columns */}
@@ -922,6 +977,7 @@ export default function HomePage() {
             <div className="md:hidden">
               <Carousel
                 items={PRICING_PLANS}
+                initialIndex={1}
                 renderItem={(item) => {
                   const { name, price, per, desc, features, allFeatures, cta, href, highlight, custom } = item as typeof PRICING_PLANS[0]
                   return (
@@ -965,12 +1021,12 @@ export default function HomePage() {
       </section>
 
       {/* ── Integrate ───────────────────────────────── */}
-      <section className="py-16 sm:py-20 px-5 sm:px-6 border-t border-white/[0.06]">
+      <section className="py-20 sm:py-28 px-5 sm:px-6">
         <div className="max-w-5xl mx-auto">
           <div ref={s8} className="reveal">
-            <div className="text-center mb-10 sm:mb-12 stagger-child">
+            <div className="text-center mb-14 sm:mb-20 stagger-child">
               <p className="text-[11px] font-bold text-blue-500 uppercase tracking-widest mb-3">Integrate seamlessly</p>
-              <h2 className="text-[1.9rem] sm:text-4xl font-extrabold tracking-tight mb-4">All your ad data in one place</h2>
+              <h2 className="text-[1.55rem] sm:text-4xl font-extrabold tracking-tight mb-4">All your ad data in one place</h2>
               <p className="text-gray-400 text-base max-w-xl mx-auto">OAuth only. No credentials stored. Data stays fresh. Team stays informed.</p>
             </div>
             <div className="stagger-child grid grid-cols-2 md:grid-cols-6 gap-3 mb-8">
@@ -1003,15 +1059,265 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── AdNexus AI Engine ─────────────────────── */}
+      <section id="ai-engine" className="py-20 sm:py-28 px-5 sm:px-6 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full opacity-[0.07] pointer-events-none" style={{ background:'radial-gradient(circle, rgba(139,92,246,1) 0%, transparent 70%)', filter:'blur(120px)' }} />
+
+        <div className="max-w-6xl mx-auto">
+          <div ref={sAI} className="reveal">
+
+            {/* Header */}
+            <div className="text-center mb-14 sm:mb-16 stagger-child">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/[0.08] text-xs font-bold text-purple-300 mb-5">
+                <Cpu className="w-3 h-3" />
+                AI Engine
+              </div>
+              <h2 className="text-[1.55rem] sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
+                Intelligence that<br className="sm:hidden" /> never sleeps
+              </h2>
+              <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">AdNexus AI watches every campaign 24/7, surfaces what costs you money, and tells your team exactly how to fix it.</p>
+            </div>
+
+            {/* Desktop bento grid */}
+            <div className="hidden lg:grid gap-4 stagger-child" style={{ gridTemplateColumns:'1fr 1fr 1fr 1fr', gridTemplateRows:'auto auto' }}>
+
+              {/* Card 1: Live Scanner */}
+              <div className="glow-card rounded-2xl border border-white/[0.08] overflow-hidden" style={{ gridColumn:'1', gridRow:'1', background:'rgba(8,10,20,0.97)' }}>
+                <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                    <p className="text-xs font-bold text-white">Live Scanner</p>
+                  </div>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 bg-green-500/10 text-green-400 rounded-md">Running</span>
+                </div>
+                <div className="p-3 space-y-1.5">
+                  {SCAN_CHECKS.map((item, i) => (
+                    <div key={i} className={`flex items-center gap-2 p-2 rounded-lg transition-all duration-500 ${i === scanStep ? 'bg-white/[0.08]' : 'opacity-50'}`}>
+                      <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors duration-300 ${i <= scanStep ? 'bg-green-400' : 'bg-white/20'}`} />
+                      <p className="text-[11px] text-gray-300 flex-1 truncate">{item.text}</p>
+                      {i <= scanStep && <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0 ${item.c}`}>{item.val}</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Card 2: Central AI Orb (col 2-3, row 1-2) */}
+              <div className="glow-card rounded-2xl border border-purple-500/25 relative overflow-hidden flex flex-col items-center justify-center py-10" style={{ gridColumn:'2 / 4', gridRow:'1 / 3', background:'radial-gradient(ellipse 85% 55% at 50% 35%, rgba(124,58,237,0.13) 0%, rgba(8,10,20,0.99) 65%)' }}>
+                <div className="absolute inset-0 opacity-[0.035] pointer-events-none" style={{ backgroundImage:'linear-gradient(rgba(139,92,246,1) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,1) 1px, transparent 1px)', backgroundSize:'36px 36px' }} />
+
+                <div className="relative mb-8" style={{ width:'160px', height:'160px' }}>
+                  <div className="absolute inset-[-40px] rounded-full border border-dashed border-purple-500/20 ai-ring-ccw" />
+                  <div className="absolute inset-[-20px] rounded-full border border-blue-500/25 ai-ring-cw" />
+                  <div className="absolute inset-0 ai-orb rounded-full" style={{ background:'radial-gradient(circle, rgba(139,92,246,0.18) 0%, rgba(59,130,246,0.06) 65%, transparent 100%)' }}>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-[72px] h-[72px] rounded-full flex items-center justify-center" style={{ background:'rgba(139,92,246,0.22)', boxShadow:'0 0 50px rgba(139,92,246,0.35), 0 0 100px rgba(59,130,246,0.10)' }}>
+                        <Cpu className="w-9 h-9 text-purple-200" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mb-7 flex-wrap justify-center">
+                  {[
+                    { label:'Meta Ads',   dot:'#2563eb' },
+                    { label:'Google Ads', dot:'#16a34a' },
+                    { label:'Amazon Ads', dot:'#f97316' },
+                    { label:'Reports',    dot:'#8b5cf6' },
+                  ].map(({ label, dot }) => (
+                    <div key={label} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/[0.10] bg-white/[0.04] text-xs font-semibold text-gray-300">
+                      <div className="w-2 h-2 rounded-full" style={{ background: dot }} />
+                      {label}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-10">
+                  {[{val:'30',label:'Checks/day'},{val:'3',label:'Platforms'},{val:'24/7',label:'Uptime'}].map(({ val, label }) => (
+                    <div key={label} className="text-center">
+                      <p className="text-2xl font-black text-purple-200">{val}</p>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">{label}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="absolute bottom-4 text-[10px] text-gray-700 font-bold uppercase tracking-[0.2em]">AdNexus AI Engine</p>
+              </div>
+
+              {/* Card 3: AI Fix Generator (col 4, row 1) */}
+              <div className="glow-card rounded-2xl border border-blue-500/20 overflow-hidden" style={{ gridColumn:'4', gridRow:'1', background:'rgba(8,10,20,0.97)' }}>
+                <div className="px-4 py-3 border-b border-white/[0.06] flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-md bg-purple-500/20 flex items-center justify-center"><Cpu className="w-3 h-3 text-purple-400" /></div>
+                  <p className="text-xs font-bold text-white">AI Fix Generator</p>
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center gap-1.5 mb-3">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 bg-red-500/15 text-red-400 rounded-md">Critical</span>
+                    <span className="text-[10px] text-gray-500">₹42K/month at risk</span>
+                  </div>
+                  <p className="text-[11px] font-semibold text-white mb-2">Creative Fatigue — Meta Ad Set #4</p>
+                  <div className="text-[11px] text-gray-300 leading-relaxed font-mono bg-white/[0.03] rounded-lg p-3 min-h-[90px]">
+                    {AI_FIX_TEXT.slice(0, aiTypedIdx)}
+                    <span className="type-cursor" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 4: Platform Health (col 1, row 2) */}
+              <div className="glow-card rounded-2xl border border-white/[0.08] overflow-hidden" style={{ gridColumn:'1', gridRow:'2', background:'rgba(8,10,20,0.97)' }}>
+                <div className="px-4 py-3 border-b border-white/[0.06]">
+                  <p className="text-xs font-bold text-white">Platform Health</p>
+                </div>
+                <div className="p-4 space-y-3">
+                  {[
+                    { name:'Meta',   score:64, color:'#f59e0b' },
+                    { name:'Google', score:58, color:'#ef4444' },
+                    { name:'Amazon', score:71, color:'#22c55e' },
+                  ].map(({ name, score, color }) => (
+                    <div key={name}>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-xs text-gray-400">{name}</span>
+                        <span className="text-xs font-black tabular-nums" style={{ color }}>{score}</span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-white/[0.07] overflow-hidden">
+                        <div className="h-full rounded-full" style={{ width:`${score}%`, background:color }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Card 5: Revenue at Risk (col 4, row 2) */}
+              <div className="glow-card rounded-2xl border border-green-500/20 overflow-hidden" style={{ gridColumn:'4', gridRow:'2', background:'rgba(8,10,20,0.97)' }}>
+                <div className="px-4 py-3 border-b border-white/[0.06]">
+                  <p className="text-xs font-bold text-white">Revenue at Risk</p>
+                </div>
+                <div className="p-4">
+                  <p className="text-3xl font-black text-white tabular-nums mb-0.5">₹2.53L</p>
+                  <p className="text-xs text-gray-500 mb-4">estimated monthly loss</p>
+                  <div className="space-y-2">
+                    {[
+                      { label:'Meta issues',   val:'₹1.01L', c:'bg-blue-500' },
+                      { label:'Google issues', val:'₹84K',   c:'bg-green-500' },
+                      { label:'Amazon issues', val:'₹52K',   c:'bg-orange-500' },
+                    ].map(({ label, val, c }) => (
+                      <div key={label} className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full shrink-0 ${c}`} />
+                        <span className="text-xs text-gray-400 flex-1">{label}</span>
+                        <span className="text-xs font-bold text-white">{val}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile: stacked layout */}
+            <div className="lg:hidden stagger-child space-y-4">
+
+              {/* Central AI orb */}
+              <div className="rounded-2xl border border-purple-500/25 relative overflow-hidden p-8 flex flex-col items-center" style={{ background:'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(124,58,237,0.13) 0%, rgba(8,10,20,0.99) 100%)' }}>
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage:'linear-gradient(rgba(139,92,246,1) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,1) 1px, transparent 1px)', backgroundSize:'32px 32px' }} />
+                <div className="relative mb-6" style={{ width:'120px', height:'120px' }}>
+                  <div className="absolute inset-[-32px] rounded-full border border-dashed border-purple-500/20 ai-ring-ccw" />
+                  <div className="absolute inset-[-16px] rounded-full border border-blue-500/25 ai-ring-cw" />
+                  <div className="absolute inset-0 ai-orb rounded-full" style={{ background:'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 100%)' }}>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background:'rgba(139,92,246,0.22)', boxShadow:'0 0 40px rgba(139,92,246,0.3)' }}>
+                        <Cpu className="w-7 h-7 text-purple-200" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-wrap justify-center mb-5">
+                  {[{label:'Meta',dot:'#2563eb'},{label:'Google',dot:'#16a34a'},{label:'Amazon',dot:'#f97316'}].map(({ label, dot }) => (
+                    <div key={label} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/[0.10] bg-white/[0.04] text-xs font-semibold text-gray-300">
+                      <div className="w-1.5 h-1.5 rounded-full" style={{ background: dot }} />{label}
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-7 justify-center">
+                  {[{val:'30',label:'Checks'},{val:'3',label:'Platforms'},{val:'24/7',label:'Uptime'}].map(({ val, label }) => (
+                    <div key={label} className="text-center">
+                      <p className="text-xl font-black text-purple-200">{val}</p>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-wide">{label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Live Scanner */}
+              <div className="rounded-2xl border border-white/[0.08] overflow-hidden" style={{ background:'rgba(8,10,20,0.97)' }}>
+                <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                    <p className="text-xs font-bold text-white">Live Scanner</p>
+                  </div>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 bg-green-500/10 text-green-400 rounded-md">Running</span>
+                </div>
+                <div className="p-3 space-y-1.5">
+                  {SCAN_CHECKS.slice(0, 4).map((item, i) => (
+                    <div key={i} className={`flex items-center gap-2 p-2 rounded-lg transition-all duration-500 ${i === scanStep % 4 ? 'bg-white/[0.08]' : 'opacity-50'}`}>
+                      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${i <= scanStep % 4 ? 'bg-green-400' : 'bg-white/20'}`} />
+                      <p className="text-[11px] text-gray-300 flex-1 truncate">{item.text}</p>
+                      {i <= scanStep % 4 && <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0 ${item.c}`}>{item.val}</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Health + Revenue */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-2xl border border-white/[0.08] overflow-hidden" style={{ background:'rgba(8,10,20,0.97)' }}>
+                  <div className="px-4 py-3 border-b border-white/[0.06]">
+                    <p className="text-xs font-bold text-white">Health</p>
+                  </div>
+                  <div className="p-3 space-y-2.5">
+                    {[{name:'Meta',score:64,color:'#f59e0b'},{name:'Google',score:58,color:'#ef4444'},{name:'Amazon',score:71,color:'#22c55e'}].map(({ name, score, color }) => (
+                      <div key={name}>
+                        <div className="flex justify-between mb-0.5"><span className="text-[11px] text-gray-400">{name}</span><span className="text-[11px] font-black" style={{ color }}>{score}</span></div>
+                        <div className="h-1.5 rounded-full bg-white/[0.07]"><div className="h-full rounded-full" style={{ width:`${score}%`, background:color }} /></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-green-500/20 overflow-hidden" style={{ background:'rgba(8,10,20,0.97)' }}>
+                  <div className="px-4 py-3 border-b border-white/[0.06]">
+                    <p className="text-xs font-bold text-white">At Risk</p>
+                  </div>
+                  <div className="p-3">
+                    <p className="text-2xl font-black text-white mb-0.5">₹2.53L</p>
+                    <p className="text-[10px] text-gray-500 mb-3">per month</p>
+                    {[{label:'Meta',val:'₹1.01L',c:'bg-blue-500'},{label:'Google',val:'₹84K',c:'bg-green-500'},{label:'Amazon',val:'₹52K',c:'bg-orange-500'}].map(({ label, val, c }) => (
+                      <div key={label} className="flex items-center gap-1.5 mb-1.5">
+                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${c}`} />
+                        <span className="text-[10px] text-gray-500 flex-1">{label}</span>
+                        <span className="text-[10px] font-bold text-white">{val}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA ─────────────────────────────────────── */}
-      <section className="relative pt-28 sm:pt-36 pb-0 px-5 sm:px-6 overflow-hidden"
+      <section className="relative pt-28 sm:pt-36 pb-0 px-5 sm:px-6"
         style={{ backgroundColor:'#03040a', backgroundImage:`url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center center', backgroundAttachment:'fixed' }}>
 
-        {/* Dark overlay — lets night sky show through in middle */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, rgba(2,3,12,0.96) 0%, rgba(2,3,12,0.48) 35%, rgba(2,3,12,0.28) 55%, rgba(2,3,14,0.70) 78%, rgba(1,2,12,0.97) 100%)' }} />
+        {/* Dark overlay — top bridges from page bg, bottom matches footer top */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, #080808 0%, rgba(8,8,8,0.94) 6%, rgba(2,3,12,0.48) 22%, rgba(2,3,12,0.18) 45%, rgba(2,3,12,0.22) 60%, rgba(1,2,12,0.72) 82%, rgba(1,2,12,0.97) 100%)' }} />
 
-        {/* Grid overlay */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.018]" style={{ backgroundImage:'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize:'52px 52px' }} />
+        {/* CSS shooting stars */}
+        {[
+          { top:'12%', left:'18%', dur:'9s',  delay:'0s' },
+          { top:'28%', left:'55%', dur:'13s', delay:'4.5s' },
+          { top:'8%',  left:'72%', dur:'11s', delay:'7s' },
+        ].map((s, i) => (
+          <div key={i} className="shooting-star" style={{ top:s.top, left:s.left, animationDuration:s.dur, animationDelay:s.delay }} />
+        ))}
 
         {/* Night stars — in the sky portion of the photo */}
         {CTA_STARS.map((s, i) => (
@@ -1024,31 +1330,10 @@ export default function HomePage() {
           }} />
         ))}
 
-        {/* Water ripple core glow — teal/cyan, realistic water color */}
-        <div className="absolute pointer-events-none" style={{ bottom:'28%', left:'50%', transform:'translateX(-50%)', width:'600px', height:'180px', background:'radial-gradient(ellipse, rgba(80,200,170,0.22) 0%, rgba(40,160,130,0.10) 40%, transparent 70%)', filter:'blur(40px)' }} />
-
-        {/* Water ripple rings — realistic water colors, centered via marginLeft */}
-        {[0,1,2,3,4,5].map((i) => {
-          const w = 140 + i * 88
-          const h = 44 + i * 28
-          return (
-            <div key={i} className="absolute pointer-events-none" style={{
-              bottom:'28%', left:'50%', marginLeft:`-${w/2}px`,
-              width:`${w}px`, height:`${h}px`,
-              borderRadius:'50%',
-              border:'1px solid',
-              borderColor: i < 2 ? 'rgba(120,230,200,0.6)' : i < 4 ? 'rgba(80,190,160,0.32)' : 'rgba(60,160,130,0.14)',
-              animation:`waterRipple ${3.5 + i * 0.1}s ${i * 0.62}s ease-out infinite`,
-            }} />
-          )
-        })}
-
-        {/* Water drop center point */}
-        <div className="absolute pointer-events-none" style={{ bottom:'28%', left:'50%', transform:'translateX(-50%)', width:'10px', height:'5px', borderRadius:'50%', background:'radial-gradient(circle, rgba(200,255,240,1) 0%, rgba(100,220,185,0.7) 50%, transparent 100%)', filter:'blur(1px)' }} />
 
         <div ref={s9} className="reveal relative max-w-3xl mx-auto text-center pb-32 sm:pb-40">
           <p className="text-[11px] font-bold text-orange-400/80 uppercase tracking-widest mb-4">Get started today</p>
-          <h2 className="text-[2.2rem] sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6">
+          <h2 className="text-[1.7rem] sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6">
             Be unstoppable<br />
             <span className="text-gradient animate-gradient">with AdNexus</span>
           </h2>
@@ -1066,9 +1351,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ──────────────────────────────────── */}
-      <footer className="pt-12 pb-8 px-5 sm:px-6 relative overflow-hidden" style={{ backgroundImage:`url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center center', backgroundAttachment:'fixed', backgroundColor:'#020308' }}>
-        {/* Bridge gradient — top matches CTA section's dark-red bottom, fades into mountain photo */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, rgba(1,2,12,0.94) 0%, rgba(2,3,14,0.78) 25%, rgba(2,4,16,0.70) 50%, rgba(2,4,16,0.82) 80%, rgba(1,3,14,0.94) 100%)', zIndex: 0 }} />
+      <footer className="pt-20 pb-14 px-5 sm:px-6 relative overflow-hidden" style={{ backgroundImage:`url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&q=80')`, backgroundSize:'cover', backgroundPosition:'center center', backgroundAttachment:'fixed', backgroundColor:'#020308', marginTop:'-4px' }}>
+        {/* Bridge overlay — matches CTA bottom (0.97) then lets night sky breathe */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background:'linear-gradient(180deg, rgba(1,2,12,0.97) 0%, rgba(1,2,14,0.94) 18%, rgba(2,3,16,0.80) 42%, rgba(2,4,16,0.72) 62%, rgba(2,4,16,0.86) 82%, rgba(1,3,14,0.97) 100%)', zIndex: 0 }} />
         {/* Night sky ambient — two soft light sources like dock lamps */}
         <div className="absolute pointer-events-none" style={{ bottom:'20%', left:'28%', width:'280px', height:'280px', borderRadius:'50%', background:'radial-gradient(circle, rgba(60,100,180,0.12) 0%, transparent 70%)', filter:'blur(50px)' }} />
         <div className="absolute pointer-events-none" style={{ bottom:'20%', right:'28%', width:'280px', height:'280px', borderRadius:'50%', background:'radial-gradient(circle, rgba(60,100,180,0.10) 0%, transparent 70%)', filter:'blur(50px)' }} />
@@ -1085,8 +1370,13 @@ export default function HomePage() {
               </Link>
               <p className="text-xs text-gray-300 leading-relaxed mb-4">AI-powered ad diagnostics for Indian D2C brands and performance agencies.</p>
               <div className="flex gap-2">
-                {['in','tw','yt'].map((s) => (
-                  <div key={s} className="w-8 h-8 rounded-lg bg-white/[0.10] border border-white/[0.15] flex items-center justify-center text-[10px] text-gray-300 uppercase font-bold hover:bg-white/[0.18] hover:text-white transition-colors cursor-pointer">{s}</div>
+                {[
+                  { label:'LinkedIn', href:'#', svg:<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><path d="M2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg> },
+                  { label:'X',        href:'#', svg:<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L2.25 2.25h6.813l4.261 5.636L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg> },
+                  { label:'YouTube',  href:'#', svg:<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg> },
+                  { label:'Instagram',href:'#', svg:<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> },
+                ].map(({ label, href, svg }) => (
+                  <a key={label} href={href} aria-label={label} className="w-8 h-8 rounded-lg bg-white/[0.08] border border-white/[0.12] flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.16] hover:border-white/[0.22] transition-all duration-150">{svg}</a>
                 ))}
               </div>
             </div>
@@ -1102,16 +1392,29 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-          <div className="border-t border-white/[0.12] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-gray-400">© 2026 AdNexus. Built for Indian D2C brands and agencies.</p>
-            <div className="flex gap-4 sm:gap-5">{['Privacy Policy','Terms of Service','Cookie Policy'].map((l) => <a key={l} href="#" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">{l}</a>)}</div>
+          <div className="border-t border-white/[0.12] pt-6 flex flex-col sm:grid sm:grid-cols-3 items-center gap-4">
+            <p className="text-xs text-gray-400 order-3 sm:order-1">© 2026 AdNexus. All rights reserved.</p>
+            {/* Social icons — centered */}
+            <div className="flex items-center gap-3 justify-center order-1 sm:order-2">
+              {[
+                { label:'LinkedIn', href:'#', svg:<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><path d="M2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg> },
+                { label:'X',        href:'#', svg:<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L2.25 2.25h6.813l4.261 5.636L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg> },
+                { label:'YouTube',  href:'#', svg:<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg> },
+                { label:'Instagram',href:'#', svg:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> },
+              ].map(({ label, href, svg }) => (
+                <a key={label} href={href} aria-label={label} className="w-9 h-9 rounded-lg bg-white/[0.07] border border-white/[0.10] flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.15] hover:border-white/[0.20] transition-all duration-150">{svg}</a>
+              ))}
+            </div>
+            <div className="flex gap-4 sm:gap-5 justify-end order-2 sm:order-3">{['Privacy','Terms','Cookies'].map((l) => <a key={l} href="#" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">{l}</a>)}</div>
           </div>
         </div>
 
         {/* Large brand wordmark — like InsiderOne footer */}
         <div className="overflow-hidden mt-6 relative" style={{ zIndex: 1 }}>
-          <p className="text-center font-black text-white select-none pointer-events-none leading-none tracking-tight"
-             style={{ fontSize:'clamp(4rem, 14vw, 11rem)', opacity:0.055, letterSpacing:'-0.03em', marginBottom:'-0.15em' }}>
+          <p className="text-center font-black select-none pointer-events-none leading-none tracking-tight"
+             style={{ fontSize:'clamp(4rem, 14vw, 11rem)', letterSpacing:'-0.03em', marginBottom:'-0.15em',
+               background:'linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(148,130,255,0.28) 40%, rgba(96,165,250,0.24) 70%, rgba(255,255,255,0.20) 100%)',
+               WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
             ADNEXUS
           </p>
         </div>

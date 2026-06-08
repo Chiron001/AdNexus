@@ -446,11 +446,101 @@ section, footer, nav { position: relative; z-index: 1; }
           mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
 }
 
-/* ── CTA water ripple rings ──────────────────────── */
-@keyframes waterRipple {
-  0%   { transform: scale(0.2); opacity: 0.75; }
-  100% { transform: scale(2.2); opacity: 0; }
+/* ── Scan line ───────────────────────────────────── */
+@keyframes scanLine {
+  0%   { top: -2px; opacity: 0; }
+  5%   { opacity: 0.7; }
+  92%  { opacity: 0.5; }
+  100% { top: 100%; opacity: 0; }
 }
+.scan-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.7) 30%, rgba(139,92,246,0.9) 50%, rgba(59,130,246,0.7) 70%, transparent 100%);
+  animation: scanLine 5s cubic-bezier(0.4, 0, 0.6, 1) 2s infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ── CSS shooting star ───────────────────────────── */
+@keyframes shootingStarAnim {
+  0%   { transform: translateX(0) translateY(0) rotate(-32deg); opacity: 0; width: 0; }
+  2%   { opacity: 1; }
+  30%  { width: 120px; opacity: 0.9; }
+  60%  { width: 60px; opacity: 0.5; }
+  100% { transform: translateX(300px) translateY(155px) rotate(-32deg); opacity: 0; width: 0; }
+}
+.shooting-star {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.9), transparent);
+  border-radius: 1px;
+  animation: shootingStarAnim linear infinite;
+  pointer-events: none;
+}
+
+/* ── Scroll progress bar ─────────────────────────── */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  z-index: 9999;
+  pointer-events: none;
+  background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #06b6d4 100%);
+  transition: width 0.05s linear;
+}
+
+/* ── AI Orb ──────────────────────────────────────── */
+@keyframes orbGlow {
+  0%, 100% { box-shadow: 0 0 50px rgba(139,92,246,0.45), 0 0 100px rgba(59,130,246,0.12), inset 0 0 30px rgba(180,120,255,0.15); }
+  50%       { box-shadow: 0 0 90px rgba(139,92,246,0.75), 0 0 180px rgba(59,130,246,0.22), inset 0 0 50px rgba(180,120,255,0.25); }
+}
+@keyframes orbSpinCW  { from { transform: rotate(0deg);    } to { transform: rotate(360deg); } }
+@keyframes orbSpinCCW { from { transform: rotate(0deg); }    to { transform: rotate(-360deg); } }
+.ai-orb     { animation: orbGlow 4s ease-in-out infinite; }
+.ai-ring-cw { animation: orbSpinCW  8s linear infinite; }
+.ai-ring-ccw{ animation: orbSpinCCW 14s linear infinite; }
+
+/* ── Type cursor blink ───────────────────────────── */
+@keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.type-cursor { display: inline-block; width: 2px; height: 1em; background: rgba(139,92,246,0.9); vertical-align: text-bottom; margin-left: 2px; animation: cursorBlink 0.9s step-end infinite; border-radius: 1px; }
+
+/* ── Page-wide night star field (fixed layer) ────── */
+.night-star-field {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at  7% 13%, rgba(255,255,255,0.055) 0%, transparent 0%),
+    radial-gradient(1px   1px   at 17% 43%, rgba(255,255,255,0.040) 0%, transparent 0%),
+    radial-gradient(2px   2px   at 28% 20%, rgba(255,255,255,0.048) 0%, transparent 0%),
+    radial-gradient(1px   1px   at 38% 65%, rgba(255,255,255,0.035) 0%, transparent 0%),
+    radial-gradient(1.5px 1.5px at 52%  8%, rgba(255,255,255,0.055) 0%, transparent 0%),
+    radial-gradient(1px   1px   at 63% 38%, rgba(255,255,255,0.040) 0%, transparent 0%),
+    radial-gradient(2px   2px   at 71% 55%, rgba(255,255,255,0.048) 0%, transparent 0%),
+    radial-gradient(1px   1px   at 83% 22%, rgba(255,255,255,0.038) 0%, transparent 0%),
+    radial-gradient(1.5px 1.5px at 91% 70%, rgba(255,255,255,0.055) 0%, transparent 0%),
+    radial-gradient(1px   1px   at 34% 82%, rgba(255,255,255,0.035) 0%, transparent 0%),
+    radial-gradient(1px   1px   at 47% 48%, rgba(255,255,255,0.042) 0%, transparent 0%),
+    radial-gradient(2px   2px   at 11% 75%, rgba(255,255,255,0.048) 0%, transparent 0%),
+    radial-gradient(1px   1px   at 96% 15%, rgba(255,255,255,0.040) 0%, transparent 0%),
+    radial-gradient(1.5px 1.5px at 60% 90%, rgba(255,255,255,0.050) 0%, transparent 0%),
+    radial-gradient(1px   1px   at 79% 85%, rgba(255,255,255,0.035) 0%, transparent 0%),
+    radial-gradient(1px   1px   at 24% 30%, rgba(255,255,255,0.042) 0%, transparent 0%),
+    radial-gradient(2px   2px   at 44% 15%, rgba(255,255,255,0.050) 0%, transparent 0%),
+    radial-gradient(1px   1px   at 88% 48%, rgba(255,255,255,0.038) 0%, transparent 0%),
+    radial-gradient(1.5px 1.5px at  3% 58%, rgba(255,255,255,0.048) 0%, transparent 0%),
+    radial-gradient(1px   1px   at 57% 72%, rgba(255,255,255,0.040) 0%, transparent 0%);
+}
+
+/* ── Number glow pulse ───────────────────────────── */
+@keyframes numGlow {
+  0%, 100% { text-shadow: 0 0 20px rgba(59,130,246,0); }
+  50%       { text-shadow: 0 0 30px rgba(59,130,246,0.5), 0 0 60px rgba(139,92,246,0.2); }
+}
+.num-glow { animation: numGlow 3s ease-in-out infinite; }
 
 /* ── Star twinkle ────────────────────────────────── */
 @keyframes twinkle {

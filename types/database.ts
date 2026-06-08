@@ -1,5 +1,28 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
+export interface NotificationPreferences {
+  email_anomaly: boolean
+  email_digest: boolean
+  email_product_updates: boolean
+  email_billing: boolean
+  whatsapp_alerts: boolean
+  whatsapp_digest: boolean
+  whatsapp_product_updates: boolean
+}
+
+export type BillingEventType =
+  | 'subscription.charged'
+  | 'subscription.cancelled'
+  | 'payment.failed'
+  | 'plan.upgraded'
+  | 'plan.downgraded'
+  | 'plan.override'
+
+export type InsightType = 'daily_summary' | 'weekly_review' | 'campaign_spotlight'
+export type InsightSentiment = 'positive' | 'neutral' | 'warning' | 'critical'
+export type NotificationType = 'issue_alert' | 'sync_complete' | 'payment' | 'feature_update' | 'ai_insight'
+export type AdminRole = 'super_admin' | 'admin' | 'support'
+
 export interface Database {
   public: {
     Tables: {
@@ -12,6 +35,13 @@ export interface Database {
           plan: 'free' | 'growth' | 'agency'
           plan_expires_at: string | null
           razorpay_customer_id: string | null
+          phone_number: string | null
+          whatsapp_opted_in: boolean
+          notification_preferences: NotificationPreferences
+          last_active_at: string | null
+          onboarding_completed: boolean
+          industry: string | null
+          total_ad_spend_inr: number
           created_at: string
           updated_at: string
         }
@@ -23,6 +53,13 @@ export interface Database {
           plan?: 'free' | 'growth' | 'agency'
           plan_expires_at?: string | null
           razorpay_customer_id?: string | null
+          phone_number?: string | null
+          whatsapp_opted_in?: boolean
+          notification_preferences?: NotificationPreferences
+          last_active_at?: string | null
+          onboarding_completed?: boolean
+          industry?: string | null
+          total_ad_spend_inr?: number
           created_at?: string
           updated_at?: string
         }
@@ -34,6 +71,13 @@ export interface Database {
           plan?: 'free' | 'growth' | 'agency'
           plan_expires_at?: string | null
           razorpay_customer_id?: string | null
+          phone_number?: string | null
+          whatsapp_opted_in?: boolean
+          notification_preferences?: NotificationPreferences
+          last_active_at?: string | null
+          onboarding_completed?: boolean
+          industry?: string | null
+          total_ad_spend_inr?: number
           updated_at?: string
         }
         Relationships: []
@@ -255,6 +299,116 @@ export interface Database {
         }
         Relationships: []
       }
+      billing_events: {
+        Row: {
+          id: string
+          user_id: string
+          event_type: BillingEventType
+          plan: string | null
+          amount_inr: number | null
+          razorpay_subscription_id: string | null
+          razorpay_payment_id: string | null
+          period_start: string | null
+          period_end: string | null
+          metadata: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          event_type: BillingEventType
+          plan?: string | null
+          amount_inr?: number | null
+          razorpay_subscription_id?: string | null
+          razorpay_payment_id?: string | null
+          period_start?: string | null
+          period_end?: string | null
+          metadata?: Json
+          created_at?: string
+        }
+        Update: {
+          event_type?: BillingEventType
+          plan?: string | null
+          amount_inr?: number | null
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      admin_users: {
+        Row: {
+          id: string
+          role: AdminRole
+          created_at: string
+        }
+        Insert: {
+          id: string
+          role?: AdminRole
+          created_at?: string
+        }
+        Update: {
+          role?: AdminRole
+        }
+        Relationships: []
+      }
+      ai_insights: {
+        Row: {
+          id: string
+          user_id: string
+          insight_type: InsightType
+          content: string
+          model: string
+          tokens_used: number | null
+          sentiment: InsightSentiment | null
+          date: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          insight_type?: InsightType
+          content: string
+          model?: string
+          tokens_used?: number | null
+          sentiment?: InsightSentiment | null
+          date: string
+          created_at?: string
+        }
+        Update: {
+          content?: string
+          model?: string
+          tokens_used?: number | null
+          sentiment?: InsightSentiment | null
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          id: string
+          user_id: string
+          type: NotificationType
+          title: string
+          body: string | null
+          link: string | null
+          read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          type: NotificationType
+          title: string
+          body?: string | null
+          link?: string | null
+          read?: boolean
+          created_at?: string
+        }
+        Update: {
+          read?: boolean
+          body?: string | null
+          link?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>
@@ -262,6 +416,19 @@ export interface Database {
   }
 }
 
-// Helper type to get a table row type
+// ── Convenience row types ────────────────────────────────────
 export type Tables<T extends keyof Database['public']['Tables']> =
   Database['public']['Tables'][T]['Row']
+
+export type Profile          = Tables<'profiles'>
+export type AdAccount        = Tables<'ad_accounts'>
+export type CampaignMetric   = Tables<'campaign_metrics'>
+export type DiagnosticIssue  = Tables<'diagnostic_issues'>
+export type Recommendation   = Tables<'recommendations'>
+export type SyncLog          = Tables<'sync_logs'>
+export type BillingEvent     = Tables<'billing_events'>
+export type AdminUser        = Tables<'admin_users'>
+export type AiInsight        = Tables<'ai_insights'>
+export type Notification     = Tables<'notifications'>
+
+export type Plan = Profile['plan']

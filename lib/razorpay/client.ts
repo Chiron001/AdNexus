@@ -38,6 +38,34 @@ export async function createSubscription(
   return subscription as { id: string; short_url: string }
 }
 
+export async function cancelSubscription(
+  subscriptionId: string,
+  atCycleEnd = true
+): Promise<void> {
+  // cancelAtCycleEnd: 1 = cancel at period end, 0 = cancel immediately
+  await (getRazorpay().subscriptions as unknown as {
+    cancel: (id: string, flag: number) => Promise<unknown>
+  }).cancel(subscriptionId, atCycleEnd ? 1 : 0)
+}
+
+export async function fetchSubscription(
+  subscriptionId: string
+): Promise<{
+  id: string
+  status: string
+  current_end: number
+  plan_id: string
+  notes: Record<string, string>
+}> {
+  return getRazorpay().subscriptions.fetch(subscriptionId) as Promise<{
+    id: string
+    status: string
+    current_end: number
+    plan_id: string
+    notes: Record<string, string>
+  }>
+}
+
 export function verifyWebhookSignature(
   rawBody: string,
   signature: string,

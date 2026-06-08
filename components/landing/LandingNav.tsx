@@ -110,6 +110,11 @@ export function LandingNav() {
               <Link href="/customers" className="px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.05] rounded-lg transition-all duration-150">
                 Customers
               </Link>
+              <Link href="/#ai-engine" className="flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg transition-all duration-150 font-semibold text-purple-400/90 hover:text-purple-300 hover:bg-purple-500/[0.08]">
+                <Cpu className="w-3.5 h-3.5" />
+                AdNexus AI
+                <span className="text-[9px] font-bold px-1.5 py-0.5 bg-purple-500/20 text-purple-300 rounded-full ml-0.5">New</span>
+              </Link>
               <button
                 onMouseEnter={() => openMenu('resources')}
                 onMouseLeave={closeMenu}
@@ -467,6 +472,18 @@ export function LandingNav() {
                 </div>
               </div>
             </div>
+
+            {/* AdNexus AI — direct link */}
+            <Link href="/#ai-engine" onClick={() => setMobileOpen(false)}
+              className="flex items-center justify-between px-5 py-5 border-b border-white/[0.07] group">
+              <span className="text-[1.55rem] font-black uppercase tracking-tight text-purple-400 group-hover:text-purple-300 transition-colors flex items-center gap-3">
+                AdNexus AI
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded-full">New</span>
+                <Cpu className="w-5 h-5 text-purple-400" />
+              </div>
+            </Link>
 
             {/* Customers — direct link */}
             <Link href="/customers" onClick={() => setMobileOpen(false)}
