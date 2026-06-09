@@ -23,7 +23,15 @@ export default async function DashboardLayout({
   const plan = (profile?.plan as 'free' | 'growth' | 'agency') || 'free'
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div
+      className="flex min-h-screen bg-zinc-950"
+      style={{
+        backgroundImage: `
+          radial-gradient(ellipse at top right, rgba(139,92,246,0.07) 0%, transparent 55%),
+          radial-gradient(ellipse at bottom left,  rgba(59,130,246,0.04) 0%, transparent 50%)
+        `,
+      }}
+    >
       {/* Desktop sidebar */}
       <div className="hidden lg:flex">
         <Sidebar plan={plan} userName={userName} />
