@@ -3,22 +3,46 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard,
-  Link2,
-  AlertTriangle,
-  Lightbulb,
-  FileText,
-  Settings,
-  Zap,
+  LayoutDashboard, Link2, AlertTriangle, Lightbulb,
+  FileText, Settings, Zap, BarChart3, Palette,
+  Wallet, Brain, TrendingDown, Target, Bell, Users, Funnel,
 } from 'lucide-react'
 
-const navItems = [
-  { href: '/dashboard',       label: 'Dashboard',       icon: LayoutDashboard },
-  { href: '/accounts',        label: 'Accounts',        icon: Link2           },
-  { href: '/diagnostics',     label: 'Diagnostics',     icon: AlertTriangle   },
-  { href: '/recommendations', label: 'Recommendations', icon: Lightbulb       },
-  { href: '/reports',         label: 'Reports',         icon: FileText        },
-  { href: '/settings',        label: 'Settings',        icon: Settings        },
+const navGroups = [
+  {
+    label: 'Overview',
+    items: [
+      { href: '/dashboard',    label: 'Dashboard',    icon: LayoutDashboard },
+      { href: '/accounts',     label: 'Accounts',     icon: Link2           },
+    ],
+  },
+  {
+    label: 'Analytics',
+    items: [
+      { href: '/analytics',          label: 'Performance',    icon: BarChart3    },
+      { href: '/analytics/creative', label: 'Creatives',      icon: Palette      },
+      { href: '/analytics/budget',   label: 'Budget & Spend', icon: Wallet       },
+      { href: '/funnel',             label: 'Funnel',         icon: TrendingDown },
+      { href: '/audiences',          label: 'Audiences',      icon: Users        },
+    ],
+  },
+  {
+    label: 'AI & Intelligence',
+    items: [
+      { href: '/ai',             label: 'AI Insights',    icon: Brain       },
+      { href: '/diagnostics',    label: 'Diagnostics',    icon: AlertTriangle },
+      { href: '/recommendations',label: 'Recommendations',icon: Lightbulb   },
+      { href: '/alerts',         label: 'Alerts',         icon: Bell        },
+      { href: '/goals',          label: 'Goals & KPIs',   icon: Target      },
+    ],
+  },
+  {
+    label: 'Account',
+    items: [
+      { href: '/reports',  label: 'Reports',  icon: FileText },
+      { href: '/settings', label: 'Settings', icon: Settings },
+    ],
+  },
 ]
 
 const PLAN_BADGE: Record<string, string> = {
@@ -49,25 +73,34 @@ export function Sidebar({ plan, userName, onNavigate }: SidebarProps) {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5">
-        {navItems.map(({ href, label, icon: Icon }) => {
-          const isActive = pathname === href || pathname.startsWith(href + '/')
-          return (
-            <Link
-              key={href}
-              href={href}
-              onClick={onNavigate}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
-                isActive
-                  ? 'bg-purple-500/15 text-white'
-                  : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-100'
-              }`}
-            >
-              <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-purple-400' : ''}`} />
-              {label}
-            </Link>
-          )
-        })}
+      <nav className="flex-1 px-3 py-3 overflow-y-auto space-y-4">
+        {navGroups.map((group) => (
+          <div key={group.label}>
+            <p className="px-3 mb-1 text-[10px] font-semibold text-zinc-600 uppercase tracking-widest">
+              {group.label}
+            </p>
+            <div className="space-y-0.5">
+              {group.items.map(({ href, label, icon: Icon }) => {
+                const isActive = pathname === href || (href !== '/analytics' && pathname.startsWith(href + '/'))
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={onNavigate}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                      isActive
+                        ? 'bg-purple-500/15 text-white'
+                        : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-100'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-purple-400' : ''}`} />
+                    {label}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       {/* User + Plan */}
