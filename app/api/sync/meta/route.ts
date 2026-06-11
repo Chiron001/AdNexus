@@ -35,11 +35,11 @@ export async function POST(request: NextRequest) {
       const token     = account.access_token
       const accountId = account.account_id
 
-      // Fetch all levels in parallel
-      const [campaignInsights, adsetInsights, adInsights, adsets, ads] = await Promise.all([
-        fetchMetaCampaignInsights(token, accountId),
-        fetchMetaAdsetInsights(token, accountId),
-        fetchMetaAdInsights(token, accountId),
+      // Fetch sequentially to avoid Meta rate limits (each level makes multiple chunked requests)
+      const campaignInsights = await fetchMetaCampaignInsights(token, accountId)
+      const adsetInsights    = await fetchMetaAdsetInsights(token, accountId)
+      const adInsights       = await fetchMetaAdInsights(token, accountId)
+      const [adsets, ads]    = await Promise.all([
         fetchMetaAdsets(token, accountId),
         fetchMetaAds(token, accountId),
       ])

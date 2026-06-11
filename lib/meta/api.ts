@@ -91,7 +91,7 @@ async function paginate<T>(url: string): Promise<T[]> {
 
 function defaultRange() {
   const until = new Date().toISOString().split('T')[0]
-  const d = new Date(); d.setFullYear(d.getFullYear() - 2)
+  const d = new Date(); d.setMonth(d.getMonth() - 6)
   return { since: d.toISOString().split('T')[0], until }
 }
 
@@ -120,8 +120,9 @@ async function fetchInsightsChunked(
 ): Promise<MetaInsightRow[]> {
   const chunks = chunkDateRange(since, until, 30)
   const results: MetaInsightRow[] = []
-  for (const chunk of chunks) {
-    const params = insightParams(level, fields, chunk.since, chunk.until, token)
+  for (let i = 0; i < chunks.length; i++) {
+    if (i > 0) await new Promise(r => setTimeout(r, 300))
+    const params = insightParams(level, fields, chunks[i].since, chunks[i].until, token)
     const rows = await paginate<MetaInsightRow>(`${BASE_URL}/act_${accountId}/insights?${params}`)
     results.push(...rows)
   }
