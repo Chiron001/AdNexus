@@ -266,14 +266,12 @@ export default async function DashboardPage() {
                     </p>
                     <div className="flex items-center gap-2">
                       <SyncButton accountId={account.id} platform={account.platform} />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-zinc-600 h-8 text-xs"
-                        asChild
+                      <Link
+                        href="/diagnostics"
+                        className="flex items-center gap-2 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors"
                       >
-                        <Link href="/diagnostics">View Issues</Link>
-                      </Button>
+                        View Issues
+                      </Link>
                     </div>
                   </div>
                 </DarkCard>
@@ -307,13 +305,12 @@ export default async function DashboardPage() {
                     </DarkCard>
                   )
                 })}
-                <Button
-                  variant="outline"
-                  className="w-full border-zinc-700 text-zinc-400 hover:bg-zinc-800 hover:text-white hover:border-zinc-600 text-sm"
-                  asChild
+                <Link
+                  href="/recommendations"
+                  className="flex items-center justify-center w-full bg-zinc-900 border border-zinc-700 hover:border-zinc-500 text-zinc-400 hover:text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors"
                 >
-                  <Link href="/recommendations">View all recommendations</Link>
-                </Button>
+                  View all recommendations
+                </Link>
               </div>
             ) : (
               <DarkCard className="p-6 border-dashed text-center">
