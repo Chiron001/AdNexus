@@ -70,7 +70,9 @@ async function metaFetch<T>(url: string): Promise<T> {
   }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
-    throw new Error(`Meta API error: ${body?.error?.message ?? res.statusText}`)
+    const msg  = body?.error?.message ?? res.statusText ?? 'unknown'
+    const code = body?.error?.code ? ` [code ${body.error.code}${body.error.error_subcode ? '/' + body.error.error_subcode : ''}]` : ''
+    throw new Error(`Meta API error: ${msg}${code}`)
   }
   return res.json()
 }
@@ -99,10 +101,9 @@ const INSIGHT_FIELDS = [
   'spend','impressions','reach','frequency',
   'clicks','unique_clicks',
   'ctr','unique_ctr','cpc','cpm','cpp','cost_per_unique_click',
-  'actions','action_values','cost_per_action_type',
+  'actions','action_values',
   'video_p25_watched_actions','video_p50_watched_actions',
   'video_p75_watched_actions','video_p100_watched_actions',
-  'video_avg_time_watched_actions','video_30_sec_watched_actions',
   'quality_ranking','engagement_rate_ranking','conversion_rate_ranking',
   'date_start','date_stop',
 ].join(',')
@@ -126,13 +127,10 @@ export interface MetaInsightRow {
   cost_per_unique_click?: string
   actions?: Array<{ action_type: string; value: string }>
   action_values?: Array<{ action_type: string; value: string }>
-  cost_per_action_type?: Array<{ action_type: string; value: string }>
   video_p25_watched_actions?: ActionArr
   video_p50_watched_actions?: ActionArr
   video_p75_watched_actions?: ActionArr
   video_p100_watched_actions?: ActionArr
-  video_avg_time_watched_actions?: ActionArr
-  video_30_sec_watched_actions?: ActionArr
   quality_ranking?: string
   engagement_rate_ranking?: string
   conversion_rate_ranking?: string
@@ -271,8 +269,8 @@ export function insightToMetrics(row: MetaInsightRow) {
     video_p50_views:        sumVideoField(row.video_p50_watched_actions),
     video_p75_views:        sumVideoField(row.video_p75_watched_actions),
     video_p100_views:       sumVideoField(row.video_p100_watched_actions),
-    video_avg_watch_time:   sumVideoField(row.video_avg_time_watched_actions),
-    video_30sec_views:      sumVideoField(row.video_30_sec_watched_actions),
+    video_avg_watch_time:   0,
+    video_30sec_views:      0,
     quality_ranking:            row.quality_ranking ?? null,
     engagement_rate_ranking:    row.engagement_rate_ranking ?? null,
     conversion_rate_ranking:    row.conversion_rate_ranking ?? null,
@@ -281,7 +279,6 @@ export function insightToMetrics(row: MetaInsightRow) {
     raw_data: {
       actions:              row.actions,
       action_values:        row.action_values,
-      cost_per_action_type: row.cost_per_action_type,
     },
   }
 }
