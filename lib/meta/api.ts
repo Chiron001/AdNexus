@@ -98,7 +98,7 @@ const INSIGHT_FIELDS = [
   'campaign_id','campaign_name','objective','buying_type',
   'spend','impressions','reach','frequency',
   'clicks','unique_clicks',
-  'ctr','unique_ctr','cpc','unique_cpc','cpm','cpp','cost_per_unique_click',
+  'ctr','unique_ctr','cpc','cpm','cpp','cost_per_unique_click',
   'actions','action_values','cost_per_action_type',
   'video_p25_watched_actions','video_p50_watched_actions',
   'video_p75_watched_actions','video_p100_watched_actions',
@@ -121,7 +121,6 @@ export interface MetaInsightRow {
   ctr: string
   unique_ctr?: string
   cpc: string
-  unique_cpc?: string
   cpm: string
   cpp?: string
   cost_per_unique_click?: string
