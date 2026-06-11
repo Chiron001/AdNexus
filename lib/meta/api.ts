@@ -95,6 +95,39 @@ function defaultRange() {
   return { since: d.toISOString().split('T')[0], until }
 }
 
+// Split a date range into chunks of `days` to stay under Meta's complexity limit
+function chunkDateRange(since: string, until: string, days = 30): Array<{ since: string; until: string }> {
+  const chunks: Array<{ since: string; until: string }> = []
+  let cursor = new Date(since)
+  const end = new Date(until)
+  while (cursor <= end) {
+    const chunkEnd = new Date(cursor)
+    chunkEnd.setDate(chunkEnd.getDate() + days - 1)
+    if (chunkEnd > end) chunkEnd.setTime(end.getTime())
+    chunks.push({
+      since: cursor.toISOString().split('T')[0],
+      until: chunkEnd.toISOString().split('T')[0],
+    })
+    cursor = new Date(chunkEnd)
+    cursor.setDate(cursor.getDate() + 1)
+  }
+  return chunks
+}
+
+async function fetchInsightsChunked(
+  token: string, accountId: string, level: string, fields: string,
+  since: string, until: string
+): Promise<MetaInsightRow[]> {
+  const chunks = chunkDateRange(since, until, 30)
+  const results: MetaInsightRow[] = []
+  for (const chunk of chunks) {
+    const params = insightParams(level, fields, chunk.since, chunk.until, token)
+    const rows = await paginate<MetaInsightRow>(`${BASE_URL}/act_${accountId}/insights?${params}`)
+    results.push(...rows)
+  }
+  return results
+}
+
 // All insight fields we request
 const INSIGHT_FIELDS = [
   'campaign_id','campaign_name','objective','buying_type',
@@ -155,33 +188,24 @@ function insightParams(level: string, fields: string, since: string, until: stri
 export async function fetchMetaCampaignInsights(
   token: string, accountId: string, since?: string, until?: string
 ): Promise<MetaInsightRow[]> {
-  return withRetry(async () => {
-    const r = defaultRange()
-    const params = insightParams('campaign', INSIGHT_FIELDS, since ?? r.since, until ?? r.until, token)
-    return paginate<MetaInsightRow>(`${BASE_URL}/act_${accountId}/insights?${params}`)
-  }, 3)
+  const r = defaultRange()
+  return fetchInsightsChunked(token, accountId, 'campaign', INSIGHT_FIELDS, since ?? r.since, until ?? r.until)
 }
 
 export async function fetchMetaAdsetInsights(
   token: string, accountId: string, since?: string, until?: string
 ): Promise<MetaInsightRow[]> {
-  return withRetry(async () => {
-    const r = defaultRange()
-    const fields = INSIGHT_FIELDS + ',adset_id,adset_name'
-    const params = insightParams('adset', fields, since ?? r.since, until ?? r.until, token)
-    return paginate<MetaInsightRow>(`${BASE_URL}/act_${accountId}/insights?${params}`)
-  }, 3)
+  const r = defaultRange()
+  const fields = INSIGHT_FIELDS + ',adset_id,adset_name'
+  return fetchInsightsChunked(token, accountId, 'adset', fields, since ?? r.since, until ?? r.until)
 }
 
 export async function fetchMetaAdInsights(
   token: string, accountId: string, since?: string, until?: string
 ): Promise<MetaInsightRow[]> {
-  return withRetry(async () => {
-    const r = defaultRange()
-    const fields = INSIGHT_FIELDS + ',adset_id,adset_name,ad_id,ad_name'
-    const params = insightParams('ad', fields, since ?? r.since, until ?? r.until, token)
-    return paginate<MetaInsightRow>(`${BASE_URL}/act_${accountId}/insights?${params}`)
-  }, 3)
+  const r = defaultRange()
+  const fields = INSIGHT_FIELDS + ',adset_id,adset_name,ad_id,ad_name'
+  return fetchInsightsChunked(token, accountId, 'ad', fields, since ?? r.since, until ?? r.until)
 }
 
 export async function fetchMetaAdsets(token: string, accountId: string): Promise<MetaAdSet[]> {
