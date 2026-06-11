@@ -2,10 +2,18 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { NoAccounts } from '@/components/shared/NoAccounts'
 import { SyncButton } from '@/components/shared/SyncButton'
+import { DateRangePicker } from '@/components/shared/DateRangePicker'
 import { BudgetCharts } from './BudgetCharts'
 import { RefreshCw } from 'lucide-react'
+import { buildDateParams } from '@/lib/utils/dateRange'
 
-export default async function BudgetPage() {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>
+
+function str(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v
+}
+
+export default async function BudgetPage({ searchParams }: { searchParams: SearchParams }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -21,14 +29,22 @@ export default async function BudgetPage() {
   }
 
   const accountIds = accounts.map(a => a.id)
-  const since = new Date()
-  since.setFullYear(since.getFullYear() - 2)
+
+  const sp = await searchParams
+  const { current, comparison } = buildDateParams({
+    from:         str(sp.from),
+    to:           str(sp.to),
+    compare:      str(sp.compare),
+    compare_from: str(sp.compare_from),
+    compare_to:   str(sp.compare_to),
+  })
 
   const { data: metrics } = await supabase
     .from('campaign_metrics')
     .select('date, platform, spend, revenue, cpm, campaign_name, campaign_id, conversions')
     .in('ad_account_id', accountIds)
-    .gte('date', since.toISOString().split('T')[0])
+    .gte('date', current.from)
+    .lte('date', current.to)
     .order('date')
 
   const hasData = !!(metrics && metrics.length > 0)
@@ -103,14 +119,24 @@ export default async function BudgetPage() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">Budget & Spend Analytics</h1>
-          <p className="text-zinc-400 text-sm mt-0.5">Last 2 years · All connected accounts</p>
+          <p className="text-zinc-400 text-sm mt-0.5">All connected accounts</p>
         </div>
-        <div className="flex gap-2">{accounts.map(a => <SyncButton key={a.id} accountId={a.id} platform={a.platform} />)}</div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <DateRangePicker />
+          {accounts.map(a => <SyncButton key={a.id} accountId={a.id} platform={a.platform} />)}
+        </div>
       </div>
+
       {!hasData && (
         <div className="flex items-start gap-3 bg-amber-500/[0.08] border border-amber-500/25 rounded-xl px-4 py-3.5">
           <RefreshCw className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
           <p className="text-sm text-amber-300">Sync your account to populate budget and spend data.</p>
+        </div>
+      )}
+
+      {comparison && (
+        <div className="text-xs text-blue-300 bg-blue-400/5 border border-blue-400/15 rounded-lg px-3 py-2">
+          Comparing <span className="font-mono">{current.from} → {current.to}</span> vs <span className="font-mono">{comparison.from} → {comparison.to}</span>
         </div>
       )}
 
@@ -154,7 +180,7 @@ export default async function BudgetPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-sm font-semibold text-white">Zero-Conversion Campaigns</p>
-              <p className="text-xs text-zinc-500 mt-0.5">Campaigns with spend but no conversions in last 30 days</p>
+              <p className="text-xs text-zinc-500 mt-0.5">Campaigns with spend but no conversions in selected range</p>
             </div>
             <span className="text-xs font-mono text-red-400 bg-red-400/10 border border-red-400/20 px-3 py-1 rounded-full">
               {fmtINR(totalWaste)} at risk

@@ -2,13 +2,42 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { NoAccounts } from '@/components/shared/NoAccounts'
 import { SyncButton } from '@/components/shared/SyncButton'
+import { DateRangePicker } from '@/components/shared/DateRangePicker'
 import { TrendChart, RoasTrendChart, PlatformBarChart } from './AnalyticsCharts'
-import { RefreshCw } from 'lucide-react'
+import { RefreshCw, TrendingUp, TrendingDown } from 'lucide-react'
+import { buildDateParams, deltaPercent } from '@/lib/utils/dateRange'
 
 const PLATFORM_COLORS: Record<string, string> = { meta: '#3b82f6', google: '#22c55e', amazon: '#f97316' }
-const PLATFORM_LABELS: Record<string, string> = { meta: 'Meta Ads', google: 'Google Ads', amazon: 'Amazon Ads' }
+const PLATFORM_LABELS: Record<string, string>  = { meta: 'Meta Ads', google: 'Google Ads', amazon: 'Amazon Ads' }
 
-export default async function AnalyticsPage() {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>
+
+function str(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v
+}
+
+function Delta({ pct }: { pct: number | null }) {
+  if (pct === null) return null
+  const pos = pct >= 0
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-xs font-mono px-1.5 py-0.5 rounded ${pos ? 'bg-emerald-400/10 text-emerald-400' : 'bg-red-400/10 text-red-400'}`}>
+      {pos ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+      {Math.abs(pct)}%
+    </span>
+  )
+}
+
+async function fetchTotals(supabase: any, accountIds: string[], from: string, to: string) {
+  const { data } = await supabase
+    .from('campaign_metrics')
+    .select('date, platform, spend, revenue, impressions, clicks, conversions, roas, cpm')
+    .in('ad_account_id', accountIds)
+    .gte('date', from).lte('date', to)
+    .order('date')
+  return data ?? []
+}
+
+export default async function AnalyticsPage({ searchParams }: { searchParams: SearchParams }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -16,62 +45,64 @@ export default async function AnalyticsPage() {
   const { data: accounts } = await supabase
     .from('ad_accounts')
     .select('id, platform, account_name, last_synced_at')
-    .eq('user_id', user.id)
-    .eq('status', 'active')
+    .eq('user_id', user.id).eq('status', 'active')
 
-  if (!accounts || accounts.length === 0) {
-    return <NoAccounts section="Performance Analytics" />
-  }
+  if (!accounts || accounts.length === 0) return <NoAccounts section="Performance Analytics" />
 
-  const accountIds = accounts.map(a => a.id)
+  const sp      = await searchParams
+  const { current, comparison, compareMode } = buildDateParams({
+    from:         str(sp.from),
+    to:           str(sp.to),
+    compare:      str(sp.compare),
+    compare_from: str(sp.compare_from),
+    compare_to:   str(sp.compare_to),
+  })
+
+  const accountIds  = accounts.map(a => a.id)
   const neverSynced = accounts.every(a => !a.last_synced_at)
 
-  const since = new Date()
-  since.setFullYear(since.getFullYear() - 2)
+  const [metrics, cmpMetrics] = await Promise.all([
+    fetchTotals(supabase, accountIds, current.from, current.to),
+    comparison ? fetchTotals(supabase, accountIds, comparison.from, comparison.to) : Promise.resolve([]),
+  ])
 
-  const { data: rawMetrics } = await supabase
-    .from('campaign_metrics')
-    .select('date, platform, spend, revenue, impressions, clicks, conversions, roas, cpm')
-    .in('ad_account_id', accountIds)
-    .gte('date', since.toISOString().split('T')[0])
-    .order('date')
-
-  const metrics = rawMetrics ?? []
   const hasData = metrics.length > 0
 
-  // Aggregate totals
-  const totals = metrics.reduce((acc, m) => ({
-    spend:       acc.spend + (m.spend ?? 0),
-    revenue:     acc.revenue + (m.revenue ?? 0),
-    impressions: acc.impressions + (m.impressions ?? 0),
-    clicks:      acc.clicks + (m.clicks ?? 0),
-    conversions: acc.conversions + (m.conversions ?? 0),
-  }), { spend: 0, revenue: 0, impressions: 0, clicks: 0, conversions: 0 })
+  function agg(rows: typeof metrics) {
+    return rows.reduce((acc: { spend: number; revenue: number; impressions: number; clicks: number; conversions: number }, m: any) => ({
+      spend:       acc.spend + (m.spend ?? 0),
+      revenue:     acc.revenue + (m.revenue ?? 0),
+      impressions: acc.impressions + (m.impressions ?? 0),
+      clicks:      acc.clicks + (m.clicks ?? 0),
+      conversions: acc.conversions + (m.conversions ?? 0),
+    }), { spend: 0, revenue: 0, impressions: 0, clicks: 0, conversions: 0 })
+  }
+
+  const totals = agg(metrics)
+  const cmpTotals = comparison ? agg(cmpMetrics) : null
 
   const blendedRoas = totals.spend > 0 ? totals.revenue / totals.spend : 0
   const avgCpa      = totals.conversions > 0 ? totals.spend / totals.conversions : 0
   const avgCtr      = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0
 
-  // Group by date for trend
+  const cmpRoas = cmpTotals && cmpTotals.spend > 0 ? cmpTotals.revenue / cmpTotals.spend : 0
+  const cmpCpa  = cmpTotals && cmpTotals.conversions > 0 ? cmpTotals.spend / cmpTotals.conversions : 0
+  const cmpCtr  = cmpTotals && cmpTotals.impressions > 0 ? (cmpTotals.clicks / cmpTotals.impressions) * 100 : 0
+
+  // Daily trend
   const byDate = new Map<string, { spend: number; revenue: number }>()
   for (const m of metrics) {
     const key = m.date.slice(0, 10)
     const prev = byDate.get(key) ?? { spend: 0, revenue: 0 }
-    byDate.set(key, {
-      spend:   prev.spend + (m.spend ?? 0),
-      revenue: prev.revenue + (m.revenue ?? 0),
-    })
+    byDate.set(key, { spend: prev.spend + (m.spend ?? 0), revenue: prev.revenue + (m.revenue ?? 0) })
   }
-  const trend = Array.from(byDate.entries())
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, v]) => ({
-      day:     date.slice(5),
-      spend:   Math.round(v.spend),
-      revenue: Math.round(v.revenue),
-      roas:    v.spend > 0 ? Math.round((v.revenue / v.spend) * 100) / 100 : 0,
-    }))
+  const trend = Array.from(byDate.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([date, v]) => ({
+    day: date.slice(5),
+    spend: Math.round(v.spend), revenue: Math.round(v.revenue),
+    roas: v.spend > 0 ? Math.round((v.revenue / v.spend) * 100) / 100 : 0,
+  }))
 
-  // Group by platform
+  // Platform breakdown
   const byPlatform = new Map<string, { spend: number; revenue: number; conversions: number }>()
   for (const m of metrics) {
     const prev = byPlatform.get(m.platform) ?? { spend: 0, revenue: 0, conversions: 0 }
@@ -82,7 +113,6 @@ export default async function AnalyticsPage() {
     })
   }
 
-  // If no data, create placeholder rows per connected platform
   const platformRows = hasData
     ? Array.from(byPlatform.entries())
     : accounts.map(a => [a.platform, { spend: 0, revenue: 0, conversions: 0 }] as [string, { spend: number; revenue: number; conversions: number }])
@@ -100,59 +130,61 @@ export default async function AnalyticsPage() {
   const fmtINR = (v: number) => v >= 100000 ? `₹${(v / 100000).toFixed(1)}L` : v > 0 ? `₹${(v / 1000).toFixed(0)}k` : '₹0'
 
   const kpis = [
-    { label: 'Total Spend',   value: fmtINR(totals.spend) },
-    { label: 'Total Revenue', value: fmtINR(totals.revenue) },
-    { label: 'Blended ROAS',  value: `${blendedRoas.toFixed(2)}x` },
-    { label: 'Conversions',   value: totals.conversions.toLocaleString('en-IN') },
-    { label: 'Avg CPA',       value: totals.conversions > 0 ? `₹${Math.round(avgCpa).toLocaleString('en-IN')}` : '—' },
-    { label: 'Blended CTR',   value: `${avgCtr.toFixed(2)}%` },
+    { label: 'Total Spend',   value: fmtINR(totals.spend),      cmp: cmpTotals ? deltaPercent(totals.spend, cmpTotals.spend) : null, invert: true },
+    { label: 'Total Revenue', value: fmtINR(totals.revenue),    cmp: cmpTotals ? deltaPercent(totals.revenue, cmpTotals.revenue) : null },
+    { label: 'Blended ROAS',  value: `${blendedRoas.toFixed(2)}x`, cmp: cmpTotals ? deltaPercent(blendedRoas, cmpRoas) : null },
+    { label: 'Conversions',   value: totals.conversions.toLocaleString('en-IN'), cmp: cmpTotals ? deltaPercent(totals.conversions, cmpTotals.conversions) : null },
+    { label: 'Avg CPA',       value: totals.conversions > 0 ? `₹${Math.round(avgCpa).toLocaleString('en-IN')}` : '—', cmp: cmpTotals ? deltaPercent(avgCpa, cmpCpa) : null, invert: true },
+    { label: 'Blended CTR',   value: `${avgCtr.toFixed(2)}%`,   cmp: cmpTotals ? deltaPercent(avgCtr, cmpCtr) : null },
   ]
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Performance Analytics</h1>
           <p className="text-zinc-400 text-sm mt-0.5">
-            {accounts.map(a => a.account_name ?? a.platform).join(' · ')} · Last 2 years
+            {accounts.map(a => a.account_name ?? a.platform).join(' · ')}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          {accounts.map(a => (
-            <SyncButton key={a.id} accountId={a.id} platform={a.platform} />
-          ))}
+        <div className="flex items-center gap-2 flex-wrap">
+          <DateRangePicker />
+          {accounts.map(a => <SyncButton key={a.id} accountId={a.id} platform={a.platform} />)}
         </div>
       </div>
 
-      {/* Sync banner when no data */}
       {!hasData && (
         <div className="flex items-start gap-3 bg-amber-500/[0.08] border border-amber-500/25 rounded-xl px-4 py-3.5">
           <RefreshCw className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-semibold text-amber-300">
-              {neverSynced ? 'Sync your account to populate this dashboard' : 'No campaign activity found in the last 2 years'}
+              {neverSynced ? 'Sync your account to populate this dashboard' : 'No campaign activity in selected date range'}
             </p>
             <p className="text-xs text-amber-400/70 mt-0.5">
               {neverSynced
-                ? 'Click "Sync" above to pull your campaign data from Meta, Google, or Amazon.'
-                : 'Your account was synced but no campaign data was returned. Confirm your campaigns are active in Ads Manager.'}
+                ? 'Click "Sync" to pull your campaign data from Meta, Google, or Amazon.'
+                : 'Try a wider date range or sync to pull more historical data.'}
             </p>
           </div>
         </div>
       )}
 
-      {/* KPI Cards */}
+      {comparison && (
+        <div className="text-xs text-blue-300 bg-blue-400/5 border border-blue-400/15 rounded-lg px-3 py-2">
+          Comparing <span className="font-mono">{current.from} → {current.to}</span> vs <span className="font-mono">{comparison.from} → {comparison.to}</span>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
         {kpis.map(k => (
           <div key={k.label} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
             <p className="text-xs text-zinc-500 mb-1">{k.label}</p>
             <p className={`text-2xl font-bold font-mono ${hasData ? 'text-white' : 'text-zinc-600'}`}>{k.value}</p>
+            {k.cmp !== null && k.cmp !== undefined && <div className="mt-1.5"><Delta pct={k.invert ? (k.cmp !== null ? -k.cmp : null) : k.cmp} /></div>}
           </div>
         ))}
       </div>
 
-      {/* Revenue vs Spend Chart */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -171,7 +203,6 @@ export default async function AnalyticsPage() {
         )}
       </div>
 
-      {/* ROAS + Platform Split */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
           <p className="text-sm font-semibold text-white mb-1">ROAS Trend</p>
@@ -193,7 +224,6 @@ export default async function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Platform Table */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
         <p className="text-sm font-semibold text-white mb-4">Platform Breakdown</p>
         <table className="w-full text-sm">
@@ -217,9 +247,7 @@ export default async function AnalyticsPage() {
                 <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>{fmtINR(p.spend)}</td>
                 <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>{fmtINR(p.revenue)}</td>
                 <td className={`py-3 text-right font-mono ${hasData ? 'text-emerald-400' : 'text-zinc-600'}`}>{p.roas}x</td>
-                <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>
-                  {p.cpa > 0 ? `₹${p.cpa.toLocaleString('en-IN')}` : '—'}
-                </td>
+                <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>{p.cpa > 0 ? `₹${p.cpa.toLocaleString('en-IN')}` : '—'}</td>
                 <td className="py-3 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">

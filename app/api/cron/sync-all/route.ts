@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
           )
         }
 
-        issues = runMetaDiagnostics({ insights, adSets, ads, accountId: account.account_id })
+        issues = runMetaDiagnostics({ insights: insights as any, adSets, ads, accountId: account.account_id })
       }
 
       // Mark old issues as fixed

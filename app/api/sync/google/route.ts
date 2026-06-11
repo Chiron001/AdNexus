@@ -2,10 +2,16 @@ export const dynamic = 'force-dynamic'
 
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { fetchCampaignPerformance, fetchKeywordPerformance, fetchConversionActions, microsToCost } from '@/lib/google/api'
+import {
+  fetchCampaignPerformance, fetchAdGroupPerformance, fetchAdPerformance,
+  fetchKeywordPerformance, fetchConversionActions, microsToCost, googleRowToMetrics,
+} from '@/lib/google/api'
 import { refreshAccessToken } from '@/lib/google/auth'
 import { runGoogleDiagnostics } from '@/lib/google/diagnostics'
 import { apiErrorResponse } from '@/lib/utils/errors'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyClient = any
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,114 +19,140 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const body = await request.json()
-    const { account_id } = body
+    const { account_id } = await request.json()
 
     const { data: account } = await supabase
-      .from('ad_accounts')
-      .select('*')
-      .eq('id', account_id)
-      .eq('user_id', user.id)
-      .eq('platform', 'google')
-      .single()
-
+      .from('ad_accounts').select('*')
+      .eq('id', account_id).eq('user_id', user.id).eq('platform', 'google').single()
     if (!account) return Response.json({ error: 'Account not found' }, { status: 404 })
 
-    const { data: syncLog } = await supabase
+    const { data: syncLog } = await (supabase as AnyClient)
       .from('sync_logs')
-      .insert({
-        ad_account_id: account.id,
-        sync_type: 'manual',
-        status: 'running',
-      })
-      .select()
-      .single()
-
+      .insert({ ad_account_id: account.id, sync_type: 'manual', status: 'running' })
+      .select().single()
     const syncLogId = syncLog?.id ?? null
 
     try {
-      // Refresh access token (Google tokens expire in 1 hour)
       let accessToken = account.access_token
       if (account.refresh_token) {
         const refreshed = await refreshAccessToken(account.refresh_token)
         accessToken = refreshed.access_token
-        await supabase
-          .from('ad_accounts')
-          .update({
-            access_token: refreshed.access_token,
-            token_expires_at: new Date(
-              Date.now() + refreshed.expires_in * 1000
-            ).toISOString(),
-          })
-          .eq('id', account.id)
+        await supabase.from('ad_accounts').update({
+          access_token: refreshed.access_token,
+          token_expires_at: new Date(Date.now() + refreshed.expires_in * 1000).toISOString(),
+        }).eq('id', account.id)
       }
 
-      const developerToken = process.env.GOOGLE_DEVELOPER_TOKEN!
+      const devToken = process.env.GOOGLE_DEVELOPER_TOKEN!
+      const customerId = account.account_id
 
-      const [campaigns, keywords, conversionActions] = await Promise.all([
-        fetchCampaignPerformance(accessToken, account.account_id, developerToken),
-        fetchKeywordPerformance(accessToken, account.account_id, developerToken),
-        fetchConversionActions(accessToken, account.account_id, developerToken),
+      const [campaigns, adGroups, ads, keywords, conversions] = await Promise.all([
+        fetchCampaignPerformance(accessToken, customerId, devToken),
+        fetchAdGroupPerformance(accessToken, customerId, devToken),
+        fetchAdPerformance(accessToken, customerId, devToken),
+        fetchKeywordPerformance(accessToken, customerId, devToken),
+        fetchConversionActions(accessToken, customerId, devToken),
       ])
 
-      // Upsert campaign metrics
+      // Upsert campaign_metrics (one row per campaign per day)
       for (const row of campaigns) {
-        const spend = microsToCost(row.metrics.cost_micros)
-        const conversions = parseFloat(row.metrics.conversions || '0')
-        const clicks = parseInt(row.metrics.clicks || '0')
-        const impressions = parseInt(row.metrics.impressions || '0')
-        const ctr = parseFloat(row.metrics.ctr || '0')
-        const cpc = microsToCost(row.metrics.average_cpc)
-
-        await supabase.from('campaign_metrics').upsert(
+        const m = googleRowToMetrics(row)
+        const date = (row as any).segments?.date ?? new Date().toISOString().split('T')[0]
+        await (supabase as AnyClient).from('campaign_metrics').upsert(
           {
             ad_account_id: account.id,
             platform: 'google',
             campaign_id: row.campaign.id,
             campaign_name: row.campaign.name,
-            status: row.campaign.status,
-            date: new Date().toISOString().split('T')[0],
-            spend,
-            revenue: 0,
-            impressions,
-            clicks,
-            conversions,
-            ctr,
-            cpc,
-            roas: 0,
-            cpm: impressions > 0 ? (spend / impressions) * 1000 : 0,
-            google_data: {
-              search_impression_share: row.metrics.search_impression_share,
-              search_budget_lost_impression_share: row.metrics.search_budget_lost_impression_share,
-            },
+            date,
+            ...m,
           },
           { onConflict: 'ad_account_id,campaign_id,date' }
         )
       }
 
-      const issues = runGoogleDiagnostics({
-        campaigns,
-        keywords,
-        conversionActions,
-        accountId: account.account_id,
-      })
+      // Upsert adset_metrics (ad group level)
+      for (const row of adGroups) {
+        const spend    = microsToCost(row.metrics?.cost_micros ?? 0)
+        const conv     = parseFloat(String(row.metrics?.conversions ?? 0))
+        const convVal  = parseFloat(String(row.metrics?.conversions_value ?? 0))
+        const imp      = parseInt(String(row.metrics?.impressions ?? 0))
+        const clicks   = parseInt(String(row.metrics?.clicks ?? 0))
+        const date     = row.segments?.date ?? new Date().toISOString().split('T')[0]
+        await (supabase as AnyClient).from('adset_metrics').upsert(
+          {
+            ad_account_id: account.id,
+            platform: 'google',
+            campaign_id: row.campaign?.id,
+            campaign_name: row.campaign?.name,
+            adset_id: row.ad_group?.id,
+            adset_name: row.ad_group?.name,
+            adset_status: row.ad_group?.status,
+            date,
+            spend,
+            impressions: imp,
+            clicks,
+            ctr: parseFloat(String(row.metrics?.ctr ?? 0)) * 100,
+            cpc: microsToCost(row.metrics?.average_cpc),
+            cpm: microsToCost(row.metrics?.average_cpm),
+            purchases: Math.round(conv),
+            purchase_value: convVal,
+            roas: spend > 0 && convVal > 0 ? convVal / spend : 0,
+            cpa: spend > 0 && conv > 0 ? spend / conv : 0,
+            search_impression_share: parseFloat(String(row.metrics?.search_impression_share ?? 0)),
+            raw_data: { metrics: row.metrics },
+          },
+          { onConflict: 'ad_account_id,platform,adset_id,date' }
+        )
+      }
 
-      await supabase
-        .from('diagnostic_issues')
-        .update({ status: 'fixed' })
-        .eq('ad_account_id', account.id)
-        .eq('status', 'open')
-        .eq('platform', 'google')
+      // Upsert ad_metrics
+      for (const row of ads) {
+        const spend  = microsToCost(row.metrics?.cost_micros ?? 0)
+        const conv   = parseFloat(String(row.metrics?.conversions ?? 0))
+        const convVal = parseFloat(String(row.metrics?.conversions_value ?? 0))
+        const imp    = parseInt(String(row.metrics?.impressions ?? 0))
+        const clicks = parseInt(String(row.metrics?.clicks ?? 0))
+        const date   = row.segments?.date ?? new Date().toISOString().split('T')[0]
+        await (supabase as AnyClient).from('ad_metrics').upsert(
+          {
+            ad_account_id: account.id,
+            platform: 'google',
+            campaign_id: row.campaign?.id,
+            campaign_name: row.campaign?.name,
+            adset_id: row.ad_group?.id,
+            adset_name: row.ad_group?.name,
+            ad_id: row.ad_group_ad?.ad?.id,
+            ad_name: row.ad_group_ad?.ad?.name,
+            ad_status: row.ad_group_ad?.status,
+            creative_type: row.ad_group_ad?.ad?.type,
+            date,
+            spend, impressions: imp, clicks,
+            ctr: parseFloat(String(row.metrics?.ctr ?? 0)) * 100,
+            cpc: microsToCost(row.metrics?.average_cpc),
+            cpm: microsToCost(row.metrics?.average_cpm),
+            purchases: Math.round(conv),
+            purchase_value: convVal,
+            roas: spend > 0 && convVal > 0 ? convVal / spend : 0,
+            cpa: spend > 0 && conv > 0 ? spend / conv : 0,
+            video_views: parseInt(String(row.metrics?.video_views ?? 0)),
+            video_view_rate: parseFloat(String(row.metrics?.video_view_rate ?? 0)) * 100,
+            raw_data: { metrics: row.metrics },
+          },
+          { onConflict: 'ad_account_id,platform,ad_id,date' }
+        )
+      }
+
+      const issues = runGoogleDiagnostics({ campaigns, keywords, conversionActions: conversions, accountId: customerId })
+
+      await supabase.from('diagnostic_issues').update({ status: 'fixed' })
+        .eq('ad_account_id', account.id).eq('status', 'open').eq('platform', 'google')
 
       for (const issue of issues) {
         await supabase.from('diagnostic_issues').insert({
-          ad_account_id: account.id,
-          user_id: user.id,
-          platform: issue.platform,
-          issue_type: issue.issue_type,
-          severity: issue.severity,
-          title: issue.title,
-          description: issue.description,
+          ad_account_id: account.id, user_id: user.id,
+          platform: issue.platform, issue_type: issue.issue_type, severity: issue.severity,
+          title: issue.title, description: issue.description,
           affected_entity_type: issue.affected_entity_type,
           affected_entity_id: issue.affected_entity_id,
           affected_entity_name: issue.affected_entity_name,
@@ -129,38 +161,34 @@ export async function POST(request: NextRequest) {
         })
       }
 
-      await supabase
-        .from('ad_accounts')
-        .update({ last_synced_at: new Date().toISOString() })
-        .eq('id', account.id)
+      await supabase.from('ad_accounts')
+        .update({ last_synced_at: new Date().toISOString() }).eq('id', account.id)
 
       if (syncLogId) {
-        await supabase
-          .from('sync_logs')
-          .update({
-            status: 'completed',
-            campaigns_synced: campaigns.length,
-            issues_found: issues.length,
-            completed_at: new Date().toISOString(),
-          })
-          .eq('id', syncLogId)
+        await (supabase as AnyClient).from('sync_logs').update({
+          status: 'completed',
+          campaigns_synced: campaigns.length,
+          adsets_synced: adGroups.length,
+          ads_synced: ads.length,
+          issues_found: issues.length,
+          completed_at: new Date().toISOString(),
+        }).eq('id', syncLogId)
       }
 
       return Response.json({
         success: true,
         campaigns_synced: campaigns.length,
+        adsets_synced: adGroups.length,
+        ads_synced: ads.length,
         issues_found: issues.length,
       })
     } catch (syncError) {
       if (syncLogId) {
-        await supabase
-          .from('sync_logs')
-          .update({
-            status: 'failed',
-            error_message: syncError instanceof Error ? syncError.message : 'Unknown error',
-            completed_at: new Date().toISOString(),
-          })
-          .eq('id', syncLogId)
+        await (supabase as AnyClient).from('sync_logs').update({
+          status: 'failed',
+          error_message: syncError instanceof Error ? syncError.message : 'Unknown error',
+          completed_at: new Date().toISOString(),
+        }).eq('id', syncLogId)
       }
       throw syncError
     }

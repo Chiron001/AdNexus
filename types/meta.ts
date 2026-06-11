@@ -4,8 +4,8 @@ export interface MetaCampaignInsight {
   spend: string
   impressions: string
   clicks: string
-  reach: string
-  frequency: string
+  reach?: string
+  frequency?: string
   ctr: string
   cpc: string
   cpm: string

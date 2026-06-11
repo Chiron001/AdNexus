@@ -2,10 +2,18 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { NoAccounts } from '@/components/shared/NoAccounts'
 import { SyncButton } from '@/components/shared/SyncButton'
+import { DateRangePicker } from '@/components/shared/DateRangePicker'
 import { CreativeCharts } from './CreativeCharts'
 import { RefreshCw } from 'lucide-react'
+import { buildDateParams } from '@/lib/utils/dateRange'
 
-export default async function CreativeAnalyticsPage() {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>
+
+function str(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v
+}
+
+export default async function CreativeAnalyticsPage({ searchParams }: { searchParams: SearchParams }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -21,14 +29,22 @@ export default async function CreativeAnalyticsPage() {
   }
 
   const accountIds = accounts.map(a => a.id)
-  const since = new Date()
-  since.setFullYear(since.getFullYear() - 2)
+
+  const sp = await searchParams
+  const { current, comparison } = buildDateParams({
+    from:         str(sp.from),
+    to:           str(sp.to),
+    compare:      str(sp.compare),
+    compare_from: str(sp.compare_from),
+    compare_to:   str(sp.compare_to),
+  })
 
   const { data: metrics } = await supabase
     .from('campaign_metrics')
-    .select('campaign_id, campaign_name, platform, spend, revenue, impressions, clicks, conversions, ctr, roas, cpm, meta_data')
+    .select('campaign_id, campaign_name, platform, spend, revenue, impressions, clicks, conversions, ctr, roas, cpm')
     .in('ad_account_id', accountIds)
-    .gte('date', since.toISOString().split('T')[0])
+    .gte('date', current.from)
+    .lte('date', current.to)
 
   const hasData = !!(metrics && metrics.length > 0)
 
@@ -83,7 +99,7 @@ export default async function CreativeAnalyticsPage() {
   }))
 
   const topRoas = campaigns[0]?.roas ?? 0
-  const topCtr  = Math.max(...campaigns.map(c => c.ctr))
+  const topCtr  = Math.max(...campaigns.map(c => c.ctr), 0)
   const fatigue = campaigns.filter(c => c.ctr < 1 && c.spend > 5000).length
 
   return (
@@ -91,9 +107,12 @@ export default async function CreativeAnalyticsPage() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">Creative Analytics</h1>
-          <p className="text-zinc-400 text-sm mt-0.5">Campaign-level performance · Last 2 years</p>
+          <p className="text-zinc-400 text-sm mt-0.5">Campaign-level performance</p>
         </div>
-        <div className="flex gap-2">{accounts.map(a => <SyncButton key={a.id} accountId={a.id} platform={a.platform} />)}</div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <DateRangePicker />
+          {accounts.map(a => <SyncButton key={a.id} accountId={a.id} platform={a.platform} />)}
+        </div>
       </div>
 
       {!hasData && (
@@ -102,10 +121,17 @@ export default async function CreativeAnalyticsPage() {
           <p className="text-sm text-amber-300">Sync your account to populate campaign creative data.</p>
         </div>
       )}
+
+      {comparison && (
+        <div className="text-xs text-blue-300 bg-blue-400/5 border border-blue-400/15 rounded-lg px-3 py-2">
+          Comparing <span className="font-mono">{current.from} → {current.to}</span> vs <span className="font-mono">{comparison.from} → {comparison.to}</span>
+        </div>
+      )}
+
       {hasData && (
-      <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3 text-xs text-amber-300">
-        Showing campaign-level data. Creative-level breakdown (individual ad images/videos) will be available once Meta Creative API is fully integrated.
-      </div>
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3 text-xs text-amber-300">
+          Showing campaign-level data. Creative-level breakdown (individual ad images/videos) will be available once Meta Creative API is fully integrated.
+        </div>
       )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
             { onConflict: 'ad_account_id,campaign_id,date' }
           )
         }
-        issues = runMetaDiagnostics({ insights, adSets, ads, accountId: account.account_id })
+        issues = runMetaDiagnostics({ insights: insights as any, adSets, ads, accountId: account.account_id })
       }
 
       if (account.platform === 'google') {

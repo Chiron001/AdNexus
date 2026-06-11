@@ -2,8 +2,16 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { NoAccounts } from '@/components/shared/NoAccounts'
 import { SyncButton } from '@/components/shared/SyncButton'
+import { DateRangePicker } from '@/components/shared/DateRangePicker'
 import { FunnelCharts } from './FunnelCharts'
 import { RefreshCw } from 'lucide-react'
+import { buildDateParams } from '@/lib/utils/dateRange'
+
+type SearchParams = Promise<Record<string, string | string[] | undefined>>
+
+function str(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v
+}
 
 function fmt(n: number) {
   if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`
@@ -11,7 +19,7 @@ function fmt(n: number) {
   return n.toString()
 }
 
-export default async function FunnelPage() {
+export default async function FunnelPage({ searchParams }: { searchParams: SearchParams }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -27,14 +35,22 @@ export default async function FunnelPage() {
   }
 
   const accountIds = accounts.map(a => a.id)
-  const since = new Date()
-  since.setFullYear(since.getFullYear() - 2)
+
+  const sp = await searchParams
+  const { current, comparison } = buildDateParams({
+    from:         str(sp.from),
+    to:           str(sp.to),
+    compare:      str(sp.compare),
+    compare_from: str(sp.compare_from),
+    compare_to:   str(sp.compare_to),
+  })
 
   const { data: metrics } = await supabase
     .from('campaign_metrics')
     .select('date, platform, impressions, clicks, conversions, spend')
     .in('ad_account_id', accountIds)
-    .gte('date', since.toISOString().split('T')[0])
+    .gte('date', current.from)
+    .lte('date', current.to)
 
   const hasData = !!(metrics && metrics.length > 0)
   const safeMetrics = metrics ?? []
@@ -64,8 +80,6 @@ export default async function FunnelPage() {
   const byWeek = new Map<string, { impressions: number; clicks: number; conversions: number }>()
   for (const m of safeMetrics) {
     const date = new Date(m.date)
-    const weekStart = new Date(date)
-    weekStart.setDate(date.getDate() - date.getDay())
     const key = `W${Math.ceil(date.getDate() / 7)}`
     const prev = byWeek.get(key) ?? { impressions: 0, clicks: 0, conversions: 0 }
     byWeek.set(key, {
@@ -109,14 +123,24 @@ export default async function FunnelPage() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">Funnel Analytics</h1>
-          <p className="text-zinc-400 text-sm mt-0.5">Impression → Purchase · Last 2 years</p>
+          <p className="text-zinc-400 text-sm mt-0.5">Impression → Purchase</p>
         </div>
-        <div className="flex gap-2">{accounts.map((a: {id: string; platform: string}) => <SyncButton key={a.id} accountId={a.id} platform={a.platform} />)}</div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <DateRangePicker />
+          {accounts.map((a: {id: string; platform: string}) => <SyncButton key={a.id} accountId={a.id} platform={a.platform} />)}
+        </div>
       </div>
+
       {!hasData && (
         <div className="flex items-start gap-3 bg-amber-500/[0.08] border border-amber-500/25 rounded-xl px-4 py-3.5">
           <RefreshCw className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
           <p className="text-sm text-amber-300">Sync your account to populate funnel data.</p>
+        </div>
+      )}
+
+      {comparison && (
+        <div className="text-xs text-blue-300 bg-blue-400/5 border border-blue-400/15 rounded-lg px-3 py-2">
+          Comparing <span className="font-mono">{current.from} → {current.to}</span> vs <span className="font-mono">{comparison.from} → {comparison.to}</span>
         </div>
       )}
 
