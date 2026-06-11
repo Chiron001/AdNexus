@@ -75,7 +75,7 @@ export function Topbar({ userName, plan }: TopbarProps) {
           >
             <Menu className="w-5 h-5 text-zinc-400" />
           </button>
-          <h1 className="text-lg font-semibold text-white tracking-tight">{title}</h1>
+          <h1 className="lg:hidden text-lg font-semibold text-white tracking-tight">{title}</h1>
         </div>
 
         <div className="flex items-center gap-2">

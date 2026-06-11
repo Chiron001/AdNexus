@@ -62,7 +62,7 @@ export function Sidebar({ plan, userName, onNavigate }: SidebarProps) {
   const pathname = usePathname()
 
   return (
-    <aside className="w-60 min-h-screen bg-zinc-900 border-r border-zinc-800/80 flex flex-col">
+    <aside className="w-60 h-full bg-zinc-900 border-r border-zinc-800/80 flex flex-col">
       {/* Logo */}
       <div className="px-6 py-5 border-b border-zinc-800/60">
         <div className="flex items-center gap-2.5">

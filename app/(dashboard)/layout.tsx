@@ -24,7 +24,7 @@ export default async function DashboardLayout({
 
   return (
     <div
-      className="flex min-h-screen bg-zinc-950"
+      className="flex h-screen overflow-hidden bg-zinc-950"
       style={{
         backgroundImage: `
           radial-gradient(ellipse at top right, rgba(139,92,246,0.07) 0%, transparent 55%),
@@ -32,12 +32,12 @@ export default async function DashboardLayout({
         `,
       }}
     >
-      {/* Desktop sidebar */}
-      <div className="hidden lg:flex">
+      {/* Desktop sidebar — fixed height, scrolls internally */}
+      <div className="hidden lg:flex flex-shrink-0">
         <Sidebar plan={plan} userName={userName} />
       </div>
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Topbar userName={userName} plan={plan} />
         <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
       </div>
