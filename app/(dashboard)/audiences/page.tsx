@@ -1,122 +1,131 @@
-'use client'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { NoAccounts } from '@/components/shared/NoAccounts'
+import { SyncButton } from '@/components/shared/SyncButton'
+import { AudienceCharts } from './AudienceCharts'
+import { RefreshCw } from 'lucide-react'
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+export default async function AudiencesPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
-const segments = [
-  { name: 'Retargeting 30d',         size: 42000, roas: 6.2, cpa: 98,  ctr: 4.1, spend: 88000, status: 'Healthy'   },
-  { name: 'Lookalike 1% — Buyers',   size: 310000, roas: 4.8, cpa: 128, ctr: 2.9, spend: 76000, status: 'Healthy'  },
-  { name: 'Lookalike 3% — Buyers',   size: 890000, roas: 4.1, cpa: 148, ctr: 2.4, spend: 52000, status: 'Healthy'  },
-  { name: 'Interest — Fitness',      size: 1200000, roas: 3.4, cpa: 178, ctr: 1.8, spend: 38000, status: 'Monitor' },
-  { name: 'Retargeting 180d',        size: 128000, roas: 2.8, cpa: 224, ctr: 1.2, spend: 28000, status: 'At Risk'  },
-  { name: 'Broad — India 25-44',     size: 4200000, roas: 2.2, cpa: 286, ctr: 0.9, spend: 14000, status: 'Poor'    },
-]
+  const { data: accounts } = await supabase
+    .from('ad_accounts')
+    .select('id, platform')
+    .eq('user_id', user.id)
+    .eq('status', 'active')
 
-const ageData = [
-  { age: '18–24', spend: 48000, revenue: 192000, cpa: 168 },
-  { age: '25–34', spend: 142000, revenue: 710000, cpa: 128 },
-  { age: '35–44', spend: 118000, revenue: 590000, cpa: 138 },
-  { age: '45–54', spend: 72000, revenue: 302000, cpa: 188 },
-  { age: '55+',   spend: 40000, revenue: 156000, cpa: 212 },
-]
+  if (!accounts || accounts.length === 0) {
+    return <NoAccounts section="Audience Insights" />
+  }
 
-const statusConfig: Record<string, { color: string; bg: string }> = {
-  Healthy:  { color: 'text-emerald-400', bg: 'bg-emerald-400/10 border-emerald-400/20' },
-  Monitor:  { color: 'text-yellow-400',  bg: 'bg-yellow-400/10 border-yellow-400/20'  },
-  'At Risk':{ color: 'text-orange-400',  bg: 'bg-orange-400/10 border-orange-400/20'  },
-  Poor:     { color: 'text-red-400',     bg: 'bg-red-400/10 border-red-400/20'        },
-}
+  const accountIds = accounts.map(a => a.id)
+  const since = new Date()
+  since.setFullYear(since.getFullYear() - 2)
 
-export default function AudiencesPage() {
+  const { data: metrics } = await supabase
+    .from('campaign_metrics')
+    .select('platform, spend, revenue, clicks, impressions, conversions, meta_data, google_data, amazon_data')
+    .in('ad_account_id', accountIds)
+    .gte('date', since.toISOString().split('T')[0])
+
+  const hasData = !!(metrics && metrics.length > 0)
+
+  // Platform-level aggregates (demographic breakdown requires deeper API integration)
+  const byPlatform = new Map<string, { spend: number; revenue: number; conversions: number; impressions: number; clicks: number }>()
+  for (const m of (metrics ?? [])) {
+    const prev = byPlatform.get(m.platform) ?? { spend: 0, revenue: 0, conversions: 0, impressions: 0, clicks: 0 }
+    byPlatform.set(m.platform, {
+      spend:       prev.spend + (m.spend ?? 0),
+      revenue:     prev.revenue + (m.revenue ?? 0),
+      conversions: prev.conversions + (m.conversions ?? 0),
+      impressions: prev.impressions + (m.impressions ?? 0),
+      clicks:      prev.clicks + (m.clicks ?? 0),
+    })
+  }
+
+  const platformData = Array.from(byPlatform.entries()).map(([platform, v]) => ({
+    name:    platform.charAt(0).toUpperCase() + platform.slice(1),
+    platform,
+    spend:   Math.round(v.spend),
+    revenue: Math.round(v.revenue),
+    roas:    v.spend > 0 ? Math.round((v.revenue / v.spend) * 100) / 100 : 0,
+    cpa:     v.conversions > 0 ? Math.round(v.spend / v.conversions) : 0,
+    ctr:     v.impressions > 0 ? Math.round((v.clicks / v.impressions) * 10000) / 100 : 0,
+  }))
+
+  const fmtINR = (v: number) => v >= 100000 ? `₹${(v / 100000).toFixed(1)}L` : `₹${(v / 1000).toFixed(0)}k`
+
+  const bestRoas  = platformData.length > 0 ? Math.max(...platformData.map(p => p.roas)) : 0
+  const lowestCpa = platformData.filter(p => p.cpa > 0).length > 0
+    ? Math.min(...platformData.filter(p => p.cpa > 0).map(p => p.cpa)) : 0
+  const topCtr    = platformData.length > 0 ? Math.max(...platformData.map(p => p.ctr)) : 0
+
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Audience Insights</h1>
-        <p className="text-zinc-400 text-sm mt-0.5">Segment performance, demographics, and overlap analysis</p>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Audience Insights</h1>
+          <p className="text-zinc-400 text-sm mt-0.5">Platform-level audience performance · Last 2 years</p>
+        </div>
+        <div className="flex gap-2">{accounts.map((a: {id: string; platform: string}) => <SyncButton key={a.id} accountId={a.id} platform={a.platform} />)}</div>
       </div>
 
-      {/* KPIs */}
+      {!hasData && (
+        <div className="flex items-start gap-3 bg-amber-500/[0.08] border border-amber-500/25 rounded-xl px-4 py-3.5">
+          <RefreshCw className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <p className="text-sm text-amber-300">Sync your account to populate audience data.</p>
+        </div>
+      )}
+
+      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-3 text-xs text-blue-300">
+        Demographic breakdowns (age, gender, city) require Meta Marketing API v18+ audience insights endpoint, which activates once your ad account is connected and synced.
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: 'Best Segment ROAS',  value: '6.2x', sub: 'Retargeting 30d' },
-          { label: 'Top Age Group',      value: '25–34', sub: '4.4x ROAS' },
-          { label: 'Saturated Segments', value: '2', sub: 'Needs refresh' },
-          { label: 'Audience Reach',     value: '6.7M', sub: 'Total addressable' },
+          { label: 'Platforms',  value: String(byPlatform.size) },
+          { label: 'Best ROAS',  value: hasData ? `${bestRoas}x` : '—' },
+          { label: 'Lowest CPA', value: hasData && lowestCpa > 0 ? `₹${lowestCpa}` : '—' },
+          { label: 'Top CTR',    value: hasData ? `${topCtr}%` : '—' },
         ].map(k => (
           <div key={k.label} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
             <p className="text-xs text-zinc-500 mb-1">{k.label}</p>
             <p className="text-2xl font-bold text-white font-mono">{k.value}</p>
-            <p className="text-xs text-zinc-500 mt-1">{k.sub}</p>
           </div>
         ))}
       </div>
 
-      {/* Segment Table */}
+      <AudienceCharts platformData={platformData} />
+
+      {/* Platform Table */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-        <p className="text-sm font-semibold text-white mb-4">Audience Segment Performance</p>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm min-w-[600px]">
-            <thead>
-              <tr className="text-xs text-zinc-500 uppercase tracking-wider border-b border-zinc-800">
-                <th className="text-left pb-3 font-medium">Segment</th>
-                <th className="text-right pb-3 font-medium">Size</th>
-                <th className="text-right pb-3 font-medium">Spend</th>
-                <th className="text-right pb-3 font-medium">ROAS</th>
-                <th className="text-right pb-3 font-medium">CPA</th>
-                <th className="text-right pb-3 font-medium">CTR</th>
-                <th className="text-center pb-3 font-medium">Status</th>
+        <p className="text-sm font-semibold text-white mb-4">Platform Audience Performance</p>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-xs text-zinc-500 uppercase tracking-wider border-b border-zinc-800">
+              <th className="text-left pb-3 font-medium">Platform</th>
+              <th className="text-right pb-3 font-medium">Spend</th>
+              <th className="text-right pb-3 font-medium">Revenue</th>
+              <th className="text-right pb-3 font-medium">ROAS</th>
+              <th className="text-right pb-3 font-medium">CPA</th>
+              <th className="text-right pb-3 font-medium">CTR</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-zinc-800">
+            {platformData.map(p => (
+              <tr key={p.platform} className="hover:bg-zinc-800/40">
+                <td className="py-3 text-white font-medium capitalize">{p.name}</td>
+                <td className="py-3 text-right font-mono text-zinc-300">{fmtINR(p.spend)}</td>
+                <td className="py-3 text-right font-mono text-zinc-300">{fmtINR(p.revenue)}</td>
+                <td className={`py-3 text-right font-mono ${p.roas >= 4 ? 'text-emerald-400' : p.roas >= 2 ? 'text-yellow-400' : 'text-red-400'}`}>{p.roas}x</td>
+                <td className="py-3 text-right font-mono text-zinc-300">{p.cpa > 0 ? `₹${p.cpa}` : '—'}</td>
+                <td className="py-3 text-right font-mono text-zinc-300">{p.ctr}%</td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-800">
-              {segments.map(s => {
-                const sc = statusConfig[s.status]
-                return (
-                  <tr key={s.name} className="hover:bg-zinc-800/40">
-                    <td className="py-3 text-white font-medium">{s.name}</td>
-                    <td className="py-3 text-right font-mono text-zinc-400">{(s.size/1000).toFixed(0)}k</td>
-                    <td className="py-3 text-right font-mono text-zinc-300">₹{(s.spend/1000).toFixed(0)}k</td>
-                    <td className={`py-3 text-right font-mono ${s.roas >= 4 ? 'text-emerald-400' : s.roas >= 3 ? 'text-yellow-400' : 'text-red-400'}`}>{s.roas}x</td>
-                    <td className="py-3 text-right font-mono text-zinc-300">₹{s.cpa}</td>
-                    <td className="py-3 text-right font-mono text-zinc-300">{s.ctr}%</td>
-                    <td className="py-3 text-center">
-                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${sc.bg} ${sc.color}`}>{s.status}</span>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Age Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-          <p className="text-sm font-semibold text-white mb-1">Revenue by Age Group</p>
-          <p className="text-xs text-zinc-500 mb-4">All platforms combined</p>
-          <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={ageData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false}/>
-              <XAxis dataKey="age" tick={{ fill: '#a1a1aa', fontSize: 11 }} axisLine={false} tickLine={false}/>
-              <YAxis tickFormatter={v => `₹${v/1000}k`} tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false}/>
-              <Tooltip contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => [`₹${(v/1000).toFixed(0)}k`]}/>
-              <Bar dataKey="revenue" name="Revenue" fill="#34d399" radius={[4, 4, 0, 0]}/>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-          <p className="text-sm font-semibold text-white mb-1">CPA by Age Group</p>
-          <p className="text-xs text-zinc-500 mb-4">Lower = better</p>
-          <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={ageData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false}/>
-              <XAxis dataKey="age" tick={{ fill: '#a1a1aa', fontSize: 11 }} axisLine={false} tickLine={false}/>
-              <YAxis tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false}/>
-              <Tooltip contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => [`₹${v}`]}/>
-              <Bar dataKey="cpa" name="CPA ₹" fill="#f97316" radius={[4, 4, 0, 0]}/>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )

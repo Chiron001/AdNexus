@@ -20,25 +20,43 @@ async function metaFetch<T>(url: string): Promise<T> {
 
 export async function fetchCampaignInsights(
   accessToken: string,
-  accountId: string,
-  datePreset = 'last_30d'
+  accountId: string
 ): Promise<MetaCampaignInsight[]> {
   return withRetry(async () => {
     const fields = [
       'campaign_id', 'campaign_name', 'spend', 'impressions', 'clicks',
       'reach', 'frequency', 'actions', 'action_values', 'ctr', 'cpc', 'cpm', 'cpp',
+      'date_start', 'date_stop',
     ].join(',')
+
+    // Fetch last 2 years of daily campaign data
+    const until = new Date().toISOString().split('T')[0]
+    const sinceDate = new Date()
+    sinceDate.setFullYear(sinceDate.getFullYear() - 2)
+    const since = sinceDate.toISOString().split('T')[0]
 
     const params = new URLSearchParams({
       fields,
       level: 'campaign',
-      date_preset: datePreset,
+      time_range: JSON.stringify({ since, until }),
+      time_increment: '1',
       access_token: accessToken,
+      limit: '500',
     })
 
     const url = `${BASE_URL}/act_${accountId}/insights?${params.toString()}`
-    const data = await metaFetch<{ data: MetaCampaignInsight[] }>(url)
-    return data.data ?? []
+    const data = await metaFetch<{ data: MetaCampaignInsight[]; paging?: { next?: string } }>(url)
+
+    // Follow pagination to get all rows
+    let allRows = data.data ?? []
+    let next = data.paging?.next
+    while (next) {
+      const page = await metaFetch<{ data: MetaCampaignInsight[]; paging?: { next?: string } }>(next)
+      allRows = allRows.concat(page.data ?? [])
+      next = page.paging?.next
+    }
+
+    return allRows
   }, 3)
 }
 

@@ -1,9 +1,12 @@
 import type { GoogleTokenResponse } from '@/types/google'
 
-export function getGoogleAuthUrl(): string {
+export function getGoogleAuthUrl(): string | null {
+  const clientId = process.env.GOOGLE_CLIENT_ID
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI
+  if (!clientId || clientId === 'your_google_client_id' || !redirectUri) return null
   const params = new URLSearchParams({
-    client_id: process.env.GOOGLE_CLIENT_ID!,
-    redirect_uri: process.env.GOOGLE_REDIRECT_URI!,
+    client_id: clientId,
+    redirect_uri: redirectUri,
     scope: 'https://www.googleapis.com/auth/adwords',
     response_type: 'code',
     access_type: 'offline',

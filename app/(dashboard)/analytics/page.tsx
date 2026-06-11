@@ -1,83 +1,153 @@
-'use client'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { NoAccounts } from '@/components/shared/NoAccounts'
+import { SyncButton } from '@/components/shared/SyncButton'
+import { TrendChart, RoasTrendChart, PlatformBarChart } from './AnalyticsCharts'
+import { RefreshCw } from 'lucide-react'
 
-import {
-  LineChart, Line, AreaChart, Area, BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-} from 'recharts'
+const PLATFORM_COLORS: Record<string, string> = { meta: '#3b82f6', google: '#22c55e', amazon: '#f97316' }
+const PLATFORM_LABELS: Record<string, string> = { meta: 'Meta Ads', google: 'Google Ads', amazon: 'Amazon Ads' }
 
-const trend = [
-  { day: 'Jun 1',  spend: 12000, revenue: 54000, roas: 4.5 },
-  { day: 'Jun 3',  spend: 14000, revenue: 59000, roas: 4.2 },
-  { day: 'Jun 5',  spend: 11000, revenue: 51000, roas: 4.6 },
-  { day: 'Jun 7',  spend: 16000, revenue: 72000, roas: 4.5 },
-  { day: 'Jun 9',  spend: 18000, revenue: 83000, roas: 4.6 },
-  { day: 'Jun 11', spend: 15000, revenue: 64000, roas: 4.3 },
-  { day: 'Jun 13', spend: 20000, revenue: 96000, roas: 4.8 },
-  { day: 'Jun 15', spend: 22000, revenue: 99000, roas: 4.5 },
-  { day: 'Jun 17', spend: 19000, revenue: 88000, roas: 4.6 },
-  { day: 'Jun 19', spend: 24000, revenue: 110000, roas: 4.6 },
-  { day: 'Jun 21', spend: 21000, revenue: 96000, roas: 4.6 },
-  { day: 'Jun 23', spend: 26000, revenue: 124000, roas: 4.8 },
-  { day: 'Jun 25', spend: 23000, revenue: 108000, roas: 4.7 },
-  { day: 'Jun 27', spend: 28000, revenue: 135000, roas: 4.8 },
-  { day: 'Jun 29', spend: 25000, revenue: 119000, roas: 4.8 },
-]
+export default async function AnalyticsPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
-const platforms = [
-  { name: 'Meta Ads',    spend: 244000, revenue: 1080000, roas: 4.4, cpa: 142, color: '#3b82f6' },
-  { name: 'Google Ads',  spend: 126000, revenue: 560000,  roas: 4.4, cpa: 158, color: '#ef4444' },
-  { name: 'Amazon Ads',  spend: 50000,  revenue: 220000,  roas: 4.4, cpa: 167, color: '#f97316' },
-]
+  const { data: accounts } = await supabase
+    .from('ad_accounts')
+    .select('id, platform, account_name, last_synced_at')
+    .eq('user_id', user.id)
+    .eq('status', 'active')
 
-const kpis = [
-  { label: 'Total Spend',    value: '₹4.2L',  change: '+12.4%', up: true  },
-  { label: 'Total Revenue',  value: '₹18.6L', change: '+8.1%',  up: true  },
-  { label: 'Blended ROAS',   value: '4.43x',  change: '-2.3%',  up: false },
-  { label: 'Conversions',    value: '2,841',   change: '+19.2%', up: true  },
-  { label: 'Avg CPA',        value: '₹148',    change: '-6.7%',  up: true  },
-  { label: 'Blended CTR',    value: '2.18%',   change: '+0.4pt', up: true  },
-]
+  if (!accounts || accounts.length === 0) {
+    return <NoAccounts section="Performance Analytics" />
+  }
 
-const fmt = (v: number) => `₹${(v / 1000).toFixed(0)}k`
+  const accountIds = accounts.map(a => a.id)
+  const neverSynced = accounts.every(a => !a.last_synced_at)
 
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (!active || !payload?.length) return null
-  return (
-    <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-xs shadow-xl">
-      <p className="text-zinc-400 mb-1">{label}</p>
-      {payload.map((p: any) => (
-        <p key={p.name} style={{ color: p.color }}>{p.name}: {p.name === 'ROAS' ? `${p.value}x` : fmt(p.value)}</p>
-      ))}
-    </div>
-  )
-}
+  const since = new Date()
+  since.setFullYear(since.getFullYear() - 2)
 
-export default function AnalyticsPage() {
+  const { data: rawMetrics } = await supabase
+    .from('campaign_metrics')
+    .select('date, platform, spend, revenue, impressions, clicks, conversions, roas, cpm')
+    .in('ad_account_id', accountIds)
+    .gte('date', since.toISOString().split('T')[0])
+    .order('date')
+
+  const metrics = rawMetrics ?? []
+  const hasData = metrics.length > 0
+
+  // Aggregate totals
+  const totals = metrics.reduce((acc, m) => ({
+    spend:       acc.spend + (m.spend ?? 0),
+    revenue:     acc.revenue + (m.revenue ?? 0),
+    impressions: acc.impressions + (m.impressions ?? 0),
+    clicks:      acc.clicks + (m.clicks ?? 0),
+    conversions: acc.conversions + (m.conversions ?? 0),
+  }), { spend: 0, revenue: 0, impressions: 0, clicks: 0, conversions: 0 })
+
+  const blendedRoas = totals.spend > 0 ? totals.revenue / totals.spend : 0
+  const avgCpa      = totals.conversions > 0 ? totals.spend / totals.conversions : 0
+  const avgCtr      = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0
+
+  // Group by date for trend
+  const byDate = new Map<string, { spend: number; revenue: number }>()
+  for (const m of metrics) {
+    const key = m.date.slice(0, 10)
+    const prev = byDate.get(key) ?? { spend: 0, revenue: 0 }
+    byDate.set(key, {
+      spend:   prev.spend + (m.spend ?? 0),
+      revenue: prev.revenue + (m.revenue ?? 0),
+    })
+  }
+  const trend = Array.from(byDate.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, v]) => ({
+      day:     date.slice(5),
+      spend:   Math.round(v.spend),
+      revenue: Math.round(v.revenue),
+      roas:    v.spend > 0 ? Math.round((v.revenue / v.spend) * 100) / 100 : 0,
+    }))
+
+  // Group by platform
+  const byPlatform = new Map<string, { spend: number; revenue: number; conversions: number }>()
+  for (const m of metrics) {
+    const prev = byPlatform.get(m.platform) ?? { spend: 0, revenue: 0, conversions: 0 }
+    byPlatform.set(m.platform, {
+      spend:       prev.spend + (m.spend ?? 0),
+      revenue:     prev.revenue + (m.revenue ?? 0),
+      conversions: prev.conversions + (m.conversions ?? 0),
+    })
+  }
+
+  // If no data, create placeholder rows per connected platform
+  const platformRows = hasData
+    ? Array.from(byPlatform.entries())
+    : accounts.map(a => [a.platform, { spend: 0, revenue: 0, conversions: 0 }] as [string, { spend: number; revenue: number; conversions: number }])
+
+  const platforms = platformRows.map(([platform, v]) => ({
+    name:    PLATFORM_LABELS[platform] ?? platform,
+    spend:   Math.round(v.spend),
+    revenue: Math.round(v.revenue),
+    roas:    v.spend > 0 ? Math.round((v.revenue / v.spend) * 100) / 100 : 0,
+    cpa:     v.conversions > 0 ? Math.round(v.spend / v.conversions) : 0,
+    color:   PLATFORM_COLORS[platform] ?? '#6b7280',
+    pct:     totals.spend > 0 ? Math.round((v.spend / totals.spend) * 100) : 0,
+  }))
+
+  const fmtINR = (v: number) => v >= 100000 ? `₹${(v / 100000).toFixed(1)}L` : v > 0 ? `₹${(v / 1000).toFixed(0)}k` : '₹0'
+
+  const kpis = [
+    { label: 'Total Spend',   value: fmtINR(totals.spend) },
+    { label: 'Total Revenue', value: fmtINR(totals.revenue) },
+    { label: 'Blended ROAS',  value: `${blendedRoas.toFixed(2)}x` },
+    { label: 'Conversions',   value: totals.conversions.toLocaleString('en-IN') },
+    { label: 'Avg CPA',       value: totals.conversions > 0 ? `₹${Math.round(avgCpa).toLocaleString('en-IN')}` : '—' },
+    { label: 'Blended CTR',   value: `${avgCtr.toFixed(2)}%` },
+  ]
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Performance Analytics</h1>
-          <p className="text-zinc-400 text-sm mt-0.5">Cross-platform overview · Last 30 days</p>
+          <p className="text-zinc-400 text-sm mt-0.5">
+            {accounts.map(a => a.account_name ?? a.platform).join(' · ')} · Last 2 years
+          </p>
         </div>
-        <select className="bg-zinc-800 border border-zinc-700 text-zinc-300 text-sm rounded-lg px-3 py-2 focus:outline-none">
-          <option>Last 30 days</option>
-          <option>Last 14 days</option>
-          <option>Last 7 days</option>
-          <option>Last 90 days</option>
-        </select>
+        <div className="flex items-center gap-2">
+          {accounts.map(a => (
+            <SyncButton key={a.id} accountId={a.id} platform={a.platform} />
+          ))}
+        </div>
       </div>
+
+      {/* Sync banner when no data */}
+      {!hasData && (
+        <div className="flex items-start gap-3 bg-amber-500/[0.08] border border-amber-500/25 rounded-xl px-4 py-3.5">
+          <RefreshCw className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-amber-300">
+              {neverSynced ? 'Sync your account to populate this dashboard' : 'No campaign activity found in the last 2 years'}
+            </p>
+            <p className="text-xs text-amber-400/70 mt-0.5">
+              {neverSynced
+                ? 'Click "Sync" above to pull your campaign data from Meta, Google, or Amazon.'
+                : 'Your account was synced but no campaign data was returned. Confirm your campaigns are active in Ads Manager.'}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-        {kpis.map((k) => (
+        {kpis.map(k => (
           <div key={k.label} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
             <p className="text-xs text-zinc-500 mb-1">{k.label}</p>
-            <p className="text-2xl font-bold text-white font-mono">{k.value}</p>
-            <p className={`text-xs font-mono mt-1 ${k.up ? 'text-emerald-400' : 'text-red-400'}`}>
-              {k.up ? '↑' : '↓'} {k.change}
-            </p>
+            <p className={`text-2xl font-bold font-mono ${hasData ? 'text-white' : 'text-zinc-600'}`}>{k.value}</p>
           </div>
         ))}
       </div>
@@ -87,70 +157,43 @@ export default function AnalyticsPage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-sm font-semibold text-white">Revenue vs Spend</p>
-            <p className="text-xs text-zinc-500 mt-0.5">Daily · All platforms combined</p>
+            <p className="text-xs text-zinc-500 mt-0.5">Daily · All platforms</p>
           </div>
           <div className="flex gap-4 text-xs font-mono">
-            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block"/>Revenue</span>
-            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-400 inline-block"/>Spend</span>
+            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />Revenue</span>
+            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-400 inline-block" />Spend</span>
           </div>
         </div>
-        <ResponsiveContainer width="100%" height={220}>
-          <AreaChart data={trend}>
-            <defs>
-              <linearGradient id="gRev" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#34d399" stopOpacity={0.15}/>
-                <stop offset="95%" stopColor="#34d399" stopOpacity={0}/>
-              </linearGradient>
-              <linearGradient id="gSpend" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.15}/>
-                <stop offset="95%" stopColor="#60a5fa" stopOpacity={0}/>
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-            <XAxis dataKey="day" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false}/>
-            <YAxis tickFormatter={fmt} tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false}/>
-            <Tooltip content={<CustomTooltip />} />
-            <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#34d399" fill="url(#gRev)" strokeWidth={2}/>
-            <Area type="monotone" dataKey="spend" name="Spend" stroke="#60a5fa" fill="url(#gSpend)" strokeWidth={2}/>
-          </AreaChart>
-        </ResponsiveContainer>
+        {hasData ? <TrendChart data={trend} /> : (
+          <div className="h-48 flex items-center justify-center border border-dashed border-zinc-800 rounded-lg">
+            <p className="text-sm text-zinc-600">Sync your account to see the trend chart</p>
+          </div>
+        )}
       </div>
 
-      {/* ROAS Trend + Platform Split */}
+      {/* ROAS + Platform Split */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* ROAS Trend */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
           <p className="text-sm font-semibold text-white mb-1">ROAS Trend</p>
           <p className="text-xs text-zinc-500 mb-4">Daily blended ROAS</p>
-          <ResponsiveContainer width="100%" height={180}>
-            <LineChart data={trend}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a"/>
-              <XAxis dataKey="day" tick={{ fill: '#71717a', fontSize: 10 }} axisLine={false} tickLine={false}/>
-              <YAxis domain={[3.5, 5.5]} tick={{ fill: '#71717a', fontSize: 10 }} axisLine={false} tickLine={false}/>
-              <Tooltip contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => [`${v}x`]}/>
-              <Line type="monotone" dataKey="roas" name="ROAS" stroke="#a78bfa" strokeWidth={2} dot={false}/>
-            </LineChart>
-          </ResponsiveContainer>
+          {hasData ? <RoasTrendChart data={trend} /> : (
+            <div className="h-48 flex items-center justify-center border border-dashed border-zinc-800 rounded-lg">
+              <p className="text-sm text-zinc-600">No data yet</p>
+            </div>
+          )}
         </div>
-
-        {/* Platform Breakdown */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
           <p className="text-sm font-semibold text-white mb-1">Platform Contribution</p>
           <p className="text-xs text-zinc-500 mb-4">Spend & Revenue by platform</p>
-          <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={platforms} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" horizontal={false}/>
-              <XAxis type="number" tickFormatter={fmt} tick={{ fill: '#71717a', fontSize: 10 }} axisLine={false} tickLine={false}/>
-              <YAxis type="category" dataKey="name" tick={{ fill: '#a1a1aa', fontSize: 11 }} axisLine={false} tickLine={false} width={80}/>
-              <Tooltip contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => [fmt(v)]}/>
-              <Bar dataKey="spend" name="Spend" fill="#3b82f6" radius={[0, 4, 4, 0]}/>
-              <Bar dataKey="revenue" name="Revenue" fill="#34d399" radius={[0, 4, 4, 0]}/>
-            </BarChart>
-          </ResponsiveContainer>
+          {hasData ? <PlatformBarChart data={platforms} /> : (
+            <div className="h-48 flex items-center justify-center border border-dashed border-zinc-800 rounded-lg">
+              <p className="text-sm text-zinc-600">No data yet</p>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Platform KPI Table */}
+      {/* Platform Table */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
         <p className="text-sm font-semibold text-white mb-4">Platform Breakdown</p>
         <table className="w-full text-sm">
@@ -165,24 +208,24 @@ export default function AnalyticsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-800">
-            {platforms.map((p) => (
+            {platforms.map(p => (
               <tr key={p.name} className="hover:bg-zinc-800/40 transition-colors">
-                <td className="py-3">
-                  <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ background: p.color }}/>
-                    <span className="text-white font-medium">{p.name}</span>
-                  </span>
+                <td className="py-3 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: p.color }} />
+                  <span className={`font-medium ${hasData ? 'text-white' : 'text-zinc-500'}`}>{p.name}</span>
                 </td>
-                <td className="py-3 text-right font-mono text-zinc-300">₹{(p.spend/1000).toFixed(0)}k</td>
-                <td className="py-3 text-right font-mono text-zinc-300">₹{(p.revenue/100000).toFixed(2)}L</td>
-                <td className="py-3 text-right font-mono text-emerald-400">{p.roas}x</td>
-                <td className="py-3 text-right font-mono text-zinc-300">₹{p.cpa}</td>
+                <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>{fmtINR(p.spend)}</td>
+                <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>{fmtINR(p.revenue)}</td>
+                <td className={`py-3 text-right font-mono ${hasData ? 'text-emerald-400' : 'text-zinc-600'}`}>{p.roas}x</td>
+                <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>
+                  {p.cpa > 0 ? `₹${p.cpa.toLocaleString('en-IN')}` : '—'}
+                </td>
                 <td className="py-3 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${(p.spend / 420000) * 100}%`, background: p.color }}/>
+                      <div className="h-full rounded-full" style={{ width: `${p.pct}%`, background: p.color }} />
                     </div>
-                    <span className="text-zinc-400 text-xs font-mono">{Math.round((p.spend / 420000) * 100)}%</span>
+                    <span className="text-zinc-400 text-xs font-mono">{p.pct}%</span>
                   </div>
                 </td>
               </tr>

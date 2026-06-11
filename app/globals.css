@@ -480,15 +480,13 @@ section, footer, nav { position: relative; z-index: 1; }
   pointer-events: none;
 }
 
-/* ── Scroll progress bar ─────────────────────────── */
-.scroll-progress {
-  position: fixed;
-  top: 0; left: 0;
-  height: 2px;
-  z-index: 9999;
-  pointer-events: none;
-  background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #06b6d4 100%);
-  transition: width 0.05s linear;
+
+/* ── Bento scan-line sweep ───────────────────────── */
+@keyframes scanLine {
+  0%   { transform: translateY(-60px); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateY(160px); opacity: 0; }
 }
 
 /* ── AI Orb ──────────────────────────────────────── */

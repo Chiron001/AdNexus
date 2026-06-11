@@ -3,11 +3,14 @@ import type { MetaTokenResponse, MetaAdAccount } from '@/types/meta'
 const META_API_VERSION = 'v20.0'
 const BASE_URL = `https://graph.facebook.com/${META_API_VERSION}`
 
-export function getMetaAuthUrl(): string {
+export function getMetaAuthUrl(): string | null {
+  const appId = process.env.META_APP_ID
+  const redirectUri = process.env.META_REDIRECT_URI
+  if (!appId || appId === 'your_meta_app_id' || !redirectUri) return null
   const state = Math.random().toString(36).substring(2, 15)
   const params = new URLSearchParams({
-    client_id: process.env.META_APP_ID!,
-    redirect_uri: process.env.META_REDIRECT_URI!,
+    client_id: appId,
+    redirect_uri: redirectUri,
     scope: 'ads_read,business_management',
     state,
     response_type: 'code',

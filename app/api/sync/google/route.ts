@@ -36,6 +36,8 @@ export async function POST(request: NextRequest) {
       .select()
       .single()
 
+    const syncLogId = syncLog?.id ?? null
+
     try {
       // Refresh access token (Google tokens expire in 1 hour)
       let accessToken = account.access_token
@@ -132,15 +134,17 @@ export async function POST(request: NextRequest) {
         .update({ last_synced_at: new Date().toISOString() })
         .eq('id', account.id)
 
-      await supabase
-        .from('sync_logs')
-        .update({
-          status: 'completed',
-          campaigns_synced: campaigns.length,
-          issues_found: issues.length,
-          completed_at: new Date().toISOString(),
-        })
-        .eq('id', syncLog!.id)
+      if (syncLogId) {
+        await supabase
+          .from('sync_logs')
+          .update({
+            status: 'completed',
+            campaigns_synced: campaigns.length,
+            issues_found: issues.length,
+            completed_at: new Date().toISOString(),
+          })
+          .eq('id', syncLogId)
+      }
 
       return Response.json({
         success: true,
@@ -148,14 +152,16 @@ export async function POST(request: NextRequest) {
         issues_found: issues.length,
       })
     } catch (syncError) {
-      await supabase
-        .from('sync_logs')
-        .update({
-          status: 'failed',
-          error_message: syncError instanceof Error ? syncError.message : 'Unknown error',
-          completed_at: new Date().toISOString(),
-        })
-        .eq('id', syncLog!.id)
+      if (syncLogId) {
+        await supabase
+          .from('sync_logs')
+          .update({
+            status: 'failed',
+            error_message: syncError instanceof Error ? syncError.message : 'Unknown error',
+            completed_at: new Date().toISOString(),
+          })
+          .eq('id', syncLogId)
+      }
       throw syncError
     }
   } catch (error) {

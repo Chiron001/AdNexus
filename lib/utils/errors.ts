@@ -45,9 +45,10 @@ export async function withRetry<T>(
 }
 
 export function apiErrorResponse(error: unknown, route: string): Response {
+  const message = getErrorMessage(error)
   console.error(`[${route}] error:`, error)
   return Response.json(
-    { error: 'Something went wrong. Please try again.' },
+    { error: message },
     { status: 500 }
   )
 }

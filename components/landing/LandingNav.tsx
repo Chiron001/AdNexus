@@ -110,7 +110,7 @@ export function LandingNav() {
               <Link href="/customers" className="px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.05] rounded-lg transition-all duration-150">
                 Customers
               </Link>
-              <Link href="/#ai-engine" className="flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg transition-all duration-150 font-semibold text-purple-400/90 hover:text-purple-300 hover:bg-purple-500/[0.08]">
+              <Link href="/ai-engine" className="flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg transition-all duration-150 font-semibold text-purple-400/90 hover:text-purple-300 hover:bg-purple-500/[0.08]">
                 <Cpu className="w-3.5 h-3.5" />
                 AdNexus AI
                 <span className="text-[9px] font-bold px-1.5 py-0.5 bg-purple-500/20 text-purple-300 rounded-full ml-0.5">New</span>
@@ -171,7 +171,7 @@ export function LandingNav() {
                 <p className="text-[11px] font-bold text-gray-600 uppercase tracking-widest mb-4">Overview</p>
                 {[
                   { icon: LayoutGrid, label: 'Platform Overview', desc: 'The complete ad health OS for D2C brands', color: 'text-blue-400', bg: 'bg-blue-500/10', href: '/platform' },
-                  { icon: Cpu, label: 'AdNexus AI', desc: 'Claude-powered fix recommendations', color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/platform' },
+                  { icon: Cpu, label: 'AdNexus AI', desc: 'Claude-powered fix recommendations', color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/ai-engine' },
                 ].map(({ icon: Icon, label, desc, color, bg, href }) => (
                   <Link key={label} href={href} className="group flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors mb-1">
                     <div className={`w-8 h-8 rounded-lg ${bg} flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform`}>
@@ -190,13 +190,13 @@ export function LandingNav() {
                 <p className="text-[11px] font-bold text-gray-600 uppercase tracking-widest mb-4">Capabilities</p>
                 <div className="space-y-0.5">
                   {[
-                    { icon: Activity, label: 'Diagnostic Engine',   desc: '30 checks per sync',   color: 'text-cyan-400' },
-                    { icon: Bell,     label: 'Real-time Alerts',     desc: 'Instant email alerts', color: 'text-amber-400' },
-                    { icon: FileText, label: 'Audit Reports',        desc: 'White-label PDFs',     color: 'text-green-400' },
-                    { icon: Shield,   label: 'Health Scoring',       desc: 'Per-platform score',   color: 'text-rose-400' },
-                    { icon: TrendingUp, label: 'Revenue Impact',     desc: 'Rupee cost per issue', color: 'text-blue-400' },
-                  ].map(({ icon: Icon, label, desc, color }) => (
-                    <Link key={label} href="/platform" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/[0.05] transition-colors group">
+                    { icon: Activity,   label: 'Diagnostic Engine', desc: '30 checks per sync',   color: 'text-cyan-400',   href: '/platform/diagnostic-engine' },
+                    { icon: Bell,       label: 'Real-time Alerts',  desc: 'Instant email alerts', color: 'text-amber-400',  href: '/platform/alerts' },
+                    { icon: FileText,   label: 'Audit Reports',     desc: 'White-label PDFs',     color: 'text-green-400',  href: '/platform/audit-reports' },
+                    { icon: Shield,     label: 'Health Scoring',    desc: 'Per-platform score',   color: 'text-rose-400',   href: '/platform/health-scoring' },
+                    { icon: TrendingUp, label: 'Revenue Impact',    desc: 'Rupee cost per issue', color: 'text-blue-400',   href: '/platform/revenue-impact' },
+                  ].map(({ icon: Icon, label, desc, color, href }) => (
+                    <Link key={label} href={href} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/[0.05] transition-colors group">
                       <Icon className={`w-4 h-4 ${color} shrink-0`} />
                       <div>
                         <p className="text-sm text-white">{label}</p>
@@ -213,9 +213,9 @@ export function LandingNav() {
                 <p className="text-[11px] font-bold text-gray-600 uppercase tracking-widest mb-4">Channels</p>
                 <div className="space-y-1">
                   {[
-                    { letter: 'M', label: 'Meta Ads',    desc: 'Facebook & Instagram',  color: 'from-blue-600 to-blue-700',     href: '/platform#meta' },
-                    { letter: 'G', label: 'Google Ads',  desc: 'Search & Shopping',     color: 'from-green-600 to-green-700',   href: '/platform#google' },
-                    { letter: 'A', label: 'Amazon Ads',  desc: 'Sponsored Products',    color: 'from-orange-500 to-orange-700', href: '/platform#amazon' },
+                    { letter: 'M', label: 'Meta Ads',    desc: 'Facebook & Instagram',  color: 'from-blue-600 to-blue-700',     href: '/platform/meta' },
+                    { letter: 'G', label: 'Google Ads',  desc: 'Search & Shopping',     color: 'from-green-600 to-green-700',   href: '/platform/google' },
+                    { letter: 'A', label: 'Amazon Ads',  desc: 'Sponsored Products',    color: 'from-orange-500 to-orange-700', href: '/platform/amazon' },
                   ].map(({ letter, label, desc, color, href }) => (
                     <Link key={label} href={href} className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors group">
                       <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${color} flex items-center justify-center text-white text-sm font-bold shrink-0 group-hover:scale-105 transition-transform shadow-lg`}>
@@ -264,14 +264,14 @@ export function LandingNav() {
               <div className="col-span-3 grid grid-cols-3 gap-2">
                 <p className="col-span-3 text-[11px] font-bold text-gray-600 uppercase tracking-widest mb-2">Industries we serve</p>
                 {[
-                  { icon: ShoppingBag, label: 'D2C E-commerce',      desc: 'Brands selling direct to consumer', color: 'text-blue-400',   bg: 'bg-blue-500/10' },
-                  { icon: Globe,       label: 'Fashion & Lifestyle',  desc: 'Apparel, beauty, accessories',      color: 'text-pink-400',   bg: 'bg-pink-500/10' },
-                  { icon: Heart,       label: 'Health & Wellness',    desc: 'Supplements and personal care',     color: 'text-red-400',    bg: 'bg-red-500/10' },
-                  { icon: Briefcase,   label: 'Performance Agencies', desc: 'Agencies managing multiple brands', color: 'text-purple-400', bg: 'bg-purple-500/10' },
-                  { icon: Plane,       label: 'Travel & Lifestyle',   desc: 'Travel, hospitality, experiences',  color: 'text-cyan-400',   bg: 'bg-cyan-500/10' },
-                  { icon: Users,       label: 'Enterprise Brands',    desc: 'Large multi-channel spenders',      color: 'text-amber-400',  bg: 'bg-amber-500/10' },
-                ].map(({ icon: Icon, label, desc, color, bg }) => (
-                  <Link key={label} href="/customers" className="group flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors">
+                  { icon: ShoppingBag, label: 'D2C E-commerce',      desc: 'Brands selling direct to consumer', color: 'text-blue-400',   bg: 'bg-blue-500/10',   href: '/industries/d2c-ecommerce' },
+                  { icon: Globe,       label: 'Fashion & Lifestyle',  desc: 'Apparel, beauty, accessories',      color: 'text-pink-400',   bg: 'bg-pink-500/10',   href: '/industries/fashion-lifestyle' },
+                  { icon: Heart,       label: 'Health & Wellness',    desc: 'Supplements and personal care',     color: 'text-red-400',    bg: 'bg-red-500/10',    href: '/industries/health-wellness' },
+                  { icon: Briefcase,   label: 'Performance Agencies', desc: 'Agencies managing multiple brands', color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/industries/performance-agencies' },
+                  { icon: Plane,       label: 'Travel & Lifestyle',   desc: 'Travel, hospitality, experiences',  color: 'text-cyan-400',   bg: 'bg-cyan-500/10',   href: '/industries/travel-lifestyle' },
+                  { icon: Users,       label: 'Enterprise Brands',    desc: 'Large multi-channel spenders',      color: 'text-amber-400',  bg: 'bg-amber-500/10',  href: '/industries/enterprise-brands' },
+                ].map(({ icon: Icon, label, desc, color, bg, href }) => (
+                  <Link key={label} href={href} className="group flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors">
                     <div className={`w-8 h-8 rounded-lg ${bg} flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform`}>
                       <Icon className={`w-4 h-4 ${color}`} />
                     </div>
@@ -314,12 +314,12 @@ export function LandingNav() {
               <div className="col-span-2 grid grid-cols-2 gap-2">
                 <p className="col-span-2 text-[11px] font-bold text-gray-600 uppercase tracking-widest mb-2">Learn and grow</p>
                 {[
-                  { icon: BookOpen,       label: 'Blog',           desc: 'Insights and tips',       color: 'text-blue-400',   bg: 'bg-blue-500/10' },
-                  { icon: PlayCircle,     label: 'Platform Tour',  desc: 'See AdNexus in action',   color: 'text-green-400',  bg: 'bg-green-500/10' },
-                  { icon: FileText,       label: 'Case Studies',   desc: 'Real brand results',      color: 'text-purple-400', bg: 'bg-purple-500/10' },
-                  { icon: MessageSquare,  label: 'Help Center',    desc: 'Docs and support',        color: 'text-amber-400',  bg: 'bg-amber-500/10' },
-                ].map(({ icon: Icon, label, desc, color, bg }) => (
-                  <Link key={label} href="#" className="group flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors">
+                  { icon: BookOpen,       label: 'Blog',           desc: 'Insights and tips',       color: 'text-blue-400',   bg: 'bg-blue-500/10',   href: '/blog' },
+                  { icon: PlayCircle,     label: 'Platform Tour',  desc: 'See AdNexus in action',   color: 'text-green-400',  bg: 'bg-green-500/10',  href: '/platform-tour' },
+                  { icon: FileText,       label: 'Case Studies',   desc: 'Real brand results',      color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/case-studies' },
+                  { icon: MessageSquare,  label: 'Help Center',    desc: 'Docs and support',        color: 'text-amber-400',  bg: 'bg-amber-500/10',  href: '/help-center' },
+                ].map(({ icon: Icon, label, desc, color, bg, href }) => (
+                  <Link key={label} href={href} className="group flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors">
                     <div className={`w-8 h-8 rounded-lg ${bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
                       <Icon className={`w-4 h-4 ${color}`} />
                     </div>
@@ -348,8 +348,8 @@ export function LandingNav() {
                 <div className="space-y-1">
                   {[
                     { label: 'Free Account Diagnostic', badge: 'Free', href: '/signup',  badgeColor: 'bg-green-500/15 text-green-400' },
-                    { label: 'ROAS Calculator',          badge: 'New',  href: '#',        badgeColor: 'bg-blue-500/15 text-blue-400' },
-                    { label: 'Ad Health Scorecard',      badge: '',     href: '#',        badgeColor: '' },
+                    { label: 'ROAS Calculator',          badge: 'New',  href: '/tools/roas-calculator',     badgeColor: 'bg-blue-500/15 text-blue-400' },
+                    { label: 'Ad Health Scorecard',      badge: '',     href: '/tools/ad-health-scorecard', badgeColor: '' },
                   ].map(({ label, badge, href, badgeColor }) => (
                     <Link key={label} href={href} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/[0.05] transition-colors group">
                       <p className="text-sm text-gray-300 group-hover:text-white transition-colors">{label}</p>
@@ -405,9 +405,9 @@ export function LandingNav() {
                   <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-3">OVERVIEW</p>
                   {[
                     { icon: LayoutGrid, label: 'Platform Overview', desc: 'The complete ad health OS for D2C brands', color: 'text-blue-400',   bg: 'bg-blue-500/10' },
-                    { icon: Cpu,        label: 'AdNexus AI',         desc: 'Claude-powered fix recommendations',       color: 'text-purple-400', bg: 'bg-purple-500/10' },
-                  ].map(({ icon: Icon, label, desc, color, bg }) => (
-                    <Link key={label} href="/platform" onClick={() => setMobileOpen(false)}
+                    { icon: Cpu,        label: 'AdNexus AI',         desc: 'Claude-powered fix recommendations',       color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/ai-engine' },
+                  ].map(({ icon: Icon, label, desc, color, bg, href }) => (
+                    <Link key={label} href={href ?? '/platform'} onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-3.5 py-3 rounded-xl hover:bg-white/[0.04] px-2 -mx-2 transition-colors">
                       <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
                         <Icon className={`w-5 h-5 ${color}`} />
@@ -420,12 +420,12 @@ export function LandingNav() {
                   ))}
                   <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mt-5 mb-3">CAPABILITIES</p>
                   {[
-                    { icon: Activity,   label: 'Diagnostic Engine', desc: '30 checks per sync',   color: 'text-cyan-400',   bg: 'bg-cyan-500/10' },
-                    { icon: Bell,       label: 'Real-time Alerts',  desc: 'Instant email alerts', color: 'text-amber-400',  bg: 'bg-amber-500/10' },
-                    { icon: FileText,   label: 'Audit Reports',     desc: 'White-label PDFs',     color: 'text-green-400',  bg: 'bg-green-500/10' },
-                    { icon: Shield,     label: 'Health Scoring',    desc: 'Per-platform score',   color: 'text-rose-400',   bg: 'bg-rose-500/10' },
-                  ].map(({ icon: Icon, label, desc, color, bg }) => (
-                    <Link key={label} href="/platform" onClick={() => setMobileOpen(false)}
+                    { icon: Activity,   label: 'Diagnostic Engine', desc: '30 checks per sync',   color: 'text-cyan-400',   bg: 'bg-cyan-500/10',   href: '/platform/diagnostic-engine' },
+                    { icon: Bell,       label: 'Real-time Alerts',  desc: 'Instant email alerts', color: 'text-amber-400',  bg: 'bg-amber-500/10',  href: '/platform/alerts' },
+                    { icon: FileText,   label: 'Audit Reports',     desc: 'White-label PDFs',     color: 'text-green-400',  bg: 'bg-green-500/10',  href: '/platform/audit-reports' },
+                    { icon: Shield,     label: 'Health Scoring',    desc: 'Per-platform score',   color: 'text-rose-400',   bg: 'bg-rose-500/10',   href: '/platform/health-scoring' },
+                  ].map(({ icon: Icon, label, desc, color, bg, href }) => (
+                    <Link key={label} href={href} onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-3.5 py-3 rounded-xl hover:bg-white/[0.04] px-2 -mx-2 transition-colors">
                       <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
                         <Icon className={`w-5 h-5 ${color}`} />
@@ -449,16 +449,18 @@ export function LandingNav() {
                 <span className="text-[1.55rem] font-black uppercase tracking-tight text-white group-hover:text-blue-300 transition-colors">Industries</span>
                 <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${mobileExpanded === 'Industries' ? 'rotate-180 text-blue-400' : ''}`} />
               </button>
-              <div className={`overflow-hidden transition-all duration-300 ${mobileExpanded === 'Industries' ? 'max-h-[500px]' : 'max-h-0'}`}>
+              <div className={`overflow-hidden transition-all duration-300 ${mobileExpanded === 'Industries' ? 'max-h-[700px]' : 'max-h-0'}`}>
                 <div className="px-5 pb-6">
                   <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-3">INDUSTRIES WE SERVE</p>
                   {[
-                    { icon: ShoppingBag, label: 'D2C E-commerce',      desc: 'Brands selling direct to consumer', color: 'text-blue-400',   bg: 'bg-blue-500/10' },
-                    { icon: Globe,       label: 'Fashion & Lifestyle',  desc: 'Apparel, beauty, accessories',      color: 'text-pink-400',   bg: 'bg-pink-500/10' },
-                    { icon: Heart,       label: 'Health & Wellness',    desc: 'Supplements and personal care',     color: 'text-red-400',    bg: 'bg-red-500/10' },
-                    { icon: Briefcase,   label: 'Performance Agencies', desc: 'Agencies managing multiple brands', color: 'text-purple-400', bg: 'bg-purple-500/10' },
-                  ].map(({ icon: Icon, label, desc, color, bg }) => (
-                    <Link key={label} href="/customers" onClick={() => setMobileOpen(false)}
+                    { icon: ShoppingBag, label: 'D2C E-commerce',      desc: 'Brands selling direct to consumer', color: 'text-blue-400',   bg: 'bg-blue-500/10',   href: '/industries/d2c-ecommerce' },
+                    { icon: Globe,       label: 'Fashion & Lifestyle',  desc: 'Apparel, beauty, accessories',      color: 'text-pink-400',   bg: 'bg-pink-500/10',   href: '/industries/fashion-lifestyle' },
+                    { icon: Heart,       label: 'Health & Wellness',    desc: 'Supplements and personal care',     color: 'text-red-400',    bg: 'bg-red-500/10',    href: '/industries/health-wellness' },
+                    { icon: Briefcase,   label: 'Performance Agencies', desc: 'Agencies managing multiple brands', color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/industries/performance-agencies' },
+                    { icon: Plane,       label: 'Travel & Lifestyle',   desc: 'Travel, hospitality, experiences',  color: 'text-cyan-400',   bg: 'bg-cyan-500/10',   href: '/industries/travel-lifestyle' },
+                    { icon: Users,       label: 'Enterprise Brands',    desc: 'Large multi-channel spenders',      color: 'text-amber-400',  bg: 'bg-amber-500/10',  href: '/industries/enterprise-brands' },
+                  ].map(({ icon: Icon, label, desc, color, bg, href }) => (
+                    <Link key={label} href={href} onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-3.5 py-3 rounded-xl hover:bg-white/[0.04] px-2 -mx-2 transition-colors">
                       <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
                         <Icon className={`w-5 h-5 ${color}`} />
@@ -474,7 +476,7 @@ export function LandingNav() {
             </div>
 
             {/* AdNexus AI — direct link */}
-            <Link href="/#ai-engine" onClick={() => setMobileOpen(false)}
+            <Link href="/ai-engine" onClick={() => setMobileOpen(false)}
               className="flex items-center justify-between px-5 py-5 border-b border-white/[0.07] group">
               <span className="text-[1.55rem] font-black uppercase tracking-tight text-purple-400 group-hover:text-purple-300 transition-colors flex items-center gap-3">
                 AdNexus AI
@@ -505,12 +507,12 @@ export function LandingNav() {
                 <div className="px-5 pb-6">
                   <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-3">LEARN & GROW</p>
                   {[
-                    { icon: BookOpen,      label: 'Blog',          desc: 'Insights and tips for ad performance', color: 'text-blue-400',   bg: 'bg-blue-500/10' },
-                    { icon: PlayCircle,    label: 'Platform Tour',  desc: 'See AdNexus in action',                color: 'text-green-400',  bg: 'bg-green-500/10' },
-                    { icon: FileText,      label: 'Case Studies',   desc: 'Real brand results and stories',       color: 'text-purple-400', bg: 'bg-purple-500/10' },
-                    { icon: MessageSquare, label: 'Help Center',    desc: 'Docs, guides and support',             color: 'text-amber-400',  bg: 'bg-amber-500/10' },
-                  ].map(({ icon: Icon, label, desc, color, bg }) => (
-                    <Link key={label} href="#" onClick={() => setMobileOpen(false)}
+                    { icon: BookOpen,      label: 'Blog',          desc: 'Insights and tips for ad performance', color: 'text-blue-400',   bg: 'bg-blue-500/10',   href: '/blog' },
+                    { icon: PlayCircle,    label: 'Platform Tour',  desc: 'See AdNexus in action',                color: 'text-green-400',  bg: 'bg-green-500/10',  href: '/platform-tour' },
+                    { icon: FileText,      label: 'Case Studies',   desc: 'Real brand results and stories',       color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/case-studies' },
+                    { icon: MessageSquare, label: 'Help Center',    desc: 'Docs, guides and support',             color: 'text-amber-400',  bg: 'bg-amber-500/10',  href: '/help-center' },
+                  ].map(({ icon: Icon, label, desc, color, bg, href }) => (
+                    <Link key={label} href={href} onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-3.5 py-3 rounded-xl hover:bg-white/[0.04] px-2 -mx-2 transition-colors">
                       <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
                         <Icon className={`w-5 h-5 ${color}`} />

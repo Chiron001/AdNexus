@@ -2,12 +2,15 @@ import type { AmazonTokenResponse, AmazonProfile } from '@/types/amazon'
 
 const AMAZON_ADS_API = 'https://advertising-api-fe.amazon.com'
 
-export function getAmazonAuthUrl(): string {
+export function getAmazonAuthUrl(): string | null {
+  const clientId = process.env.AMAZON_CLIENT_ID
+  const redirectUri = process.env.AMAZON_REDIRECT_URI
+  if (!clientId || clientId === 'your_amazon_client_id' || !redirectUri) return null
   const params = new URLSearchParams({
-    client_id: process.env.AMAZON_CLIENT_ID!,
+    client_id: clientId,
     scope: 'advertising::campaign_management',
     response_type: 'code',
-    redirect_uri: process.env.AMAZON_REDIRECT_URI!,
+    redirect_uri: redirectUri,
     state: Math.random().toString(36).substring(2, 15),
   })
   return `https://www.amazon.com/ap/oa?${params.toString()}`

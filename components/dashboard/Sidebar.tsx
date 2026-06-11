@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Link2, AlertTriangle, Lightbulb,
   FileText, Settings, Zap, BarChart3, Palette,
-  Wallet, Brain, TrendingDown, Target, Bell, Users, Funnel,
+  Wallet, Brain, TrendingDown, Target, Bell, Users, Plug,
 } from 'lucide-react'
 
 const navGroups = [
@@ -39,8 +39,9 @@ const navGroups = [
   {
     label: 'Account',
     items: [
-      { href: '/reports',  label: 'Reports',  icon: FileText },
-      { href: '/settings', label: 'Settings', icon: Settings },
+      { href: '/reports',               label: 'Reports',      icon: FileText },
+      { href: '/settings/integrations', label: 'Integrations', icon: Plug     },
+      { href: '/settings',              label: 'Settings',     icon: Settings },
     ],
   },
 ]
@@ -81,7 +82,7 @@ export function Sidebar({ plan, userName, onNavigate }: SidebarProps) {
             </p>
             <div className="space-y-0.5">
               {group.items.map(({ href, label, icon: Icon }) => {
-                const isActive = pathname === href || (href !== '/analytics' && pathname.startsWith(href + '/'))
+                const isActive = pathname === href || (href !== '/analytics' && href !== '/settings' && pathname.startsWith(href + '/'))
                 return (
                   <Link
                     key={href}

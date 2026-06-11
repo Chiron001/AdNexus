@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     if (!account) return Response.json({ error: 'Account not found' }, { status: 404 })
 
-    // Create sync log
+    // Create sync log (optional — silently skip if table doesn't exist yet)
     const { data: syncLog } = await supabase
       .from('sync_logs')
       .insert({
@@ -36,6 +36,8 @@ export async function POST(request: NextRequest) {
       })
       .select()
       .single()
+
+    const syncLogId = syncLog?.id ?? null
 
     try {
       const [insights, adSets, ads] = await Promise.all([
@@ -110,16 +112,18 @@ export async function POST(request: NextRequest) {
         .update({ last_synced_at: new Date().toISOString() })
         .eq('id', account.id)
 
-      // Complete sync log
-      await supabase
-        .from('sync_logs')
-        .update({
-          status: 'completed',
-          campaigns_synced: insights.length,
-          issues_found: issues.length,
-          completed_at: new Date().toISOString(),
-        })
-        .eq('id', syncLog!.id)
+      // Update sync log if it was created
+      if (syncLogId) {
+        await supabase
+          .from('sync_logs')
+          .update({
+            status: 'completed',
+            campaigns_synced: insights.length,
+            issues_found: issues.length,
+            completed_at: new Date().toISOString(),
+          })
+          .eq('id', syncLogId)
+      }
 
       return Response.json({
         success: true,
@@ -127,14 +131,16 @@ export async function POST(request: NextRequest) {
         issues_found: issues.length,
       })
     } catch (syncError) {
-      await supabase
-        .from('sync_logs')
-        .update({
-          status: 'failed',
-          error_message: syncError instanceof Error ? syncError.message : 'Unknown error',
-          completed_at: new Date().toISOString(),
-        })
-        .eq('id', syncLog!.id)
+      if (syncLogId) {
+        await supabase
+          .from('sync_logs')
+          .update({
+            status: 'failed',
+            error_message: syncError instanceof Error ? syncError.message : 'Unknown error',
+            completed_at: new Date().toISOString(),
+          })
+          .eq('id', syncLogId)
+      }
       throw syncError
     }
   } catch (error) {

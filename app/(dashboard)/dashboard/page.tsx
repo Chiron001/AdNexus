@@ -13,6 +13,7 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 import { formatINR, formatRelativeTime } from '@/lib/utils/format'
+import { SyncButton } from '@/components/shared/SyncButton'
 
 type RecommendationWithIssue = Tables<'recommendations'> & {
   diagnostic_issues: { title: string; platform: string; severity: string } | null
@@ -261,16 +262,19 @@ export default async function DashboardPage() {
                     <p className="text-xs text-zinc-600">
                       {account.last_synced_at
                         ? `Synced ${formatRelativeTime(account.last_synced_at)}`
-                        : 'Never synced'}
+                        : <span className="text-orange-400">Never synced</span>}
                     </p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-zinc-600 h-8 text-xs"
-                      asChild
-                    >
-                      <Link href="/diagnostics">View Issues</Link>
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <SyncButton accountId={account.id} platform={account.platform} />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-zinc-600 h-8 text-xs"
+                        asChild
+                      >
+                        <Link href="/diagnostics">View Issues</Link>
+                      </Button>
+                    </div>
                   </div>
                 </DarkCard>
               )

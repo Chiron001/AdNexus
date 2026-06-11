@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { Loader2, CheckCircle2 } from 'lucide-react'
+import { Loader2, CheckCircle2, Plug, ChevronRight } from 'lucide-react'
+import Link from 'next/link'
 
 const PLAN_BADGE: Record<string, string> = {
   free:   'bg-zinc-800 text-zinc-400 border border-zinc-700',
@@ -106,6 +107,22 @@ export default function SettingsPage() {
         <h2 className="text-2xl font-bold text-white">Settings</h2>
         <p className="text-zinc-500 mt-1 text-sm">Manage your account and preferences.</p>
       </div>
+
+      {/* Integrations shortcut */}
+      <Link href="/settings/integrations">
+        <div className="flex items-center justify-between bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 hover:border-zinc-600 transition-colors cursor-pointer group">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-purple-600/20 border border-purple-500/25 flex items-center justify-center">
+              <Plug className="w-5 h-5 text-purple-400" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white">Platform Integrations</p>
+              <p className="text-xs text-zinc-500 mt-0.5">Connect Meta Ads, Google Ads, and Amazon Ads</p>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-400 transition-colors" />
+        </div>
+      </Link>
 
       {/* Profile */}
       <DarkCard className="p-6">
