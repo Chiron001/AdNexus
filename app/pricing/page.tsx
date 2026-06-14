@@ -28,6 +28,7 @@ const PLANS = [
     desc: 'For brands running serious budgets across multiple platforms.',
     color: 'border-blue-500/40 bg-blue-600/[0.07]',
     badge: 'Most Popular',
+    badgeStyle: 'bg-blue-600 text-white',
     cta: 'Start Growth plan',
     href: '/signup?plan=growth',
     ctaStyle: 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20',
@@ -41,7 +42,7 @@ const PLANS = [
     desc: 'For agencies managing multiple client ad accounts at scale.',
     color: 'border-purple-500/40 bg-purple-600/[0.05]',
     badge: 'AI Included Free',
-    badgeStyle: 'bg-purple-500/20 text-purple-300',
+    badgeStyle: 'bg-purple-600 text-white',
     cta: 'Start Professional plan',
     href: '/signup?plan=agency',
     ctaStyle: 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white shadow-lg shadow-purple-500/20',
@@ -215,11 +216,11 @@ export default function PricingPage() {
       <section className="pb-20">
         {/* Mobile/tablet: horizontal scroll */}
         <div className="px-5 sm:px-6 xl:hidden">
-          <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none' }}>
+          <div className="flex gap-4 overflow-x-auto pb-4 pt-5 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none' }}>
             {PLANS.map((plan) => (
               <div key={plan.key + '-mobile'} className={`relative rounded-2xl border p-6 flex flex-col snap-start shrink-0 w-72 ${plan.color}`}>
                 {plan.badge && (
-                  <span className={`absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 text-[10px] font-bold rounded-full whitespace-nowrap ${plan.badgeStyle ?? 'bg-blue-500/20 text-blue-300'}`}>
+                  <span className={`absolute -top-3.5 left-1/2 -translate-x-1/2 z-10 px-3 py-1 text-[10px] font-bold rounded-full whitespace-nowrap shadow-lg ${plan.badgeStyle ?? 'bg-blue-600 text-white'}`}>
                     {plan.badge}
                   </span>
                 )}
@@ -245,11 +246,11 @@ export default function PricingPage() {
 
         {/* Desktop: 4-column grid */}
         <div className="hidden xl:block px-6 max-w-6xl mx-auto">
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 gap-4 pt-5">
           {PLANS.map((plan) => (
             <div key={plan.key} className={`relative rounded-2xl border p-6 flex flex-col ${plan.color}`}>
               {plan.badge && (
-                <span className={`absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 text-[10px] font-bold rounded-full whitespace-nowrap ${plan.badgeStyle ?? 'bg-blue-500/20 text-blue-300'}`}>
+                <span className={`absolute -top-3.5 left-1/2 -translate-x-1/2 z-10 px-3 py-1 text-[10px] font-bold rounded-full whitespace-nowrap shadow-lg ${plan.badgeStyle ?? 'bg-blue-600 text-white'}`}>
                   {plan.badge}
                 </span>
               )}
