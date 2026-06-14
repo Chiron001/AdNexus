@@ -12,6 +12,8 @@ import {
 
 type MenuKey = 'platform' | 'industries' | 'resources' | null
 
+const USER_URL = process.env.NEXT_PUBLIC_USER_URL ?? ''
+
 export function LandingNav() {
   const [activeMenu, setActiveMenu] = useState<MenuKey>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -133,11 +135,11 @@ export function LandingNav() {
 
             {/* Desktop CTAs */}
             <div className="hidden lg:flex items-center gap-3 shrink-0">
-              <Link href="/login" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-2">
+              <Link href={`${USER_URL}/login`} className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-2">
                 Sign in
               </Link>
               <Link
-                href="/signup"
+                href={`${USER_URL}/signup`}
                 className="btn-blue flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-lg"
               >
                 Get started free
@@ -147,7 +149,7 @@ export function LandingNav() {
 
             {/* Mobile controls */}
             <div className="flex lg:hidden items-center gap-2.5">
-              <Link href="/signup" className="btn-blue px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg">
+              <Link href={`${USER_URL}/signup`} className="btn-blue px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg">
                 Free trial
               </Link>
               <button
@@ -568,11 +570,11 @@ export function LandingNav() {
 
           {/* Bottom CTAs */}
           <div className="px-5 py-6 border-t border-white/[0.08] space-y-3 shrink-0">
-            <Link href="/login" onClick={() => setMobileOpen(false)}
+            <Link href={`${USER_URL}/login`} onClick={() => setMobileOpen(false)}
               className="block text-center text-sm font-medium text-gray-400 hover:text-white transition-colors py-2">
               Login
             </Link>
-            <Link href="/signup" onClick={() => setMobileOpen(false)}
+            <Link href={`${USER_URL}/signup`} onClick={() => setMobileOpen(false)}
               className="btn-blue flex items-center justify-center gap-2 w-full py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold rounded-2xl text-[15px] shadow-lg shadow-blue-500/20 transition-opacity hover:opacity-90">
               Get started free <ArrowRight className="w-4 h-4" />
             </Link>

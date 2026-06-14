@@ -298,9 +298,9 @@ function SignupForm() {
 
         <p className="text-center text-xs text-zinc-700 mt-5">
           By continuing you agree to our{' '}
-          <span className="text-zinc-600 hover:text-zinc-500 cursor-pointer">Terms</span>
+          <a href="https://adnexusone.com/terms" className="text-zinc-600 hover:text-zinc-500">Terms</a>
           {' '}·{' '}
-          <span className="text-zinc-600 hover:text-zinc-500 cursor-pointer">Privacy</span>
+          <a href="https://adnexusone.com/privacy" className="text-zinc-600 hover:text-zinc-500">Privacy</a>
         </p>
       </div>
     </div>
