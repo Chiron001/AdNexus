@@ -82,7 +82,7 @@ export function LandingFooter() {
           <div className="col-span-1 sm:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-6">
             {[
               { title:'Platform', links:[{l:'Platform Overview',h:'/platform'},{l:'Meta Ads',h:'/platform#meta'},{l:'Google Ads',h:'/platform#google'},{l:'Amazon Ads',h:'/platform#amazon'},{l:'AI Diagnostics',h:'/platform#ai'}] },
-              { title:'Company',  links:[{l:'Features',h:'/#features'},{l:'Customers',h:'/customers'},{l:'Pricing',h:'/#pricing'},{l:'Contact us',h:'/contact'},{l:'Resources',h:'/#resources'}] },
+              { title:'Company',  links:[{l:'Features',h:'/#features'},{l:'Customers',h:'/customers'},{l:'Pricing',h:'/pricing'},{l:'Contact us',h:'/contact'},{l:'Resources',h:'/#resources'}] },
               { title:'Resources',links:[{l:'Case Studies',h:'/customers'},{l:'Blog',h:'#'},{l:'Guides',h:'#'},{l:'Help Center',h:'#'}] },
               { title:'Legal',    links:[{l:'Privacy Policy',h:'/privacy'},{l:'Terms of Service',h:'/terms'},{l:'Refund Policy',h:'/refund'},{l:'Cookie Policy',h:'/cookies'}] },
             ].map(({ title, links }) => (

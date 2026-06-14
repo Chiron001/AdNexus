@@ -113,8 +113,8 @@ export function LandingNav() {
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeMenu === key ? 'rotate-180' : ''}`} />
                 </button>
               ))}
-              <Link href="/customers" className="px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.05] rounded-lg transition-all duration-150">
-                Customers
+              <Link href="/pricing" className="px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.05] rounded-lg transition-all duration-150">
+                Pricing
               </Link>
               <Link href="/ai-engine" className="flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg transition-all duration-150 font-semibold text-purple-400/90 hover:text-purple-300 hover:bg-purple-500/[0.08]">
                 <Cpu className="w-3.5 h-3.5" />
@@ -520,12 +520,6 @@ export function LandingNav() {
               </div>
             </Link>
 
-            {/* Customers — direct link */}
-            <Link href="/customers" onClick={() => setMobileOpen(false)}
-              className="flex items-center justify-between px-5 py-5 border-b border-white/[0.07] group">
-              <span className="text-[1.55rem] font-black uppercase tracking-tight text-white group-hover:text-blue-300 transition-colors">Customers</span>
-              <ChevronRight className="w-5 h-5 text-gray-600" />
-            </Link>
 
             {/* Resources */}
             <div className="border-b border-white/[0.07]">
@@ -561,7 +555,7 @@ export function LandingNav() {
             </div>
 
             {/* Pricing — direct link */}
-            <Link href="/#pricing" onClick={() => setMobileOpen(false)}
+            <Link href="/pricing" onClick={() => setMobileOpen(false)}
               className="flex items-center justify-between px-5 py-5 border-b border-white/[0.07] group">
               <span className="text-[1.55rem] font-black uppercase tracking-tight text-white group-hover:text-blue-300 transition-colors">Pricing</span>
               <ChevronRight className="w-5 h-5 text-gray-600" />
