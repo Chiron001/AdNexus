@@ -25,7 +25,7 @@ interface Props {
   plan: 'basic' | 'growth' | 'professional' | 'ai'
   label: string
   className?: string
-  onSuccess?: () => void
+  onSuccess?: (subscriptionId: string) => void
 }
 
 export function CheckoutButton({ plan, label, className, onSuccess }: Props) {
@@ -60,10 +60,11 @@ export function CheckoutButton({ plan, label, className, onSuccess }: Props) {
         },
         theme:   { color: '#7c3aed' },
         modal:   { backdropclose: false },
-        handler: () => {
+        handler: (response: { razorpay_subscription_id?: string }) => {
           toast.success('Payment successful! Activating your plan…')
+          const subId = response?.razorpay_subscription_id ?? data.subscription_id
           if (onSuccess) {
-            setTimeout(() => onSuccess(), 2500)
+            onSuccess(subId)
           } else {
             setTimeout(() => window.location.reload(), 2500)
           }

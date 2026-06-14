@@ -84,7 +84,7 @@ export default function SubscribePage() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name, plan, razorpay_subscription_id')
+        .select('full_name, plan')
         .eq('id', user.id)
         .single()
 
@@ -100,13 +100,28 @@ export default function SubscribePage() {
     check()
   }, [router])
 
-  async function handleSuccess() {
+  async function handleSuccess(subscriptionId: string) {
     setActivating(true)
+    try {
+      // Verify with Razorpay and update plan immediately — don't wait for webhook
+      const res = await fetch('/api/billing/activate', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ subscription_id: subscriptionId }),
+      })
+      if (res.ok) {
+        router.push('/dashboard')
+        return
+      }
+    } catch {
+      // fall through to polling fallback
+    }
+
+    // Fallback: poll Supabase in case activate fails (e.g. Razorpay API delay)
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { router.push('/dashboard'); return }
 
-    // Poll until webhook updates the plan (max 30s)
     let attempts = 0
     const timer = setInterval(async () => {
       attempts++
@@ -115,7 +130,6 @@ export default function SubscribePage() {
         .select('plan')
         .eq('id', user.id)
         .single()
-
       if ((data?.plan && data.plan !== 'free') || attempts >= 15) {
         clearInterval(timer)
         router.push('/dashboard')

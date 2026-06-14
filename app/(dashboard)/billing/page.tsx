@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { CheckoutButton } from '@/components/billing/CheckoutButton'
-import { Zap, Brain, Shield, Calendar, CheckCircle2, AlertCircle, Clock, ArrowUpRight, Sparkles } from 'lucide-react'
+import { Zap, Brain, Shield, Calendar, CheckCircle2, AlertCircle, Clock, ArrowUpRight, Sparkles, Mail, Building2, Infinity as InfinityIcon, Headphones } from 'lucide-react'
 
 /* ── Types ─────────────────────────────────────────── */
 type PlanKey = 'free' | 'basic' | 'growth' | 'professional' | 'agency' | 'custom'
@@ -286,6 +286,61 @@ export default function BillingPage() {
                 />
               )}
             </Card>
+          </div>
+
+          {/* Custom / Enterprise Plan */}
+          <div
+            className="rounded-xl border border-emerald-500/25 p-6 relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(5,150,105,0.03) 50%, rgba(0,0,0,0) 100%)',
+            }}
+          >
+            {/* subtle glow */}
+            <div className="absolute inset-0 pointer-events-none rounded-xl" style={{ boxShadow: 'inset 0 0 60px rgba(16,185,129,0.04)' }} />
+
+            <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+              {/* Left: copy */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                    <Building2 className="w-4 h-4 text-emerald-400" />
+                  </div>
+                  <span className="text-base font-bold text-white">Custom / Enterprise</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">Contact us</span>
+                </div>
+                <p className="text-sm text-zinc-400 mb-4 max-w-lg">
+                  Need more than 50 ad accounts, a dedicated success manager, or a white-label setup for your agency? We&apos;ll build a plan around your exact requirements.
+                </p>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
+                  {[
+                    [InfinityIcon, 'Unlimited ad accounts'],
+                    [CheckCircle2, 'Custom pricing & billing'],
+                    [Brain,        'AI included'],
+                    [Headphones,   'Dedicated account manager'],
+                    [Zap,          'Priority onboarding'],
+                    [Shield,       'SLA & uptime guarantee'],
+                  ].map(([Icon, text]) => (
+                    <div key={text as string} className="flex items-center gap-1.5 text-xs text-zinc-400">
+                      {/* @ts-expect-error dynamic icon */}
+                      <Icon className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                      {text as string}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right: CTA */}
+              <div className="shrink-0 flex flex-col items-center gap-2">
+                <a
+                  href="mailto:info@adnexusone.com?subject=Custom%20Plan%20Enquiry%20-%20Adnexusone&body=Hi%2C%0A%0AI%20am%20interested%20in%20a%20custom%20plan.%20Here%20are%20my%20requirements%3A%0A%0A"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-900/30"
+                >
+                  <Mail className="w-4 h-4" />
+                  Talk to us
+                </a>
+                <p className="text-[11px] text-zinc-600 text-center">We reply within 24 hours</p>
+              </div>
+            </div>
           </div>
 
           {/* AI Add-on */}

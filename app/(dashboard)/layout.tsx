@@ -15,14 +15,14 @@ export default async function DashboardLayout({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, plan, razorpay_subscription_id')
+    .select('full_name, plan')
     .eq('id', user.id)
     .single()
 
-  // Gate: 'free' plan means no active subscription → force subscribe page
-  if (!profile || profile.plan === 'free') {
-    redirect('/onboarding/subscribe')
-  }
+  // Gate: only block if no profile at all OR plan is explicitly 'free'
+  // Any paid plan (basic/growth/professional/agency/custom) goes straight to dashboard
+  if (!profile) redirect('/onboarding/subscribe')
+  if (profile.plan === 'free') redirect('/onboarding/subscribe')
 
   const userName  = profile.full_name || user.email?.split('@')[0] || 'User'
   const userEmail = user.email ?? ''
