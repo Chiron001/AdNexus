@@ -1,12 +1,12 @@
 import type { Plan } from '@/types/database'
 
-export type PlanTier = Plan  // 'free' | 'growth' | 'agency' | 'custom'
+export type PlanTier = Plan  // 'free' | 'basic' | 'growth' | 'professional' | 'agency' | 'custom'
 
 export interface PlanLimits {
   max_ad_accounts: number        // -1 = unlimited
-  max_diagnostic_checks: number  // -1 = unlimited (per month, manual syncs only)
-  sync_cooldown_ms: number       // ms between manual syncs per account (0 = no limit)
-  ai_recommendations: boolean
+  max_diagnostic_checks: number  // -1 = unlimited (per month)
+  sync_cooldown_ms: number       // ms between manual syncs (0 = no limit)
+  ai_recommendations: boolean    // base plan AI (add-on overrides this for basic/growth)
   pdf_reports: boolean
   white_label_reports: boolean
   whatsapp_alerts: boolean
@@ -23,10 +23,28 @@ export interface PlanLimits {
 
 export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
   free: {
-    max_ad_accounts:       1,
-    max_diagnostic_checks: 10,
-    sync_cooldown_ms:      24 * 60 * 60 * 1000, // 24 hours
+    max_ad_accounts:       0,
+    max_diagnostic_checks: 0,
+    sync_cooldown_ms:      0,
     ai_recommendations:    false,
+    pdf_reports:           false,
+    white_label_reports:   false,
+    whatsapp_alerts:       false,
+    api_access:            false,
+    data_retention_days:   0,
+    priority_support:      false,
+    custom_diagnostics:    false,
+    anomaly_detection:     false,
+    creative_analytics:    false,
+    budget_analytics:      false,
+    scheduled_reports:     false,
+    team_seats:            0,
+  },
+  basic: {
+    max_ad_accounts:       2,
+    max_diagnostic_checks: 15,
+    sync_cooldown_ms:      6 * 60 * 60 * 1000, // 6 hours
+    ai_recommendations:    false, // requires AI add-on
     pdf_reports:           false,
     white_label_reports:   false,
     whatsapp_alerts:       false,
@@ -44,7 +62,7 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     max_ad_accounts:       5,
     max_diagnostic_checks: 30,
     sync_cooldown_ms:      60 * 60 * 1000, // 1 hour
-    ai_recommendations:    true,
+    ai_recommendations:    false, // requires AI add-on
     pdf_reports:           true,
     white_label_reports:   false,
     whatsapp_alerts:       true,
@@ -56,12 +74,31 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     creative_analytics:    true,
     budget_analytics:      true,
     scheduled_reports:     false,
-    team_seats:            1,
+    team_seats:            2,
   },
-  agency: {
+  professional: {
     max_ad_accounts:       50,
     max_diagnostic_checks: -1,
     sync_cooldown_ms:      15 * 60 * 1000, // 15 minutes
+    ai_recommendations:    true, // AI included in professional
+    pdf_reports:           true,
+    white_label_reports:   true,
+    whatsapp_alerts:       true,
+    api_access:            true,
+    data_retention_days:   365,
+    priority_support:      true,
+    custom_diagnostics:    true,
+    anomaly_detection:     true,
+    creative_analytics:    true,
+    budget_analytics:      true,
+    scheduled_reports:     true,
+    team_seats:            5,
+  },
+  agency: {
+    // legacy alias for professional — kept so existing DB rows don't break
+    max_ad_accounts:       50,
+    max_diagnostic_checks: -1,
+    sync_cooldown_ms:      15 * 60 * 1000,
     ai_recommendations:    true,
     pdf_reports:           true,
     white_label_reports:   true,
@@ -74,7 +111,7 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     creative_analytics:    true,
     budget_analytics:      true,
     scheduled_reports:     true,
-    team_seats:            3,
+    team_seats:            5,
   },
   custom: {
     max_ad_accounts:       -1,
@@ -100,6 +137,12 @@ export function getPlanLimits(plan: PlanTier): PlanLimits {
   return PLAN_LIMITS[plan] ?? PLAN_LIMITS.free
 }
 
+/** True if user has access to AI features (either via plan or add-on) */
+export function hasAIAccess(plan: PlanTier, has_ai_addon: boolean): boolean {
+  if (plan === 'professional' || plan === 'agency' || plan === 'custom') return true
+  return has_ai_addon
+}
+
 export function canAccessFeature(plan: PlanTier, feature: keyof PlanLimits): boolean {
   const value = getPlanLimits(plan)[feature]
   if (typeof value === 'boolean') return value
@@ -118,7 +161,7 @@ export function isAtCheckLimit(plan: PlanTier, checksUsed: number): boolean {
 }
 
 export function getMinPlanForFeature(feature: keyof PlanLimits): PlanTier {
-  const order: PlanTier[] = ['free', 'growth', 'agency', 'custom']
+  const order: PlanTier[] = ['basic', 'growth', 'professional', 'custom']
   for (const plan of order) {
     if (canAccessFeature(plan, feature)) return plan
   }
@@ -126,19 +169,23 @@ export function getMinPlanForFeature(feature: keyof PlanLimits): PlanTier {
 }
 
 export const PLAN_LEVEL: Record<PlanTier, number> = {
-  free: 0, growth: 1, agency: 2, custom: 3,
+  free: 0, basic: 1, growth: 2, professional: 3, agency: 3, custom: 4,
 }
 
-export const PLAN_DISPLAY: Record<PlanTier, { label: string; price: string; color: string; badgeCls: string }> = {
-  free:   { label: 'Basic',  price: '$19/mo',        color: 'text-zinc-400',   badgeCls: 'bg-zinc-800 text-zinc-400 border border-zinc-700'         },
-  growth: { label: 'Growth', price: '$99/mo',         color: 'text-blue-400',   badgeCls: 'bg-blue-500/15 text-blue-300 border border-blue-500/25'   },
-  agency: { label: 'Professional', price: '$499/mo',  color: 'text-purple-400', badgeCls: 'bg-purple-500/15 text-purple-300 border border-purple-500/25' },
-  custom: { label: 'Custom', price: 'Contact Sales',  color: 'text-emerald-400',badgeCls: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25' },
+export const PLAN_DISPLAY: Record<PlanTier, { label: string; priceInr: string; color: string; badgeCls: string }> = {
+  free:         { label: 'Free',         priceInr: '—',             color: 'text-zinc-400',    badgeCls: 'bg-zinc-800 text-zinc-400 border border-zinc-700'               },
+  basic:        { label: 'Basic',        priceInr: '₹1,800/mo',     color: 'text-teal-400',    badgeCls: 'bg-teal-500/15 text-teal-300 border border-teal-500/25'          },
+  growth:       { label: 'Growth',       priceInr: '₹8,999/mo',     color: 'text-blue-400',    badgeCls: 'bg-blue-500/15 text-blue-300 border border-blue-500/25'          },
+  professional: { label: 'Professional', priceInr: '₹46,999/mo',    color: 'text-purple-400',  badgeCls: 'bg-purple-500/15 text-purple-300 border border-purple-500/25'    },
+  agency:       { label: 'Professional', priceInr: '₹46,999/mo',    color: 'text-purple-400',  badgeCls: 'bg-purple-500/15 text-purple-300 border border-purple-500/25'    },
+  custom:       { label: 'Custom',       priceInr: 'Contact Sales',  color: 'text-emerald-400', badgeCls: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25' },
 }
 
 export const MIN_PLAN_LABELS: Record<PlanTier, string> = {
-  free:   'Basic ($19/mo after 30-day trial)',
-  growth: 'Growth ($99/mo)',
-  agency: 'Professional ($499/mo)',
-  custom: 'Custom',
+  free:         'Basic (₹1,800/mo after 30-day trial)',
+  basic:        'Basic (₹1,800/mo)',
+  growth:       'Growth (₹8,999/mo)',
+  professional: 'Professional (₹46,999/mo)',
+  agency:       'Professional (₹46,999/mo)',
+  custom:       'Custom',
 }
