@@ -14,13 +14,16 @@ interface PageSeo {
   updated_by?: string | null
 }
 
-// Working state uses empty strings for form inputs
 interface PageSeoState {
   id: string; page_path: string; page_name: string; section: string
   meta_title: string; meta_description: string; focus_keyword: string
   og_title: string; og_description: string; og_image_url: string
   canonical_url: string; robots_directive: string; schema_json: string
 }
+
+const INPUT = 'w-full text-sm rounded-lg px-3 py-2 text-white placeholder-zinc-600 outline-none transition-colors'
+const INPUT_STYLE = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }
+const CARD_STYLE = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }
 
 export function PageSeoForm({ initial }: { initial: PageSeo }) {
   const router = useRouter()
@@ -41,7 +44,7 @@ export function PageSeoForm({ initial }: { initial: PageSeo }) {
     schema_json:      initial.schema_json      ?? '',
   })
 
-  const set = (k: keyof PageSeo) => (v: string) => setP(prev => ({ ...prev, [k]: v }))
+  const set = (k: keyof PageSeoState) => (v: string) => setP(prev => ({ ...prev, [k]: v }))
 
   const seoFields = [
     { label: 'Meta Title',       value: p.meta_title,       ideal: { min: 40, max: 60 } },
@@ -82,23 +85,38 @@ export function PageSeoForm({ initial }: { initial: PageSeo }) {
 
   return (
     <div className="p-8 max-w-4xl">
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.push('/admin/seo')} className="p-1.5 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700">
+          <button
+            onClick={() => router.push('/admin/seo')}
+            className="p-1.5 rounded-lg transition-colors text-zinc-500 hover:text-white"
+            style={{ background: 'rgba(255,255,255,0.06)' }}
+          >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
-            <h1 className="text-xl font-bold text-zinc-900">{p.page_name}</h1>
-            <p className="text-sm text-zinc-400">{p.page_path}</p>
+            <h1 className="text-xl font-bold text-white">{p.page_name}</h1>
+            <p className="text-sm text-zinc-600">{p.page_path}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <a href={`https://adnexusone.com${p.page_path}`} target="_blank" rel="noopener noreferrer"
-             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 border border-zinc-200 transition-colors">
+          <a
+            href={`https://adnexusone.com${p.page_path}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-zinc-400 hover:text-white transition-colors"
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+          >
             <ExternalLink className="w-3.5 h-3.5" /> View page
           </a>
-          <button type="button" onClick={save} disabled={pending}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-colors disabled:opacity-60">
+          <button
+            type="button"
+            onClick={save}
+            disabled={pending}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-colors disabled:opacity-60"
+            style={{ background: 'rgba(124,58,237,0.85)' }}
+          >
             <Save className="w-3.5 h-3.5" /> {pending ? 'Saving…' : 'Save Changes'}
           </button>
         </div>
@@ -107,78 +125,86 @@ export function PageSeoForm({ initial }: { initial: PageSeo }) {
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-2 space-y-5">
           {/* Core SEO */}
-          <div className="bg-white border border-zinc-200 rounded-xl p-5 space-y-4">
-            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Core SEO</p>
+          <div className="rounded-xl p-5 space-y-4" style={CARD_STYLE}>
+            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Core SEO</p>
 
             <div>
               <label className="block text-xs font-semibold text-zinc-500 mb-1">FOCUS KEYWORD</label>
-              <input value={p.focus_keyword} onChange={e => set('focus_keyword')(e.target.value)}
-                placeholder="e.g. meta ads diagnostics India" className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300" />
-              <p className="text-[11px] text-zinc-400 mt-1">The primary keyword this page should rank for</p>
+              <input
+                value={p.focus_keyword}
+                onChange={e => set('focus_keyword')(e.target.value)}
+                placeholder="e.g. meta ads diagnostics India"
+                className={INPUT}
+                style={INPUT_STYLE}
+              />
+              <p className="text-[11px] text-zinc-600 mt-1">The primary keyword this page should rank for</p>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs font-semibold text-zinc-500">META TITLE</label>
-                <span className={`text-[10px] ${(p.meta_title?.length ?? 0) > 60 ? 'text-red-500' : 'text-zinc-400'}`}>
-                  {p.meta_title?.length ?? 0}/60 chars
+                <span className={`text-[10px] ${(p.meta_title?.length ?? 0) > 60 ? 'text-red-400' : 'text-zinc-600'}`}>
+                  {p.meta_title?.length ?? 0}/60
                 </span>
               </div>
-              <input value={p.meta_title} onChange={e => set('meta_title')(e.target.value)}
-                placeholder="Keyword-rich title shown in Google · 40–60 characters"
-                className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300" />
+              <input
+                value={p.meta_title}
+                onChange={e => set('meta_title')(e.target.value)}
+                placeholder="Keyword-rich title · 40–60 chars"
+                className={INPUT}
+                style={INPUT_STYLE}
+              />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs font-semibold text-zinc-500">META DESCRIPTION</label>
-                <span className={`text-[10px] ${(p.meta_description?.length ?? 0) > 160 ? 'text-red-500' : 'text-zinc-400'}`}>
-                  {p.meta_description?.length ?? 0}/160 chars
+                <span className={`text-[10px] ${(p.meta_description?.length ?? 0) > 160 ? 'text-red-400' : 'text-zinc-600'}`}>
+                  {p.meta_description?.length ?? 0}/160
                 </span>
               </div>
-              <textarea value={p.meta_description} onChange={e => set('meta_description')(e.target.value)}
-                placeholder="What this page is about — shown in Google results · 100–160 chars"
-                rows={3} className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 outline-none resize-none focus:border-blue-300" />
+              <textarea
+                value={p.meta_description}
+                onChange={e => set('meta_description')(e.target.value)}
+                placeholder="What this page is about — 100–160 chars"
+                rows={3}
+                className={`${INPUT} resize-none`}
+                style={INPUT_STYLE}
+              />
             </div>
 
             {/* Google Preview */}
             {(p.meta_title || p.page_path) && (
-              <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
-                <p className="text-[10px] font-semibold text-zinc-400 mb-2 uppercase tracking-wider">Google Search Preview</p>
-                <p className="text-blue-600 text-sm font-medium truncate">{p.meta_title || p.page_name}</p>
-                <p className="text-green-700 text-xs">adnexusone.com{p.page_path}</p>
-                <p className="text-zinc-600 text-xs mt-1 line-clamp-2">{p.meta_description || 'No description set.'}</p>
+              <div className="rounded-lg p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                <p className="text-[10px] font-bold text-zinc-600 mb-2 uppercase tracking-widest">Google Preview</p>
+                <p className="text-blue-400 text-sm font-medium truncate">{p.meta_title || p.page_name}</p>
+                <p className="text-emerald-500 text-xs">adnexusone.com{p.page_path}</p>
+                <p className="text-zinc-500 text-xs mt-1 line-clamp-2">{p.meta_description || 'No description set.'}</p>
               </div>
             )}
           </div>
 
           {/* Open Graph */}
-          <div className="bg-white border border-zinc-200 rounded-xl p-5 space-y-4">
-            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Open Graph — Social Sharing</p>
+          <div className="rounded-xl p-5 space-y-4" style={CARD_STYLE}>
+            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Open Graph — Social Sharing</p>
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-zinc-400">OG TITLE</label>
-                <span className="text-[10px] text-zinc-400">{p.og_title?.length ?? 0}/60</span>
+                <label className="text-xs font-semibold text-zinc-500">OG TITLE</label>
+                <span className="text-[10px] text-zinc-600">{p.og_title?.length ?? 0}/60</span>
               </div>
-              <input value={p.og_title} onChange={e => set('og_title')(e.target.value)}
-                placeholder="Falls back to Meta Title"
-                className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300" />
+              <input value={p.og_title} onChange={e => set('og_title')(e.target.value)} placeholder="Falls back to Meta Title" className={INPUT} style={INPUT_STYLE} />
             </div>
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-zinc-400">OG DESCRIPTION</label>
-                <span className="text-[10px] text-zinc-400">{p.og_description?.length ?? 0}/160</span>
+                <label className="text-xs font-semibold text-zinc-500">OG DESCRIPTION</label>
+                <span className="text-[10px] text-zinc-600">{p.og_description?.length ?? 0}/160</span>
               </div>
-              <textarea value={p.og_description} onChange={e => set('og_description')(e.target.value)}
-                placeholder="Falls back to Meta Description"
-                rows={2} className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 outline-none resize-none focus:border-blue-300" />
+              <textarea value={p.og_description} onChange={e => set('og_description')(e.target.value)} placeholder="Falls back to Meta Description" rows={2} className={`${INPUT} resize-none`} style={INPUT_STYLE} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1">OG IMAGE (1200×630px)</label>
-              <input value={p.og_image_url} onChange={e => set('og_image_url')(e.target.value)}
-                placeholder="https://..."
-                className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300" />
+              <label className="block text-xs font-semibold text-zinc-500 mb-1">OG IMAGE (1200×630px)</label>
+              <input value={p.og_image_url} onChange={e => set('og_image_url')(e.target.value)} placeholder="https://..." className={INPUT} style={INPUT_STYLE} />
               {p.og_image_url && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={p.og_image_url} alt="OG preview" className="mt-2 w-full h-32 object-cover rounded-lg" />
@@ -187,32 +213,38 @@ export function PageSeoForm({ initial }: { initial: PageSeo }) {
           </div>
 
           {/* Advanced */}
-          <div className="bg-white border border-zinc-200 rounded-xl p-5 space-y-4">
-            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Advanced</p>
+          <div className="rounded-xl p-5 space-y-4" style={CARD_STYLE}>
+            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Advanced</p>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1">CANONICAL URL</label>
-                <input value={p.canonical_url} onChange={e => set('canonical_url')(e.target.value)}
-                  placeholder={`https://adnexusone.com${p.page_path}`}
-                  className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300" />
+                <label className="block text-xs font-semibold text-zinc-500 mb-1">CANONICAL URL</label>
+                <input value={p.canonical_url} onChange={e => set('canonical_url')(e.target.value)} placeholder={`https://adnexusone.com${p.page_path}`} className={INPUT} style={INPUT_STYLE} />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1">ROBOTS</label>
-                <select value={p.robots_directive} onChange={e => set('robots_directive')(e.target.value)}
-                  className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 outline-none bg-white">
-                  <option value="index,follow">index, follow</option>
-                  <option value="noindex,follow">noindex, follow</option>
-                  <option value="index,nofollow">index, nofollow</option>
-                  <option value="noindex,nofollow">noindex, nofollow</option>
+                <label className="block text-xs font-semibold text-zinc-500 mb-1">ROBOTS</label>
+                <select
+                  value={p.robots_directive}
+                  onChange={e => set('robots_directive')(e.target.value)}
+                  className="w-full text-sm rounded-lg px-3 py-2 text-white outline-none"
+                  style={{ ...INPUT_STYLE, background: 'rgba(255,255,255,0.06)' }}
+                >
+                  <option value="index,follow"    style={{ background: '#0f0f1a' }}>index, follow</option>
+                  <option value="noindex,follow"  style={{ background: '#0f0f1a' }}>noindex, follow</option>
+                  <option value="index,nofollow"  style={{ background: '#0f0f1a' }}>index, nofollow</option>
+                  <option value="noindex,nofollow" style={{ background: '#0f0f1a' }}>noindex, nofollow</option>
                 </select>
               </div>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1">SCHEMA JSON-LD (optional)</label>
-              <textarea value={p.schema_json} onChange={e => set('schema_json')(e.target.value)}
-                placeholder={'{\n  "@context": "https://schema.org",\n  "@type": "WebPage",\n  "name": "..."\n}'}
-                rows={6} className="w-full text-xs font-mono border border-zinc-200 rounded-lg px-3 py-2 outline-none resize-y focus:border-blue-300" />
-              <p className="text-[11px] text-zinc-400 mt-1">Paste valid JSON-LD structured data. Leave empty to skip.</p>
+              <label className="block text-xs font-semibold text-zinc-500 mb-1">SCHEMA JSON-LD (optional)</label>
+              <textarea
+                value={p.schema_json}
+                onChange={e => set('schema_json')(e.target.value)}
+                placeholder={'{\n  "@context": "https://schema.org",\n  "@type": "WebPage"\n}'}
+                rows={6}
+                className={`${INPUT} text-xs font-mono resize-y`}
+                style={INPUT_STYLE}
+              />
             </div>
           </div>
         </div>
@@ -220,9 +252,9 @@ export function PageSeoForm({ initial }: { initial: PageSeo }) {
         {/* Sidebar */}
         <div className="space-y-4">
           <SeoScoreBar fields={seoFields} />
-          <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-4">
-            <p className="text-xs font-semibold text-zinc-500 mb-2">SEO CHECKLIST</p>
-            <ul className="space-y-2 text-xs text-zinc-600">
+          <div className="rounded-xl p-4" style={CARD_STYLE}>
+            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">SEO CHECKLIST</p>
+            <ul className="space-y-2 text-xs">
               {[
                 { ok: (p.meta_title?.length ?? 0) >= 40 && (p.meta_title?.length ?? 0) <= 60, text: 'Meta title 40–60 chars' },
                 { ok: (p.meta_description?.length ?? 0) >= 100 && (p.meta_description?.length ?? 0) <= 160, text: 'Description 100–160 chars' },
@@ -232,10 +264,10 @@ export function PageSeoForm({ initial }: { initial: PageSeo }) {
                 { ok: !!p.canonical_url, text: 'Canonical URL set' },
               ].map(({ ok, text }) => (
                 <li key={text} className="flex items-center gap-2">
-                  <span className={ok ? 'text-green-500' : 'text-zinc-300'}>
+                  <span className={ok ? 'text-emerald-400' : 'text-zinc-700'}>
                     {ok ? '✓' : '○'}
                   </span>
-                  <span className={ok ? 'text-zinc-700' : 'text-zinc-400'}>{text}</span>
+                  <span className={ok ? 'text-zinc-300' : 'text-zinc-600'}>{text}</span>
                 </li>
               ))}
             </ul>
