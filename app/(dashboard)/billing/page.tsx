@@ -321,7 +321,6 @@ export default function BillingPage() {
                     [Shield,       'SLA & uptime guarantee'],
                   ].map(([Icon, text]) => (
                     <div key={text as string} className="flex items-center gap-1.5 text-xs text-zinc-400">
-                      {/* @ts-expect-error dynamic icon */}
                       <Icon className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                       {text as string}
                     </div>
