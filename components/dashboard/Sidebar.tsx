@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Link2, AlertTriangle, Lightbulb,
   FileText, Settings, Zap, BarChart3, Palette,
   Wallet, Brain, TrendingDown, Target, Bell, Users, Plug,
-  PanelLeftClose, PanelLeftOpen, Lock,
+  PanelLeftClose, PanelLeftOpen, Lock, CreditCard,
 } from 'lucide-react'
 import { PLAN_LEVEL } from '@/lib/config/plans'
 import type { PlanTier } from '@/lib/config/plans'
@@ -50,9 +50,10 @@ const navGroups: { label: string; items: NavItem[] }[] = [
   {
     label: 'Account',
     items: [
-      { href: '/reports',               label: 'Reports',      icon: FileText, minPlan: 'growth' },
-      { href: '/settings/integrations', label: 'Integrations', icon: Plug                        },
-      { href: '/settings',              label: 'Settings',     icon: Settings                    },
+      { href: '/reports',               label: 'Reports',      icon: FileText,    minPlan: 'growth' },
+      { href: '/settings/integrations', label: 'Integrations', icon: Plug                          },
+      { href: '/billing',               label: 'Billing',      icon: CreditCard                    },
+      { href: '/settings',              label: 'Settings',     icon: Settings                      },
     ],
   },
 ]

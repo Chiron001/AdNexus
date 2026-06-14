@@ -19,7 +19,8 @@ export default async function DashboardLayout({
     .eq('id', user.id)
     .single()
 
-  const userName = profile?.full_name || user.email?.split('@')[0] || 'User'
+  const userName  = profile?.full_name || user.email?.split('@')[0] || 'User'
+  const userEmail = user.email ?? ''
   const plan = (profile?.plan as 'free' | 'growth' | 'agency' | 'custom') || 'free'
 
   return (
@@ -38,7 +39,7 @@ export default async function DashboardLayout({
       </div>
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <Topbar userName={userName} plan={plan} />
+        <Topbar userName={userName} userEmail={userEmail} plan={plan} />
         <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
       </div>
     </div>
