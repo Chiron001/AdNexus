@@ -216,7 +216,7 @@ export default function BillingPage() {
               <p className="text-2xl font-black text-teal-400 mt-2">₹1,800<span className="text-sm font-normal text-zinc-500">/mo</span></p>
               <p className="text-[11px] text-teal-600 font-medium mb-3">30-day free trial</p>
               <ul className="space-y-1.5 text-xs text-zinc-400 mb-5 flex-1">
-                <li>✓ 2 ad accounts</li>
+                <li>✓ 1 ad account (Meta, Google, or Amazon)</li>
                 <li>✓ 15 diagnostic checks/mo</li>
                 <li>✓ Meta, Google & Amazon</li>
                 <li>✗ AI (requires add-on)</li>

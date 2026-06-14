@@ -17,7 +17,7 @@ const PLANS = [
     color: 'teal',
     icon: Shield,
     features: [
-      '2 ad accounts (Meta, Google, Amazon)',
+      '1 ad account (Meta, Google, or Amazon)',
       '15 diagnostic checks per month',
       'Issue detection & recommendations',
       'Add AI features for ₹6,499/mo extra',
