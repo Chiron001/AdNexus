@@ -243,10 +243,10 @@ const PRICING_PLANS = [
   },
   {
     name: 'Professional', price: '499', per: 'per month',
-    desc: 'For agencies managing multiple client ad accounts. Includes Adnexusone AI Engine free.',
+    desc: 'For agencies managing multiple client ad accounts.',
     features: ['50 ad accounts', 'Adnexusone AI Engine (included)', 'White-label PDFs', 'Priority support'],
     allFeatures: ['API access', 'Team collaboration', 'Client portal', 'Custom branding', 'Issue assignment', 'Multi-user roles', 'Dedicated onboarding', 'SLA commitment'],
-    cta: 'Start Professional plan', href: '/signup?plan=agency', highlight: false, custom: false,
+    cta: 'Start Professional plan', href: '/signup?plan=agency', highlight: false, custom: false, aiIncluded: true,
   },
   {
     name: 'Custom', price: 'Custom', per: 'contact for pricing',
@@ -935,8 +935,8 @@ export default function HomePage() {
             </div>
             {/* Desktop — 4 columns */}
             <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {PRICING_PLANS.map(({ name, price, per, desc, features, allFeatures, cta, href, highlight, custom }) => (
-                <div key={name} className={`stagger-child relative p-6 rounded-2xl border flex flex-col ${highlight ? 'border-blue-500/40 bg-blue-600/[0.07]' : custom ? 'border-amber-500/25 bg-amber-500/[0.04] glow-card' : 'border-white/[0.07] bg-white/[0.02] glow-card'}`}>
+              {PRICING_PLANS.map(({ name, price, per, desc, features, allFeatures, cta, href, highlight, custom, aiIncluded }) => (
+                <div key={name} className={`stagger-child relative p-6 rounded-2xl border flex flex-col ${highlight ? 'border-blue-500/40 bg-blue-600/[0.07]' : custom ? 'border-amber-500/25 bg-amber-500/[0.04] glow-card' : aiIncluded ? 'border-purple-500/40 bg-purple-600/[0.05] glow-card' : 'border-white/[0.07] bg-white/[0.02] glow-card'}`}>
                   {highlight && <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-bold rounded-full shadow-lg shadow-blue-500/25 whitespace-nowrap">Most popular</span>}
                   <p className="text-sm font-semibold text-gray-400 mb-2">{name}</p>
                   {custom ? (
@@ -945,9 +945,20 @@ export default function HomePage() {
                     <div className="flex items-baseline gap-0.5"><span className="text-sm text-gray-500">$</span><span className="text-3xl font-black text-white tabular-nums">{price}</span></div>
                   )}
                   <p className="text-xs text-gray-500 mt-1 mb-3">{per}</p>
+                  {aiIncluded && (
+                    <div className="flex items-center gap-1.5 mb-3 px-2.5 py-1.5 rounded-lg bg-yellow-500/10 border border-yellow-500/30 w-fit">
+                      <Zap className="w-3 h-3 text-yellow-400 shrink-0" />
+                      <span className="text-[11px] font-bold text-yellow-400 uppercase tracking-wide">Adnexusone AI Engine — Included Free</span>
+                    </div>
+                  )}
                   <p className="text-sm text-gray-400 mb-5 leading-relaxed">{desc}</p>
                   <ul className="space-y-2 flex-1 mb-4">
-                    {features.map((f) => <li key={f} className="flex items-center gap-2 text-sm text-gray-400"><CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" />{f}</li>)}
+                    {features.map((f) => (
+                      <li key={f} className={`flex items-center gap-2 text-sm ${aiIncluded && f.includes('AI Engine') ? 'text-white font-semibold' : 'text-gray-400'}`}>
+                        <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${aiIncluded && f.includes('AI Engine') ? 'text-yellow-400' : 'text-green-500'}`} />
+                        {f}
+                      </li>
+                    ))}
                   </ul>
                   {/* Expandable allFeatures */}
                   <button
@@ -972,9 +983,9 @@ export default function HomePage() {
                 items={PRICING_PLANS}
                 initialIndex={1}
                 renderItem={(item) => {
-                  const { name, price, per, desc, features, allFeatures, cta, href, highlight, custom } = item as typeof PRICING_PLANS[0]
+                  const { name, price, per, desc, features, allFeatures, cta, href, highlight, custom, aiIncluded } = item as typeof PRICING_PLANS[0]
                   return (
-                    <div className={`p-6 rounded-2xl border flex flex-col mx-2 ${highlight ? 'border-blue-500/40 bg-blue-600/[0.07]' : custom ? 'border-amber-500/25 bg-amber-500/[0.04]' : 'border-white/[0.07] bg-white/[0.02]'}`}>
+                    <div className={`p-6 rounded-2xl border flex flex-col mx-2 ${highlight ? 'border-blue-500/40 bg-blue-600/[0.07]' : custom ? 'border-amber-500/25 bg-amber-500/[0.04]' : aiIncluded ? 'border-purple-500/40 bg-purple-600/[0.05]' : 'border-white/[0.07] bg-white/[0.02]'}`}>
                       {highlight && (
                         <div className="flex justify-center mb-3">
                           <span className="px-3 py-0.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-bold rounded-full">Most popular</span>
@@ -987,9 +998,20 @@ export default function HomePage() {
                         <div className="flex items-baseline gap-0.5 mb-1"><span className="text-sm text-gray-500">$</span><span className="text-4xl font-black text-white">{price}</span></div>
                       )}
                       <p className="text-xs text-gray-500 mb-3">{per}</p>
+                      {aiIncluded && (
+                        <div className="flex items-center gap-1.5 mb-3 px-2.5 py-1.5 rounded-lg bg-yellow-500/10 border border-yellow-500/30 w-fit">
+                          <Zap className="w-3 h-3 text-yellow-400 shrink-0" />
+                          <span className="text-[11px] font-bold text-yellow-400 uppercase tracking-wide">AI Engine — Included Free</span>
+                        </div>
+                      )}
                       <p className="text-sm text-gray-400 mb-4 leading-relaxed">{desc}</p>
                       <ul className="space-y-2 mb-4">
-                        {features.map((f) => <li key={f} className="flex items-center gap-2 text-sm text-gray-400"><CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" />{f}</li>)}
+                        {features.map((f) => (
+                          <li key={f} className={`flex items-center gap-2 text-sm ${aiIncluded && f.includes('AI Engine') ? 'text-white font-semibold' : 'text-gray-400'}`}>
+                            <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${aiIncluded && f.includes('AI Engine') ? 'text-yellow-400' : 'text-green-500'}`} />
+                            {f}
+                          </li>
+                        ))}
                       </ul>
                       <button
                         onClick={() => setExpandedPlan(expandedPlan === name ? null : name)}
