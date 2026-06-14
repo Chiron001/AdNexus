@@ -50,10 +50,8 @@ const navGroups: { label: string; items: NavItem[] }[] = [
   {
     label: 'Account',
     items: [
-      { href: '/reports',               label: 'Reports',      icon: FileText,    minPlan: 'growth' },
-      { href: '/settings/integrations', label: 'Integrations', icon: Plug                          },
-      { href: '/billing',               label: 'Billing',      icon: CreditCard                    },
-      { href: '/settings',              label: 'Settings',     icon: Settings                      },
+      { href: '/reports',               label: 'Reports',      icon: FileText, minPlan: 'growth' },
+      { href: '/settings/integrations', label: 'Integrations', icon: Plug                        },
     ],
   },
 ]
