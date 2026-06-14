@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Users, CreditCard, Bell, Shield, ArrowLeft, Link2, Activity, Mail } from 'lucide-react'
+import { LayoutDashboard, Users, CreditCard, Bell, Shield, ArrowLeft, Link2, Activity, Mail, FileText, Search } from 'lucide-react'
 
 const NAV = [
   { href: '/admin/dashboard',     icon: LayoutDashboard, label: 'Overview'      },
@@ -12,6 +12,8 @@ const NAV = [
   { href: '/admin/billing',       icon: CreditCard,      label: 'Billing'       },
   { href: '/admin/inquiries',     icon: Mail,            label: 'Inquiries'     },
   { href: '/admin/notifications', icon: Bell,            label: 'Notifications' },
+  { href: '/admin/blog',          icon: FileText,        label: 'Blog'          },
+  { href: '/admin/seo',           icon: Search,          label: 'SEO Manager'   },
 ]
 
 export function AdminSidebar({ role }: { role: string }) {
