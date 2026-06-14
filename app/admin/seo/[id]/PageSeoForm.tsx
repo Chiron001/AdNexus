@@ -7,6 +7,15 @@ import { toast } from 'sonner'
 import { Save, ArrowLeft, ExternalLink } from 'lucide-react'
 
 interface PageSeo {
+  id: string; page_path: string; page_name: string; section: string | null
+  meta_title: string | null; meta_description: string | null; focus_keyword: string | null
+  og_title: string | null; og_description: string | null; og_image_url: string | null
+  canonical_url: string | null; robots_directive: string; schema_json: string | null
+  updated_by?: string | null
+}
+
+// Working state uses empty strings for form inputs
+interface PageSeoState {
   id: string; page_path: string; page_name: string; section: string
   meta_title: string; meta_description: string; focus_keyword: string
   og_title: string; og_description: string; og_image_url: string
@@ -16,7 +25,21 @@ interface PageSeo {
 export function PageSeoForm({ initial }: { initial: PageSeo }) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
-  const [p, setP] = useState<PageSeo>(initial)
+  const [p, setP] = useState<PageSeoState>({
+    id:               initial.id,
+    page_path:        initial.page_path,
+    page_name:        initial.page_name,
+    section:          initial.section          ?? '',
+    meta_title:       initial.meta_title       ?? '',
+    meta_description: initial.meta_description ?? '',
+    focus_keyword:    initial.focus_keyword    ?? '',
+    og_title:         initial.og_title         ?? '',
+    og_description:   initial.og_description   ?? '',
+    og_image_url:     initial.og_image_url     ?? '',
+    canonical_url:    initial.canonical_url    ?? '',
+    robots_directive: initial.robots_directive,
+    schema_json:      initial.schema_json      ?? '',
+  })
 
   const set = (k: keyof PageSeo) => (v: string) => setP(prev => ({ ...prev, [k]: v }))
 

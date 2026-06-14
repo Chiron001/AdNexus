@@ -40,8 +40,8 @@ export async function generateMetadata(
       url:         canonical,
       siteName:    'AdNexus',
       type:        'article',
-      publishedTime: post.published_at,
-      modifiedTime:  post.updated_at,
+      publishedTime: post.published_at  ?? undefined,
+      modifiedTime:  post.updated_at   ?? undefined,
       authors:     [post.author_name],
       ...(ogImage ? { images: [{ url: ogImage, width: 1200, height: 630, alt: title }] } : {}),
     },
@@ -54,7 +54,8 @@ export async function generateMetadata(
   }
 }
 
-function fmtDate(iso: string) {
+function fmtDate(iso: string | null) {
+  if (!iso) return ''
   return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
@@ -157,7 +158,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
           {/* Meta row */}
           <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-400 mb-8 pb-8 border-b border-zinc-100">
             <span className="font-medium text-zinc-600">{post.author_name}</span>
-            <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{fmtDate(post.published_at)}</span>
+            <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{post.published_at ? fmtDate(post.published_at) : ''}</span>
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{post.reading_time_minutes} min read</span>
             <button
               type="button"
@@ -171,7 +172,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
           {/* Article content */}
           <article
             className="blog-content"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
           />
 
           {/* Tags */}

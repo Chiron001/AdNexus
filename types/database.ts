@@ -409,6 +409,147 @@ export interface Database {
         }
         Relationships: []
       }
+      blog_posts: {
+        Row: {
+          id: string
+          title: string
+          slug: string
+          excerpt: string | null
+          content: string | null
+          cover_image_url: string | null
+          author_name: string
+          author_avatar_url: string | null
+          category: string | null
+          tags: string[]
+          status: 'draft' | 'published' | 'scheduled'
+          published_at: string | null
+          reading_time_minutes: number
+          featured: boolean
+          view_count: number
+          seo_title: string | null
+          seo_description: string | null
+          focus_keyword: string | null
+          seo_keywords: string | null
+          og_title: string | null
+          og_description: string | null
+          og_image_url: string | null
+          canonical_url: string | null
+          robots_directive: string
+          schema_type: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          slug: string
+          excerpt?: string | null
+          content?: string | null
+          cover_image_url?: string | null
+          author_name?: string
+          author_avatar_url?: string | null
+          category?: string | null
+          tags?: string[]
+          status?: 'draft' | 'published' | 'scheduled'
+          published_at?: string | null
+          reading_time_minutes?: number
+          featured?: boolean
+          view_count?: number
+          seo_title?: string | null
+          seo_description?: string | null
+          focus_keyword?: string | null
+          seo_keywords?: string | null
+          og_title?: string | null
+          og_description?: string | null
+          og_image_url?: string | null
+          canonical_url?: string | null
+          robots_directive?: string
+          schema_type?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          title?: string
+          slug?: string
+          excerpt?: string | null
+          content?: string | null
+          cover_image_url?: string | null
+          author_name?: string
+          author_avatar_url?: string | null
+          category?: string | null
+          tags?: string[]
+          status?: 'draft' | 'published' | 'scheduled'
+          published_at?: string | null
+          reading_time_minutes?: number
+          featured?: boolean
+          view_count?: number
+          seo_title?: string | null
+          seo_description?: string | null
+          focus_keyword?: string | null
+          seo_keywords?: string | null
+          og_title?: string | null
+          og_description?: string | null
+          og_image_url?: string | null
+          canonical_url?: string | null
+          robots_directive?: string
+          schema_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      page_seo: {
+        Row: {
+          id: string
+          page_path: string
+          page_name: string
+          section: string | null
+          meta_title: string | null
+          meta_description: string | null
+          focus_keyword: string | null
+          og_title: string | null
+          og_description: string | null
+          og_image_url: string | null
+          canonical_url: string | null
+          robots_directive: string
+          schema_json: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          page_path: string
+          page_name: string
+          section?: string | null
+          meta_title?: string | null
+          meta_description?: string | null
+          focus_keyword?: string | null
+          og_title?: string | null
+          og_description?: string | null
+          og_image_url?: string | null
+          canonical_url?: string | null
+          robots_directive?: string
+          schema_json?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          page_path?: string
+          page_name?: string
+          section?: string | null
+          meta_title?: string | null
+          meta_description?: string | null
+          focus_keyword?: string | null
+          og_title?: string | null
+          og_description?: string | null
+          og_image_url?: string | null
+          canonical_url?: string | null
+          robots_directive?: string
+          schema_json?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>
@@ -432,3 +573,5 @@ export type AiInsight        = Tables<'ai_insights'>
 export type Notification     = Tables<'notifications'>
 
 export type Plan = Profile['plan']
+export type BlogPost  = Tables<'blog_posts'>
+export type PageSeo   = Tables<'page_seo'>

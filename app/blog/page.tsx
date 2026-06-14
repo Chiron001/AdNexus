@@ -36,7 +36,8 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-function fmtDate(iso: string) {
+function fmtDate(iso: string | null) {
+  if (!iso) return ''
   return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
