@@ -46,7 +46,7 @@ export function LandingCTA() {
             </Link>
           </div>
         </div>
-        <p className="text-xs text-gray-600">Free plan available. No credit card. Cancel anytime.</p>
+        <p className="text-xs text-gray-600">30-day free trial. No charge until day 30. Cancel anytime.</p>
       </div>
     </section>
   )
@@ -84,7 +84,7 @@ export function LandingFooter() {
               { title:'Platform', links:[{l:'Platform Overview',h:'/platform'},{l:'Meta Ads',h:'/platform#meta'},{l:'Google Ads',h:'/platform#google'},{l:'Amazon Ads',h:'/platform#amazon'},{l:'AI Diagnostics',h:'/platform#ai'}] },
               { title:'Company',  links:[{l:'Features',h:'/#features'},{l:'Customers',h:'/customers'},{l:'Pricing',h:'/#pricing'},{l:'Contact us',h:'/contact'},{l:'Resources',h:'/#resources'}] },
               { title:'Resources',links:[{l:'Case Studies',h:'/customers'},{l:'Blog',h:'#'},{l:'Guides',h:'#'},{l:'Help Center',h:'#'}] },
-              { title:'Account',  links:[{l:'Sign up free',h:'/signup'},{l:'Sign in',h:'/login'},{l:'Growth plan',h:'/signup?plan=growth'},{l:'Professional plan',h:'/signup?plan=agency'}] },
+              { title:'Legal',    links:[{l:'Privacy Policy',h:'/privacy'},{l:'Terms of Service',h:'/terms'},{l:'Refund Policy',h:'/refund'},{l:'Cookie Policy',h:'/cookies'}] },
             ].map(({ title, links }) => (
               <div key={title}>
                 <p className="text-[11px] font-bold text-gray-200 uppercase tracking-widest mb-4">{title}</p>
@@ -98,8 +98,13 @@ export function LandingFooter() {
         <div className="border-t border-white/[0.12] pt-6 flex flex-row items-center justify-between">
           <p className="text-xs text-gray-400">© 2026 Adnexusone. All rights reserved.</p>
           <div className="flex gap-5">
-            {['Privacy','Terms','Cookies'].map(l => (
-              <a key={l} href="#" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">{l}</a>
+            {[
+              { l: 'Privacy',  h: '/privacy'  },
+              { l: 'Terms',    h: '/terms'    },
+              { l: 'Refund',   h: '/refund'   },
+              { l: 'Cookies',  h: '/cookies'  },
+            ].map(({ l, h }) => (
+              <Link key={l} href={h} className="text-xs text-gray-400 hover:text-gray-200 transition-colors">{l}</Link>
             ))}
           </div>
         </div>
