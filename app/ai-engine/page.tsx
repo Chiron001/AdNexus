@@ -49,7 +49,7 @@ const FEATURES = [
   { icon: <Wand2 className="w-4 h-4" />,         iconColor: 'text-blue-400',   iconBg: 'bg-blue-500/10',   title: 'ROAS recovery recommendations', desc: 'Step-by-step fixes with estimated recovery' },
   { icon: <Activity className="w-4 h-4" />,      iconColor: 'text-green-400',  iconBg: 'bg-green-500/10',  title: 'Platform health scoring',      desc: 'Per-platform score updated every sync' },
   { icon: <BarChart3 className="w-4 h-4" />,     iconColor: 'text-yellow-400', iconBg: 'bg-yellow-500/10', title: 'Competitive bid analysis',     desc: 'Benchmark against category benchmarks' },
-  { icon: <Brain className="w-4 h-4" />,         iconColor: 'text-purple-400', iconBg: 'bg-purple-500/10', title: 'AI-written fix instructions',  desc: 'Claude writes every action plan, not templates' },
+  { icon: <Brain className="w-4 h-4" />,         iconColor: 'text-purple-400', iconBg: 'bg-purple-500/10', title: 'AI-written fix instructions',  desc: 'Adnexusone AI writes every action plan, not templates' },
 ]
 
 const DISCOVER_CARDS = [
@@ -137,7 +137,7 @@ function HeroMock() {
             <Cpu className="w-3.5 h-3.5 text-purple-300" />
           </div>
           <span className="text-[11px] font-bold uppercase tracking-wide text-white">AI Fix Generator</span>
-          <span className="ml-auto text-[9px] font-bold px-2 py-0.5 bg-purple-500/15 text-purple-300 rounded-full border border-purple-500/20">Powered by Claude</span>
+          <span className="ml-auto text-[9px] font-bold px-2 py-0.5 bg-purple-500/15 text-purple-300 rounded-full border border-purple-500/20">Adnexusone AI</span>
         </div>
         <div className="p-4">
           <div className="flex items-center gap-2 mb-2">
@@ -203,7 +203,7 @@ function AIFixMock() {
           <Cpu className="w-3.5 h-3.5 text-purple-300" />
         </div>
         <span className="text-[11px] font-bold uppercase tracking-wide text-white">AI Fix Generator</span>
-        <span className="ml-auto text-[9px] font-bold px-2 py-0.5 bg-purple-500/15 text-purple-300 rounded-full border border-purple-500/20">Powered by Claude</span>
+        <span className="ml-auto text-[9px] font-bold px-2 py-0.5 bg-purple-500/15 text-purple-300 rounded-full border border-purple-500/20">Adnexusone AI</span>
       </div>
       <div className="p-4">
         <div className="flex items-center gap-2 mb-3">
@@ -312,7 +312,7 @@ function AskAIMock() {
           <MessageSquare className="w-3.5 h-3.5 text-blue-300" />
         </div>
         <span className="text-[11px] font-bold uppercase tracking-wide text-white">Ask AI</span>
-        <span className="ml-auto text-[9px] font-bold px-2 py-0.5 bg-blue-500/15 text-blue-300 rounded-full border border-blue-500/20">Powered by Claude</span>
+        <span className="ml-auto text-[9px] font-bold px-2 py-0.5 bg-blue-500/15 text-blue-300 rounded-full border border-blue-500/20">Adnexusone AI</span>
       </div>
       <div className="p-4 space-y-3 min-h-[200px]">
         {/* User question bubble */}
@@ -416,7 +416,7 @@ export default function AIPage() {
             <div>
               {/* Tag pill */}
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-purple-500/25 bg-purple-500/[0.08] text-[10px] font-bold text-purple-300 mb-7 stagger-child uppercase tracking-widest">
-                <Cpu className="w-3 h-3" /> AI Engine · Powered by Claude
+                <Cpu className="w-3 h-3" /> AI Engine · Adnexusone AI
               </div>
 
               <h1 className="text-[2rem] sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1] mb-7 stagger-child">
@@ -425,7 +425,7 @@ export default function AIPage() {
               </h1>
 
               <p className="text-gray-400 text-lg sm:text-xl max-w-xl mb-10 leading-relaxed stagger-child">
-                Adnexusone AI monitors Meta, Google, and Amazon 24/7. It surfaces issues ranked by rupee impact and writes the exact fix your team needs — powered by Claude.
+                Adnexusone AI monitors Meta, Google, and Amazon 24/7. It analyses 1,000+ parameters across your accounts, surfaces issues ranked by revenue impact, and writes the exact fix your team needs to act on immediately.
               </p>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 stagger-child">
@@ -465,8 +465,8 @@ export default function AIPage() {
                 icon: <Eye className="w-5 h-5 text-cyan-400" />,
                 iconBg: 'bg-cyan-500/10',
                 label: 'Detect',
-                stat: '30 checks per sync',
-                desc: 'Creative fatigue, broken pixels, zero-conversion spend — caught automatically across Meta, Google, Amazon',
+                stat: '1,000+ checks per sync',
+                desc: 'Creative fatigue, broken pixels, zero-conversion spend, audience overlap, bid inefficiencies — caught automatically across Meta, Google, Amazon',
               },
               {
                 icon: <BarChart3 className="w-5 h-5 text-blue-400" />,
@@ -479,8 +479,8 @@ export default function AIPage() {
                 icon: <Wand2 className="w-5 h-5 text-purple-400" />,
                 iconBg: 'bg-purple-500/10',
                 label: 'Fix',
-                stat: 'Claude writes the action plan',
-                desc: 'Step-by-step fix instructions. Expected ROAS recovery. Ready to share with your media buyer or apply directly.',
+                stat: 'Adnexusone AI writes the action plan',
+                desc: 'Step-by-step fix instructions with expected ROAS recovery. Grounded in cross-brand data and your own account patterns.',
               },
             ].map((p, i) => (
               <div key={i} className="px-8 py-8 stagger-child">
@@ -500,8 +500,8 @@ export default function AIPage() {
         tag="AI Fix Generator"
         tagColor="text-purple-400 bg-purple-500/10 border-purple-500/20"
         accentColor="rgba(139,92,246,0.08)"
-        headline={<>Claude explains the problem<br />and writes the fix</>}
-        body="Every issue Adnexusone detects comes with a Claude-written action plan. Not 'your frequency is high' — but 'pause these 3 creatives, upload 2 fresh variants with a different angle, set cap to 3/week.' Specific. Actionable."
+        headline={<>Adnexusone AI explains the problem<br />and writes the fix</>}
+        body="Every issue Adnexusone AI detects comes with a precise, AI-generated action plan. Not 'your frequency is high' — but 'pause these 3 creatives, upload 2 fresh variants with a different angle, set cap to 3/week.' Specific. Actionable."
         bullets={[
           { icon: CHECKP, text: 'Step-by-step fix instructions for every detected issue' },
           { icon: CHECKP, text: 'Expected outcome: ROAS recovery, budget savings in rupees' },
@@ -581,15 +581,15 @@ export default function AIPage() {
         tag="Diagnostic Intelligence"
         tagColor="text-cyan-400 bg-cyan-500/10 border-cyan-500/20"
         accentColor="rgba(6,182,212,0.07)"
-        headline={<>30 checks. Every sync.<br />Zero effort.</>}
-        body="Adnexusone runs 30 platform-specific diagnostic checks every time you sync — automatically. Creative fatigue, broken tracking, keyword cannibalization, zero-conversion spend, high ACOS — all caught, ranked, and ready to act on."
+        headline={<>1,000+ checks. Every sync.<br />Zero effort.</>}
+        body="Adnexusone AI runs 1,000+ platform-specific diagnostic checks every time you sync — automatically. Creative fatigue, broken tracking, keyword cannibalization, zero-conversion spend, high ACOS — all caught, ranked by revenue impact, and ready to act on."
         bullets={[
           { icon: CHECKC, text: 'Creative fatigue detection with frequency and CTR decline signals' },
           { icon: CHECKC, text: 'Pixel tracking validation before you scale spend' },
           { icon: CHECKC, text: 'Budget pacing and allocation inefficiencies across campaigns' },
-          { icon: CHECKC, text: 'Platform-specific logic: 10 checks each for Meta, Google, Amazon' },
+          { icon: CHECKC, text: '1,000+ checks across Meta, Google & Amazon on every sync' },
         ]}
-        cta="See all 30 diagnostic checks"
+        cta="See what Adnexusone AI checks"
         ctaHref="/platform#diagnostic"
         reverse
         visual={<DiagnosticMock />}
@@ -683,7 +683,7 @@ export default function AIPage() {
         <div ref={featRef} className="reveal max-w-6xl mx-auto">
           <div className="text-center mb-14 stagger-child">
             <h2 className="text-[1.6rem] sm:text-4xl font-extrabold tracking-tight mb-4">Everything Adnexusone AI can do</h2>
-            <p className="text-gray-400 max-w-xl mx-auto">30 checks across 3 platforms, powered by Claude. Here's the full list.</p>
+            <p className="text-gray-400 max-w-xl mx-auto">1,000+ checks across Meta, Google & Amazon. Here's what Adnexusone AI monitors.</p>
           </div>
           {/* Desktop grid */}
           <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-3 stagger-child">
@@ -734,7 +734,7 @@ export default function AIPage() {
             {[
               { icon: <Lock className="w-5 h-5 text-green-400" />,        bg: 'bg-green-500/10',  title: 'OAuth only · No passwords stored' },
               { icon: <Shield className="w-5 h-5 text-blue-400" />,       bg: 'bg-blue-500/10',   title: 'Data encrypted in transit and at rest' },
-              { icon: <Cpu className="w-5 h-5 text-purple-400" />,        bg: 'bg-purple-500/10', title: 'Claude processes but never trains on your data' },
+              { icon: <Cpu className="w-5 h-5 text-purple-400" />,        bg: 'bg-purple-500/10', title: 'Your data powers insights, never used for model training' },
               { icon: <CheckCircle2 className="w-5 h-5 text-cyan-400" />, bg: 'bg-cyan-500/10',   title: 'SOC 2 compliant infrastructure' },
             ].map((t, i) => (
               <div key={i} className="flex flex-col items-center text-center gap-3">
@@ -881,7 +881,94 @@ export default function AIPage() {
         </div>
       </section>
 
-      {/* ── 12. LandingCTA + LandingFooter ───────── */}
+      {/* ── 12. AI Engine Pricing ────────────────── */}
+      <section className="py-24 px-5 sm:px-6 border-t border-white/[0.05]">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-14">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border text-purple-400 bg-purple-500/10 border-purple-500/20 mb-5">
+              Pricing
+            </span>
+            <h2 className="text-[1.6rem] sm:text-4xl font-extrabold tracking-tight text-white mb-4">
+              Start using Adnexusone AI today
+            </h2>
+            <p className="text-gray-400 max-w-lg mx-auto text-base">
+              Available as a standalone add-on, or included free in the Professional plan.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-5">
+            {/* Add-on card */}
+            <div className="bg-zinc-950/60 border border-white/[0.10] rounded-2xl p-8 flex flex-col">
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">AI Engine Add-on</p>
+              <div className="flex items-baseline gap-1 mb-1">
+                <span className="text-4xl font-black text-white">$69</span>
+                <span className="text-gray-500 text-sm font-normal">/month</span>
+              </div>
+              <p className="text-sm text-gray-500 mb-7">Add to any plan. Cancel anytime.</p>
+              <ul className="space-y-3 flex-1 mb-8">
+                {[
+                  '1,000+ diagnostic parameters per sync',
+                  'AI-written fix instructions for every issue',
+                  'Ask AI — natural language Q&A on your campaigns',
+                  'Insights from cross-brand performance patterns',
+                  'Revenue-impact-ranked recommendations',
+                  'Buyer behaviour & purchase signal analysis',
+                ].map(f => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-gray-300">
+                    <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />{f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/signup"
+                className="w-full py-3 text-sm font-bold text-center rounded-xl border border-white/[0.14] hover:bg-white/[0.06] text-white transition-all"
+              >
+                Add AI Engine — $69/mo
+              </Link>
+            </div>
+
+            {/* Professional plan card */}
+            <div className="relative bg-purple-500/[0.07] border border-purple-500/40 rounded-2xl p-8 flex flex-col overflow-hidden">
+              <span className="absolute top-0 right-0 bg-gradient-to-l from-purple-600 to-blue-600 text-white text-[10px] font-bold px-4 py-1.5 rounded-bl-xl tracking-wide">
+                AI INCLUDED FREE
+              </span>
+              <p className="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-3">Professional Plan</p>
+              <div className="flex items-baseline gap-1 mb-1">
+                <span className="text-4xl font-black text-white">$499</span>
+                <span className="text-gray-500 text-sm font-normal">/month</span>
+              </div>
+              <p className="text-sm text-gray-500 mb-7">AI Engine fully included — no extra charge.</p>
+              <ul className="space-y-3 flex-1 mb-8">
+                {[
+                  { text: 'Adnexusone AI Engine — included ($69 value)', highlight: true },
+                  { text: 'Everything in Growth', highlight: false },
+                  { text: '50 ad accounts', highlight: false },
+                  { text: 'White-label PDF audit reports', highlight: false },
+                  { text: 'Priority support & API access', highlight: false },
+                  { text: 'Team collaboration & client portal', highlight: false },
+                ].map(f => (
+                  <li key={f.text} className="flex items-start gap-2.5 text-sm text-gray-300">
+                    <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${f.highlight ? 'text-yellow-400' : 'text-purple-400'}`} />
+                    <span className={f.highlight ? 'text-white font-semibold' : ''}>{f.text}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/signup?plan=agency"
+                className="w-full py-3 text-sm font-bold text-center rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white transition-all shadow-lg shadow-purple-500/20"
+              >
+                Get Professional — $499/mo
+              </Link>
+            </div>
+          </div>
+
+          <p className="text-center text-xs text-gray-600 mt-6">
+            Already on Growth? Add AI Engine for $69/mo from your settings page.
+          </p>
+        </div>
+      </section>
+
+      {/* ── 13. LandingCTA + LandingFooter ───────── */}
       <LandingCTA />
       <LandingFooter />
     </div>

@@ -237,14 +237,14 @@ const PRICING_PLANS = [
   {
     name: 'Growth', price: '99', per: 'per month',
     desc: 'For brands running serious ad budgets across platforms.',
-    features: ['5 ad accounts', 'All 30 diagnostic checks', 'Daily auto-syncs', 'AI-written fixes'],
+    features: ['5 ad accounts', '1,000+ diagnostic checks', 'Daily auto-syncs', 'AI-written fixes'],
     allFeatures: ['Meta, Google & Amazon', 'PDF audit reports', 'Instant email alerts', 'Revenue impact per issue', '90-day issue history', 'Slack notifications'],
     cta: 'Start Growth plan', href: '/signup?plan=growth', highlight: true, custom: false,
   },
   {
     name: 'Professional', price: '499', per: 'per month',
-    desc: 'For agencies managing multiple client ad accounts.',
-    features: ['50 ad accounts', 'All Growth features', 'White-label PDFs', 'Priority support'],
+    desc: 'For agencies managing multiple client ad accounts. Includes Adnexusone AI Engine free.',
+    features: ['50 ad accounts', 'Adnexusone AI Engine (included)', 'White-label PDFs', 'Priority support'],
     allFeatures: ['API access', 'Team collaboration', 'Client portal', 'Custom branding', 'Issue assignment', 'Multi-user roles', 'Dedicated onboarding', 'SLA commitment'],
     cta: 'Start Professional plan', href: '/signup?plan=agency', highlight: false, custom: false,
   },
@@ -1416,6 +1416,7 @@ export default function HomePage() {
             </div>
           </div>
           <p className="text-xs text-gray-600">30-day free trial. No credit card required. Cancel anytime.</p>
+          <p className="text-xs text-gray-600 mt-1">Adnexusone AI Engine included free in Professional · Available as a $69/mo add-on for Basic &amp; Growth</p>
         </div>
       </section>
 
