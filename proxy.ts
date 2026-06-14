@@ -48,7 +48,9 @@ export async function proxy(request: NextRequest) {
       if (!pathname.startsWith('/admin')) {
         const url = request.nextUrl.clone()
         url.pathname = `/admin${pathname === '/' ? '' : pathname}`
-        return NextResponse.rewrite(url)
+        const reqHeaders = new Headers(request.headers)
+        reqHeaders.set('x-pathname', url.pathname)
+        return NextResponse.rewrite(url, { request: { headers: reqHeaders } })
       }
     }
 
@@ -76,7 +78,9 @@ export async function proxy(request: NextRequest) {
   }
   // ──────────────────────────────────────────────────────────────────────
 
-  let supabaseResponse = NextResponse.next({ request })
+  const reqHeaders = new Headers(request.headers)
+  reqHeaders.set('x-pathname', pathname)
+  let supabaseResponse = NextResponse.next({ request: { headers: reqHeaders } })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -86,7 +90,7 @@ export async function proxy(request: NextRequest) {
         getAll() { return request.cookies.getAll() },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request })
+          supabaseResponse = NextResponse.next({ request: { headers: reqHeaders } })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
