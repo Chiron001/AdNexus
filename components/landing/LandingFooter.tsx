@@ -11,7 +11,7 @@ const FOOTER_STARS = Array.from({ length: 28 }, (_, i) => ({
   del: `${(i % 7) * 0.4}s`,
 }))
 
-const SOCIAL = [
+const BRAND_SOCIALS = [
   { label:'LinkedIn', svg:<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><path d="M2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg> },
   { label:'X',        svg:<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L2.25 2.25h6.813l4.261 5.636L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg> },
   { label:'YouTube',  svg:<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg> },
@@ -63,6 +63,7 @@ export function LandingFooter() {
 
       <div className="max-w-6xl mx-auto relative" style={{ zIndex:1 }}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-10">
+
           {/* F2 — Brand block: 1/3 */}
           <div>
             <Link href="/" className="flex items-center gap-2 mb-4">
@@ -71,7 +72,7 @@ export function LandingFooter() {
             </Link>
             <p className="text-xs text-gray-300 leading-relaxed mb-4">AI-powered ad diagnostics for Indian D2C brands and performance agencies.</p>
             <div className="flex gap-2">
-              {SOCIAL.map(({ label, svg }) => (
+              {BRAND_SOCIALS.map(({ label, svg }) => (
                 <a key={label} href="#" aria-label={label} className="w-8 h-8 rounded-lg bg-white/[0.08] border border-white/[0.12] flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.16] transition-all">{svg}</a>
               ))}
             </div>
@@ -92,9 +93,15 @@ export function LandingFooter() {
             ))}
           </div>
         </div>
-        <div className="border-t border-white/[0.12] pt-6 flex flex-row items-center justify-between gap-4">
+
+        {/* Bottom bar: copyright left, legal links right — NO social icons */}
+        <div className="border-t border-white/[0.12] pt-6 flex flex-row items-center justify-between">
           <p className="text-xs text-gray-400">© 2026 Adnexusone. All rights reserved.</p>
-          <div className="flex gap-5">{['Privacy','Terms','Cookies'].map(l => <a key={l} href="#" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">{l}</a>)}</div>
+          <div className="flex gap-5">
+            {['Privacy','Terms','Cookies'].map(l => (
+              <a key={l} href="#" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">{l}</a>
+            ))}
+          </div>
         </div>
       </div>
 
