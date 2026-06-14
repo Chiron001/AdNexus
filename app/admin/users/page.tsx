@@ -7,6 +7,10 @@ const PLAN_BADGE: Record<string, string> = {
   agency: 'bg-purple-100 text-purple-700',
 }
 
+const PLAN_LABEL: Record<string, string> = {
+  free: 'Basic', growth: 'Growth', agency: 'Professional', custom: 'Custom',
+}
+
 function initials(name: string | null, email: string) {
   if (name) return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
   return email.slice(0, 2).toUpperCase()
@@ -54,7 +58,7 @@ export default async function AdminUsersPage({
           className="bg-white border border-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         >
           <option value="">All plans</option>
-          <option value="free">Free</option>
+          <option value="free">Basic</option>
           <option value="growth">Growth</option>
           <option value="agency">Professional</option>
         </select>
@@ -102,8 +106,8 @@ export default async function AdminUsersPage({
                   </div>
                 </td>
                 <td className="px-5 py-3.5">
-                  <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize ${PLAN_BADGE[u.plan]}`}>
-                    {u.plan}
+                  <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${PLAN_BADGE[u.plan]}`}>
+                    {PLAN_LABEL[u.plan] ?? u.plan}
                   </span>
                 </td>
                 <td className="px-5 py-3.5 text-xs text-zinc-500">

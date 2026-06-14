@@ -159,15 +159,15 @@ export default function SettingsPage() {
 
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="font-medium text-white capitalize">{plan} Plan</p>
+            <p className="font-medium text-white">{{ free: 'Basic', growth: 'Growth', agency: 'Professional', custom: 'Custom' }[plan] ?? plan} Plan</p>
             <p className="text-sm text-zinc-500 mt-0.5">
-              {plan === 'free'   && '1 platform · 10 issues · 5 AI recommendations/month'}
+              {plan === 'free'   && '1 ad account · 10 diagnostic checks · 30-day free trial, then $19/mo'}
               {plan === 'growth' && 'All platforms · Unlimited issues · Unlimited recommendations'}
               {plan === 'agency' && 'Everything in Growth · 25 brand accounts · White-label reports'}
             </p>
           </div>
-          <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize ${PLAN_BADGE[plan] ?? ''}`}>
-            {plan}
+          <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${PLAN_BADGE[plan] ?? ''}`}>
+            {{ free: 'Basic', growth: 'Growth', agency: 'Professional', custom: 'Custom' }[plan] ?? plan}
           </span>
         </div>
 
@@ -182,7 +182,7 @@ export default function SettingsPage() {
                 <div className="bg-zinc-800/50 border border-zinc-700/60 rounded-xl p-4">
                   <p className="font-semibold text-white">Growth</p>
                   <p className="text-2xl font-bold text-white mt-1">
-                    ₹2,999<span className="text-sm font-normal text-zinc-500">/mo</span>
+                    $99<span className="text-sm font-normal text-zinc-500">/mo</span>
                   </p>
                   <ul className="text-xs text-zinc-400 mt-3 space-y-1.5">
                     {['All 3 platforms', 'Unlimited issues', 'Unlimited AI recs', 'Email alerts', 'PDF audit reports'].map(f => (
@@ -205,7 +205,7 @@ export default function SettingsPage() {
                 <div className="bg-purple-500/10 border border-purple-500/25 rounded-xl p-4">
                   <p className="font-semibold text-white">Professional</p>
                   <p className="text-2xl font-bold text-white mt-1">
-                    ₹9,999<span className="text-sm font-normal text-zinc-500">/mo</span>
+                    $499<span className="text-sm font-normal text-zinc-500">/mo</span>
                   </p>
                   <ul className="text-xs text-zinc-400 mt-3 space-y-1.5">
                     {['Everything in Growth', '25 brand accounts', 'White-label reports', 'Priority support'].map(f => (

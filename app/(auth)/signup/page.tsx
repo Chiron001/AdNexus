@@ -17,8 +17,8 @@ const STARS = [
 ]
 
 const PLAN_META: Record<string, { label: string; price: string; accent: string; border: string }> = {
-  growth: { label: 'Growth', price: '₹2,999/mo', accent: 'text-blue-300',   border: 'border-blue-500/30'   },
-  agency: { label: 'Professional', price: '₹9,999/mo', accent: 'text-purple-300', border: 'border-purple-500/30' },
+  growth: { label: 'Growth', price: '$99/mo', accent: 'text-blue-300',   border: 'border-blue-500/30'   },
+  agency: { label: 'Professional', price: '$499/mo', accent: 'text-purple-300', border: 'border-purple-500/30' },
 }
 
 function GoogleIcon() {
@@ -284,7 +284,7 @@ function SignupForm() {
                 <button type="submit" disabled={loading}
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white text-sm font-semibold py-2.5 rounded-xl transition-all shadow-lg shadow-purple-500/20 disabled:opacity-60 mt-1">
                   {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {loading ? 'Creating account…' : planMeta ? `Create account & pay ${planMeta.price}` : 'Create free account'}
+                  {loading ? 'Creating account…' : planMeta ? `Create account & pay ${planMeta.price}` : 'Start free trial'}
                 </button>
               </form>
 

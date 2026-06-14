@@ -1,10 +1,10 @@
 import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/server'
 
-const PLAN_PRICE = { free: 0, growth: 2999, agency: 9999, custom: 0 }
+const PLAN_PRICE = { free: 19, growth: 99, agency: 499, custom: 0 }
 
 function fmt(n: number) {
-  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n)
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
 }
 
 function timeAgo(iso: string) {
@@ -132,7 +132,7 @@ export default async function AdminDashboardPage() {
             const count = byPlan[plan]
             const pct   = total > 0 ? Math.round((count / total) * 100) : 0
             const bar   = { agency: 'bg-purple-500', growth: 'bg-blue-500', custom: 'bg-emerald-500', free: 'bg-zinc-300' }[plan]
-            const lbl   = { agency: 'Professional', growth: 'Growth', custom: 'Custom', free: 'Free' }[plan]
+            const lbl   = { agency: 'Professional', growth: 'Growth', custom: 'Custom', free: 'Basic' }[plan]
             return (
               <div key={plan} className="mb-3 last:mb-0">
                 <div className="flex justify-between text-xs mb-1">
@@ -193,7 +193,7 @@ export default async function AdminDashboardPage() {
                     <p className="text-xs font-medium text-zinc-700 truncate">{name}</p>
                     <p className="text-[10px] text-zinc-400">{timeAgo(u.created_at)}</p>
                   </div>
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize shrink-0 ${planCls}`}>{u.plan}</span>
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${planCls}`}>{{ free: 'Basic', growth: 'Growth', agency: 'Professional', custom: 'Custom' }[u.plan] ?? u.plan}</span>
                 </Link>
               )
             })}

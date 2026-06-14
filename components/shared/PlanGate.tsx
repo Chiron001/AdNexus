@@ -40,7 +40,7 @@ export function PlanGate({ userPlan, requiredPlan, children, featureName }: Plan
             href="/settings?tab=billing"
             className="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md transition-colors"
           >
-            Upgrade — ₹2,999/mo →
+            Upgrade — $99/mo →
           </Link>
         </div>
       </div>

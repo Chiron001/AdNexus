@@ -1,10 +1,10 @@
 import { createAdminClient } from '@/lib/supabase/server'
 
-const PLAN_PRICE = { free: 0, growth: 2999, agency: 9999 } as const
+const PLAN_PRICE = { free: 19, growth: 99, agency: 499 } as const
 
 function fmt(n: number) {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency', currency: 'INR', maximumFractionDigits: 0,
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency', currency: 'USD', maximumFractionDigits: 0,
   }).format(n)
 }
 
@@ -152,7 +152,7 @@ export default async function AdminBillingPage() {
                     {e.event_type.replace('.', ' › ')}
                   </span>
                 </td>
-                <td className="px-5 py-3 text-xs text-zinc-600 capitalize">{e.plan ?? '—'}</td>
+                <td className="px-5 py-3 text-xs text-zinc-600">{{ free: 'Basic', growth: 'Growth', agency: 'Professional', custom: 'Custom' }[e.plan ?? ''] ?? (e.plan ?? '—')}</td>
                 <td className="px-5 py-3 text-xs font-medium text-zinc-700">
                   {e.amount_inr != null ? fmt(e.amount_inr) : '—'}
                 </td>

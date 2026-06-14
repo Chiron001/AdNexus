@@ -228,21 +228,21 @@ const TESTIMONIALS = [
 /* ── Pricing plans ─────────────────────────────── */
 const PRICING_PLANS = [
   {
-    name: 'Free', price: '0', per: 'forever',
-    desc: 'For brands getting started with ad diagnostics.',
+    name: 'Basic', price: '19', per: 'per month',
+    desc: '30-day free trial, then $19/mo. For brands getting started with ad diagnostics.',
     features: ['1 ad account', '10 diagnostic checks', 'Weekly digest email', 'Basic health score'],
     allFeatures: ['Meta Ads support', 'Manual scan trigger', 'Issue summary dashboard', 'Community support'],
-    cta: 'Start for free', href: '/signup', highlight: false, custom: false,
+    cta: 'Start free trial', href: '/signup', highlight: false, custom: false,
   },
   {
-    name: 'Growth', price: '2,999', per: 'per month',
+    name: 'Growth', price: '99', per: 'per month',
     desc: 'For brands running serious ad budgets across platforms.',
     features: ['5 ad accounts', 'All 30 diagnostic checks', 'Daily auto-syncs', 'AI-written fixes'],
     allFeatures: ['Meta, Google & Amazon', 'PDF audit reports', 'Instant email alerts', 'Revenue impact per issue', '90-day issue history', 'Slack notifications'],
     cta: 'Start Growth plan', href: '/signup?plan=growth', highlight: true, custom: false,
   },
   {
-    name: 'Professional', price: '9,999', per: 'per month',
+    name: 'Professional', price: '499', per: 'per month',
     desc: 'For agencies managing multiple client ad accounts.',
     features: ['15 ad accounts', 'All Growth features', 'White-label PDFs', 'Priority support'],
     allFeatures: ['API access', 'Team collaboration', 'Client portal', 'Custom branding', 'Issue assignment', 'Multi-user roles', 'Dedicated onboarding', 'SLA commitment'],
@@ -942,7 +942,7 @@ export default function HomePage() {
                   {custom ? (
                     <div className="text-3xl font-black text-white mb-0.5">Custom</div>
                   ) : (
-                    <div className="flex items-baseline gap-0.5"><span className="text-sm text-gray-500">₹</span><span className="text-3xl font-black text-white tabular-nums">{price}</span></div>
+                    <div className="flex items-baseline gap-0.5"><span className="text-sm text-gray-500">$</span><span className="text-3xl font-black text-white tabular-nums">{price}</span></div>
                   )}
                   <p className="text-xs text-gray-500 mt-1 mb-3">{per}</p>
                   <p className="text-sm text-gray-400 mb-5 leading-relaxed">{desc}</p>
@@ -984,7 +984,7 @@ export default function HomePage() {
                       {custom ? (
                         <div className="text-4xl font-black text-white mb-0.5">Custom</div>
                       ) : (
-                        <div className="flex items-baseline gap-0.5 mb-1"><span className="text-sm text-gray-500">₹</span><span className="text-4xl font-black text-white">{price}</span></div>
+                        <div className="flex items-baseline gap-0.5 mb-1"><span className="text-sm text-gray-500">$</span><span className="text-4xl font-black text-white">{price}</span></div>
                       )}
                       <p className="text-xs text-gray-500 mb-3">{per}</p>
                       <p className="text-sm text-gray-400 mb-4 leading-relaxed">{desc}</p>
@@ -1415,7 +1415,7 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-          <p className="text-xs text-gray-600">Free plan available. No credit card. Cancel anytime.</p>
+          <p className="text-xs text-gray-600">30-day free trial. No credit card required. Cancel anytime.</p>
         </div>
       </section>
 
