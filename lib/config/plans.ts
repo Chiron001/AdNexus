@@ -132,13 +132,13 @@ export const PLAN_LEVEL: Record<PlanTier, number> = {
 export const PLAN_DISPLAY: Record<PlanTier, { label: string; price: string; color: string; badgeCls: string }> = {
   free:   { label: 'Free',   price: '₹0',           color: 'text-zinc-400',   badgeCls: 'bg-zinc-800 text-zinc-400 border border-zinc-700'         },
   growth: { label: 'Growth', price: '₹2,999/mo',    color: 'text-blue-400',   badgeCls: 'bg-blue-500/15 text-blue-300 border border-blue-500/25'   },
-  agency: { label: 'Agency', price: '₹9,999/mo',    color: 'text-purple-400', badgeCls: 'bg-purple-500/15 text-purple-300 border border-purple-500/25' },
+  agency: { label: 'Professional', price: '₹9,999/mo',    color: 'text-purple-400', badgeCls: 'bg-purple-500/15 text-purple-300 border border-purple-500/25' },
   custom: { label: 'Custom', price: 'Contact Sales', color: 'text-emerald-400',badgeCls: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25' },
 }
 
 export const MIN_PLAN_LABELS: Record<PlanTier, string> = {
   free:   'Free',
   growth: 'Growth (₹2,999/mo)',
-  agency: 'Agency (₹9,999/mo)',
+  agency: 'Professional (₹9,999/mo)',
   custom: 'Custom',
 }

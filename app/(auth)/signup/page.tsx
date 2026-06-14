@@ -18,7 +18,7 @@ const STARS = [
 
 const PLAN_META: Record<string, { label: string; price: string; accent: string; border: string }> = {
   growth: { label: 'Growth', price: '₹2,999/mo', accent: 'text-blue-300',   border: 'border-blue-500/30'   },
-  agency: { label: 'Agency', price: '₹9,999/mo', accent: 'text-purple-300', border: 'border-purple-500/30' },
+  agency: { label: 'Professional', price: '₹9,999/mo', accent: 'text-purple-300', border: 'border-purple-500/30' },
 }
 
 function GoogleIcon() {

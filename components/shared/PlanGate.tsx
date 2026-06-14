@@ -31,7 +31,7 @@ export function PlanGate({ userPlan, requiredPlan, children, featureName }: Plan
             <Lock className="w-5 h-5 text-blue-600" />
           </div>
           <p className="text-sm font-semibold text-gray-900 mb-1">
-            {requiredPlan === 'growth' ? 'Growth Plan' : 'Agency Plan'} required
+            {requiredPlan === 'growth' ? 'Growth Plan' : 'Professional Plan'} required
           </p>
           {featureName && (
             <p className="text-xs text-gray-500 mb-3">{featureName} is a paid feature</p>

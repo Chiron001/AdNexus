@@ -201,9 +201,9 @@ export default function SettingsPage() {
                   </button>
                 </div>
 
-                {/* Agency */}
+                {/* Professional */}
                 <div className="bg-purple-500/10 border border-purple-500/25 rounded-xl p-4">
-                  <p className="font-semibold text-white">Agency</p>
+                  <p className="font-semibold text-white">Professional</p>
                   <p className="text-2xl font-bold text-white mt-1">
                     ₹9,999<span className="text-sm font-normal text-zinc-500">/mo</span>
                   </p>
@@ -220,7 +220,7 @@ export default function SettingsPage() {
                     className="w-full mt-4 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white text-sm font-semibold py-2.5 rounded-lg transition-colors"
                   >
                     {upgradeLoading === 'agency' && <Loader2 className="w-4 h-4 animate-spin" />}
-                    Upgrade to Agency
+                    Upgrade to Professional
                   </button>
                 </div>
 

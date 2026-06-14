@@ -78,7 +78,7 @@ export default async function AdminBillingPage() {
           <p className="text-2xl font-bold text-zinc-800">
             {byPlan.growth} <span className="text-sm font-normal text-zinc-400">growth</span>
             {' '}·{' '}
-            {byPlan.agency} <span className="text-sm font-normal text-zinc-400">agency</span>
+            {byPlan.agency} <span className="text-sm font-normal text-zinc-400">professional</span>
           </p>
           <p className="text-[11px] text-zinc-400 mt-1">{byPlan.growth + byPlan.agency} total paid</p>
         </div>

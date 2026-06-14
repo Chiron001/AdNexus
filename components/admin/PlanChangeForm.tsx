@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 const PLANS = [
   { value: 'free',   label: 'Free',   cls: 'bg-zinc-100 text-zinc-600'     },
   { value: 'growth', label: 'Growth', cls: 'bg-blue-100 text-blue-700'     },
-  { value: 'agency', label: 'Agency', cls: 'bg-purple-100 text-purple-700' },
+  { value: 'agency', label: 'Professional', cls: 'bg-purple-100 text-purple-700' },
   { value: 'custom', label: 'Custom', cls: 'bg-emerald-100 text-emerald-700' },
 ]
 

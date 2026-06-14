@@ -56,7 +56,7 @@ export default async function AdminUsersPage({
           <option value="">All plans</option>
           <option value="free">Free</option>
           <option value="growth">Growth</option>
-          <option value="agency">Agency</option>
+          <option value="agency">Professional</option>
         </select>
         <button
           type="submit"

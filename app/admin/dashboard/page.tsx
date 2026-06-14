@@ -100,7 +100,7 @@ export default async function AdminDashboardPage() {
   const STATS = [
     { label: 'Est. MRR',        value: fmt(mrr),                  sub: 'monthly recurring revenue', accent: 'text-green-600',  href: '/admin/billing'  },
     { label: 'Total Users',     value: String(total),             sub: `+${newThis7d} this week`,    accent: 'text-blue-600',   href: '/admin/users'    },
-    { label: 'Paid Users',      value: String(activePaid),        sub: 'growth + agency + custom',  accent: 'text-indigo-600', href: '/admin/users'    },
+    { label: 'Paid Users',      value: String(activePaid),        sub: 'growth + professional + custom',  accent: 'text-indigo-600', href: '/admin/users'    },
     { label: 'Ad Accounts',     value: String(allAccounts.length),sub: `${activeAccounts} active`,  accent: 'text-purple-600', href: '/admin/accounts' },
     { label: 'Syncs Today',     value: String(syncsToday),        sub: `${syncsOk} ok · ${issuesFoundToday} issues`, accent: 'text-orange-600', href: '/admin/activity' },
     { label: 'Open Issues',     value: String(allIssues.length),  sub: `${criticalCount} critical · ${highCount} high`, accent: criticalCount > 0 ? 'text-red-600' : 'text-zinc-600', href: '/admin/activity' },
@@ -132,7 +132,7 @@ export default async function AdminDashboardPage() {
             const count = byPlan[plan]
             const pct   = total > 0 ? Math.round((count / total) * 100) : 0
             const bar   = { agency: 'bg-purple-500', growth: 'bg-blue-500', custom: 'bg-emerald-500', free: 'bg-zinc-300' }[plan]
-            const lbl   = { agency: 'Agency', growth: 'Growth', custom: 'Custom', free: 'Free' }[plan]
+            const lbl   = { agency: 'Professional', growth: 'Growth', custom: 'Custom', free: 'Free' }[plan]
             return (
               <div key={plan} className="mb-3 last:mb-0">
                 <div className="flex justify-between text-xs mb-1">

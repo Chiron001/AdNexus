@@ -20,7 +20,7 @@ const FAQS = [
     items: [
       { q: 'How do I connect my Meta Ads account?', a: 'Go to Settings → Connected Accounts → Connect Meta. You\'ll be redirected to Facebook\'s OAuth flow. Adnexusone requests read-only access to your Ad account — we never request the ability to create or modify campaigns. Once authenticated, your account will appear in the workspace within 2 minutes.' },
       { q: 'Can I connect multiple ad accounts from the same platform?', a: 'Yes. Adnexusone supports multiple accounts per platform and multiple platforms per workspace. From Settings → Connected Accounts, click "Add Account" and select the platform. For agencies, accounts can be organized by client using the workspace structure.' },
-      { q: 'How often does Adnexusone sync my account data?', a: 'By default, Adnexusone syncs every 4 hours. You can trigger a manual sync at any time from the dashboard. On Growth and Agency plans, sync frequency can be configured down to hourly.' },
+      { q: 'How often does Adnexusone sync my account data?', a: 'By default, Adnexusone syncs every 4 hours. You can trigger a manual sync at any time from the dashboard. On Growth and Professional plans, sync frequency can be configured down to hourly.' },
       { q: 'What permissions does Adnexusone need on each platform?', a: 'Meta: Read access to ad accounts, campaigns, ad sets, ads, and insights. Google: Read access to campaigns, ad groups, keywords, and performance data. Amazon: Sponsored Products and Sponsored Brands read access. Adnexusone never requests write permissions — it cannot modify, pause, or create any campaigns.' },
     ],
   },

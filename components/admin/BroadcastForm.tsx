@@ -65,7 +65,7 @@ export function BroadcastForm() {
           >
             <option value="all">All Users</option>
             <option value="growth">Growth Plan Only</option>
-            <option value="agency">Agency Plan Only</option>
+            <option value="agency">Professional Plan Only</option>
           </select>
         </div>
       </div>
