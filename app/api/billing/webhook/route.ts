@@ -36,21 +36,22 @@ export async function POST(req: Request) {
         const planKey  = planFromRazorpayId(sub.plan_id as string)
         if (!userId || !planKey) break
 
-        const isAI      = sub.plan_id === RAZORPAY_PLANS.ai
-        const isTrialing = event.event === 'subscription.activated' && sub.start_at && sub.start_at > Math.floor(Date.now() / 1000)
-        const status    = isTrialing ? 'trialing' : 'active'
+        const isAI       = sub.plan_id === RAZORPAY_PLANS.ai
+        const isTrialing = event.event === 'subscription.activated' && sub.start_at && (sub.start_at as number) > Math.floor(Date.now() / 1000)
+        const status     = isTrialing ? 'trialing' : 'active'
         const trialEndsAt = isTrialing ? new Date((sub.start_at as number) * 1000).toISOString() : null
 
         if (isAI) {
           await admin.from('profiles').update({
-            has_ai_addon:               true,
+            has_ai_addon:                true,
             razorpay_ai_subscription_id: sub.id as string,
           }).eq('id', userId)
         } else {
+          const dbPlan = planKey as 'basic' | 'growth' | 'professional'
           await admin.from('profiles').update({
-            plan:                      planKey,
-            razorpay_subscription_id:  sub.id as string,
-            subscription_status:       status,
+            plan:                     dbPlan,
+            razorpay_subscription_id: sub.id as string,
+            subscription_status:      status,
             ...(trialEndsAt ? { trial_ends_at: trialEndsAt } : {}),
           }).eq('id', userId)
         }

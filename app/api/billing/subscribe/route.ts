@@ -44,7 +44,8 @@ export async function POST(req: Request) {
     subParams.start_at = Math.floor(Date.now() / 1000) + TRIAL_SECONDS
   }
 
-  const subscription = await razorpay.subscriptions.create(subParams as Parameters<typeof razorpay.subscriptions.create>[0])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const subscription = await razorpay.subscriptions.create(subParams as any)
 
   return NextResponse.json({
     subscription_id: subscription.id,

@@ -18,7 +18,7 @@ const PLATFORM_LABELS: Record<string, string> = {
 }
 
 export default function ReportsPage() {
-  const [plan,        setPlan]        = useState<'free' | 'growth' | 'agency' | 'custom'>('free')
+  const [plan,        setPlan]        = useState<'free' | 'basic' | 'growth' | 'professional' | 'agency' | 'custom'>('free')
   const [adAccounts,  setAdAccounts]  = useState<AdAccount[]>([])
   const [downloading, setDownloading] = useState<string | null>(null)
   const [loading,     setLoading]     = useState(true)

@@ -11,17 +11,21 @@ interface UpgradeWallProps {
 }
 
 const PLAN_PRICE: Record<PlanTier, string> = {
-  free:   '₹0',
-  growth: '₹2,999/mo',
-  agency: '₹9,999/mo',
-  custom: 'Contact Sales',
+  free:         '—',
+  basic:        '₹1,800/mo',
+  growth:       '₹8,999/mo',
+  professional: '₹46,999/mo',
+  agency:       '₹46,999/mo',
+  custom:       'Contact Sales',
 }
 
 const PLAN_GRADIENT: Record<PlanTier, string> = {
-  free:   'from-zinc-600 to-zinc-500',
-  growth: 'from-blue-600 to-cyan-500',
-  agency: 'from-purple-600 to-blue-600',
-  custom: 'from-emerald-600 to-teal-500',
+  free:         'from-zinc-600 to-zinc-500',
+  basic:        'from-teal-600 to-teal-500',
+  growth:       'from-blue-600 to-cyan-500',
+  professional: 'from-purple-600 to-blue-600',
+  agency:       'from-purple-600 to-blue-600',
+  custom:       'from-emerald-600 to-teal-500',
 }
 
 export function UpgradeWall({ feature, requiredPlan, bullets, currentPlan = 'free' }: UpgradeWallProps) {

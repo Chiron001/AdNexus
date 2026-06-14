@@ -169,8 +169,8 @@ export default async function AdminDashboardPage() {
             {(recentSignups ?? []).map(u => {
               const name     = u.full_name ?? u.email.split('@')[0]
               const initials = name.slice(0, 2).toUpperCase()
-              const planCls  = { free: 'bg-zinc-700 text-zinc-400', growth: 'bg-blue-500/20 text-blue-400', agency: 'bg-purple-500/20 text-purple-400', custom: 'bg-emerald-500/20 text-emerald-400' }[u.plan] ?? 'bg-zinc-700 text-zinc-400'
-              const planLbl  = { free: 'Free', growth: 'Growth', agency: 'Agency', custom: 'Custom' }[u.plan] ?? u.plan
+              const planCls  = ({ free: 'bg-zinc-700 text-zinc-400', basic: 'bg-teal-500/20 text-teal-400', growth: 'bg-blue-500/20 text-blue-400', professional: 'bg-purple-500/20 text-purple-400', agency: 'bg-purple-500/20 text-purple-400', custom: 'bg-emerald-500/20 text-emerald-400' } as Record<string,string>)[u.plan] ?? 'bg-zinc-700 text-zinc-400'
+              const planLbl  = ({ free: 'Free', basic: 'Basic', growth: 'Growth', professional: 'Pro', agency: 'Pro', custom: 'Custom' } as Record<string,string>)[u.plan] ?? u.plan
               return (
                 <Link
                   key={u.id}
