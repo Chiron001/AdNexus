@@ -4,10 +4,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 const PLANS = [
-  { value: 'free',   label: 'Basic',  cls: 'bg-zinc-100 text-zinc-600'     },
-  { value: 'growth', label: 'Growth', cls: 'bg-blue-100 text-blue-700'     },
-  { value: 'agency', label: 'Professional', cls: 'bg-purple-100 text-purple-700' },
-  { value: 'custom', label: 'Custom', cls: 'bg-emerald-100 text-emerald-700' },
+  { value: 'free',         label: 'Free'         },
+  { value: 'basic',        label: 'Basic'        },
+  { value: 'growth',       label: 'Growth'       },
+  { value: 'professional', label: 'Professional' },
+  { value: 'custom',       label: 'Custom'       },
 ]
 
 export function PlanChangeForm({ userId, currentPlan }: { userId: string; currentPlan: string }) {
@@ -46,21 +47,23 @@ export function PlanChangeForm({ userId, currentPlan }: { userId: string; curren
       <select
         value={plan}
         onChange={e => setPlan(e.target.value)}
-        className="bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+        className="rounded-lg px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}
       >
         {PLANS.map(p => (
-          <option key={p.value} value={p.value}>{p.label}</option>
+          <option key={p.value} value={p.value} style={{ background: '#0f0f1a' }}>{p.label}</option>
         ))}
       </select>
       <button
         type="submit"
         disabled={loading || plan === currentPlan}
-        className="text-xs font-semibold bg-zinc-900 text-white px-3 py-1.5 rounded-lg hover:bg-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        className="text-xs font-semibold text-white px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        style={{ background: 'rgba(124,58,237,0.8)' }}
       >
         {loading ? 'Saving…' : 'Apply'}
       </button>
       {msg && (
-        <span className={`text-xs font-medium ${msg === 'Plan updated!' ? 'text-green-600' : 'text-red-500'}`}>
+        <span className={`text-xs font-medium ${msg === 'Plan updated!' ? 'text-emerald-400' : 'text-red-400'}`}>
           {msg}
         </span>
       )}

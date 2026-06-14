@@ -6,6 +6,9 @@ import type { NotificationType } from '@/types/database'
 
 type Target = 'all' | 'growth' | 'agency'
 
+const inputCls = 'w-full rounded-lg px-3 py-2 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-purple-500/50'
+const inputStyle = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }
+
 export function BroadcastForm() {
   const [title,   setTitle]   = useState('')
   const [body,    setBody]    = useState('')
@@ -17,10 +20,8 @@ export function BroadcastForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!title.trim() || !body.trim()) return
-
     setLoading(true)
     setResult(null)
-
     try {
       const res  = await fetch('/api/admin/notifications/broadcast', {
         method:  'POST',
@@ -43,29 +44,21 @@ export function BroadcastForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-xs font-medium text-zinc-500 mb-1.5">Type</label>
-          <select
-            value={type}
-            onChange={e => setType(e.target.value as NotificationType)}
-            className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="feature_update">Feature Update</option>
-            <option value="ai_insight">AI Insight</option>
+          <select value={type} onChange={e => setType(e.target.value as NotificationType)} className={inputCls} style={inputStyle}>
+            <option value="feature_update" style={{ background: '#0f0f1a' }}>Feature Update</option>
+            <option value="ai_insight"     style={{ background: '#0f0f1a' }}>AI Insight</option>
           </select>
         </div>
         <div>
           <label className="block text-xs font-medium text-zinc-500 mb-1.5">Target Audience</label>
-          <select
-            value={target}
-            onChange={e => setTarget(e.target.value as Target)}
-            className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="all">All Users</option>
-            <option value="growth">Growth Plan Only</option>
-            <option value="agency">Professional Plan Only</option>
+          <select value={target} onChange={e => setTarget(e.target.value as Target)} className={inputCls} style={inputStyle}>
+            <option value="all"    style={{ background: '#0f0f1a' }}>All Users</option>
+            <option value="growth" style={{ background: '#0f0f1a' }}>Growth Plan Only</option>
+            <option value="agency" style={{ background: '#0f0f1a' }}>Professional Plan Only</option>
           </select>
         </div>
       </div>
@@ -77,7 +70,8 @@ export function BroadcastForm() {
           onChange={e => setTitle(e.target.value)}
           placeholder="Notification title..."
           maxLength={80}
-          className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className={inputCls}
+          style={inputStyle}
         />
       </div>
 
@@ -89,13 +83,14 @@ export function BroadcastForm() {
           rows={4}
           placeholder="Write your message..."
           maxLength={500}
-          className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+          className={`${inputCls} resize-none`}
+          style={inputStyle}
         />
-        <p className="text-[11px] text-zinc-400 mt-1 text-right">{body.length}/500</p>
+        <p className="text-[11px] text-zinc-600 mt-1 text-right">{body.length}/500</p>
       </div>
 
       {result && (
-        <div className={`text-sm rounded-lg px-4 py-3 ${result.ok ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+        <div className={`text-sm rounded-lg px-4 py-3 border ${result.ok ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
           {result.message}
         </div>
       )}
@@ -103,7 +98,7 @@ export function BroadcastForm() {
       <button
         type="submit"
         disabled={loading || !title.trim() || !body.trim()}
-        className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+        className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
       >
         <Send className="w-4 h-4" />
         {loading ? 'Sending...' : 'Send Broadcast'}
