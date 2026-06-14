@@ -212,8 +212,40 @@ export default function PricingPage() {
       </section>
 
       {/* ── Plan cards ────────────────────────────────────────────── */}
-      <section className="px-5 sm:px-6 pb-20">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <section className="pb-20">
+        {/* Mobile/tablet: horizontal scroll */}
+        <div className="px-5 sm:px-6 xl:hidden">
+          <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none' }}>
+            {PLANS.map((plan) => (
+              <div key={plan.key + '-mobile'} className={`relative rounded-2xl border p-6 flex flex-col snap-start shrink-0 w-72 ${plan.color}`}>
+                {plan.badge && (
+                  <span className={`absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 text-[10px] font-bold rounded-full whitespace-nowrap ${plan.badgeStyle ?? 'bg-blue-500/20 text-blue-300'}`}>
+                    {plan.badge}
+                  </span>
+                )}
+                <p className="text-sm font-semibold text-zinc-400 mb-1">{plan.name}</p>
+                <div className="flex items-end gap-1 mb-1">
+                  <span className="text-3xl font-extrabold text-white">{plan.price}</span>
+                  {plan.per && <span className="text-zinc-500 text-sm mb-1">{plan.per}</span>}
+                </div>
+                {plan.trial
+                  ? <p className="text-[11px] text-emerald-400 font-semibold mb-3">{plan.trial}</p>
+                  : <p className="text-[11px] text-transparent mb-3">—</p>
+                }
+                <p className="text-sm text-zinc-400 mb-5 leading-relaxed flex-1">{plan.desc}</p>
+                <Link href={plan.href}
+                  className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all ${plan.ctaStyle}`}>
+                  {plan.cta} <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            ))}
+          </div>
+          <p className="text-center text-xs text-zinc-600 mt-1">← Swipe to see all plans →</p>
+        </div>
+
+        {/* Desktop: 4-column grid */}
+        <div className="hidden xl:block px-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-4 gap-4">
           {PLANS.map((plan) => (
             <div key={plan.key} className={`relative rounded-2xl border p-6 flex flex-col ${plan.color}`}>
               {plan.badge && (
@@ -240,6 +272,7 @@ export default function PricingPage() {
               </Link>
             </div>
           ))}
+          </div>
         </div>
       </section>
 
@@ -249,7 +282,8 @@ export default function PricingPage() {
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-center mb-2">Full feature comparison</h2>
           <p className="text-zinc-500 text-center text-sm mb-10">Everything included in each plan at a glance.</p>
 
-          <div className="rounded-2xl border border-zinc-800 overflow-hidden">
+          <div className="rounded-2xl border border-zinc-800 overflow-x-auto">
+            <div className="min-w-[700px]">
             {/* Header */}
             <div className="grid grid-cols-5 bg-zinc-900/80 border-b border-zinc-800">
               <div className="px-5 py-4 text-xs font-bold text-zinc-500 uppercase tracking-wider">Feature</div>
@@ -284,6 +318,7 @@ export default function PricingPage() {
                 ))}
               </div>
             ))}
+            </div>
           </div>
         </div>
       </section>
