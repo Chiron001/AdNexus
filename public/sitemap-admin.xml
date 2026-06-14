@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sitemap: admin.adnexusone.com
+  Scope : Internal reference only — do NOT submit to Google Search Console.
+          The admin panel is fully password-gated. All routes return a
+          redirect to /admin/login for unauthenticated requests, so no
+          page will ever be indexed by crawlers.
+
+  Note  : The robots.txt at adnexusone.com already disallows /admin/.
+          Googlebot will not crawl admin.adnexusone.com pages.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- ── Admin login (only public entry point) ──────────────────────── -->
+
+  <url>
+    <loc>https://admin.adnexusone.com/admin/login</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.1</priority>
+  </url>
+
+  <!--
+    All routes below are gated by the admin password cookie.
+    Listed here for internal architecture reference only.
+
+    App structure (all behind /admin/login gate):
+    ├── /admin/dashboard         — Overview: users, revenue, active accounts
+    ├── /admin/users             — All user accounts (list + search)
+    │     └── /admin/users/[id] — Individual user detail + plan controls
+    ├── /admin/accounts          — All connected ad accounts
+    ├── /admin/billing           — Subscription management + Paddle webhooks
+    ├── /admin/inquiries         — Contact form submissions + support tickets
+    ├── /admin/activity          — System audit log
+    └── /admin/notifications     — Push notification sender
+  -->
+
+</urlset>

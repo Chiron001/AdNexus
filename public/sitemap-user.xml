@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sitemap: user.adnexusone.com
+  Scope : Public entry points only (login, signup).
+          All /dashboard and app routes are behind auth — excluded from sitemap
+          per SEO best practice (crawlers cannot access them anyway).
+  Submit: https://user.adnexusone.com/sitemap-user.xml
+          Add to Google Search Console → user.adnexusone.com property.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- ── Public auth pages ──────────────────────────────────────────── -->
+
+  <url>
+    <loc>https://user.adnexusone.com/login</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://user.adnexusone.com/signup</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!--
+    The following routes exist in the app but are excluded from the sitemap
+    because they require authentication. Crawlers will receive a redirect
+    to /login and will not index these pages.
+
+    Excluded routes:
+      /dashboard
+      /accounts
+      /diagnostics
+      /recommendations
+      /analytics
+      /analytics/budget
+      /analytics/creative
+      /ai
+      /alerts
+      /reports
+      /audiences
+      /funnel
+      /goals
+      /billing
+      /settings
+      /settings/integrations
+      /onboarding
+  -->
+
+</urlset>
