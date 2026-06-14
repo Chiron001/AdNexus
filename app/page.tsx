@@ -244,7 +244,7 @@ const PRICING_PLANS = [
   {
     name: 'Professional', price: '499', per: 'per month',
     desc: 'For agencies managing multiple client ad accounts.',
-    features: ['15 ad accounts', 'All Growth features', 'White-label PDFs', 'Priority support'],
+    features: ['50 ad accounts', 'All Growth features', 'White-label PDFs', 'Priority support'],
     allFeatures: ['API access', 'Team collaboration', 'Client portal', 'Custom branding', 'Issue assignment', 'Multi-user roles', 'Dedicated onboarding', 'SLA commitment'],
     cta: 'Start Professional plan', href: '/signup?plan=agency', highlight: false, custom: false,
   },

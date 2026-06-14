@@ -59,7 +59,7 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     team_seats:            1,
   },
   agency: {
-    max_ad_accounts:       15,
+    max_ad_accounts:       50,
     max_diagnostic_checks: -1,
     sync_cooldown_ms:      15 * 60 * 1000, // 15 minutes
     ai_recommendations:    true,

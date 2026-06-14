@@ -163,7 +163,7 @@ export default function SettingsPage() {
             <p className="text-sm text-zinc-500 mt-0.5">
               {plan === 'free'   && '1 ad account · 10 diagnostic checks · 30-day free trial, then $19/mo'}
               {plan === 'growth' && 'All platforms · Unlimited issues · Unlimited recommendations'}
-              {plan === 'agency' && 'Everything in Growth · 25 brand accounts · White-label reports'}
+              {plan === 'agency' && 'Everything in Growth · 50 ad accounts · White-label reports'}
             </p>
           </div>
           <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${PLAN_BADGE[plan] ?? ''}`}>
