@@ -1,16 +1,70 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL  || 'https://adnexusone.com'
+const USER_URL  = process.env.NEXT_PUBLIC_USER_URL  || 'https://user.adnexusone.com'
+const ADMIN_URL = process.env.NEXT_PUBLIC_ADMIN_URL || 'https://admin.adnexusone.com'
+
 const PROTECTED_PATHS = [
   '/dashboard', '/accounts', '/diagnostics',
-  '/recommendations', '/reports', '/settings',
+  '/recommendations', '/reports', '/settings', '/billing',
+]
+
+// Paths that live on user.adnexusone.com only
+const USER_PATHS = [
+  '/dashboard', '/accounts', '/diagnostics', '/recommendations',
+  '/reports', '/settings', '/billing', '/onboarding',
+  '/login', '/signup', '/auth',
+]
+
+// Paths that live on adnexusone.com only
+const LANDING_ONLY = [
+  '/ai-engine', '/platform', '/customers', '/contact',
+  '/privacy', '/terms', '/refund', '/cookies',
+  '/industries', '/tools', '/case-studies', '/platform-tour',
 ]
 
 export async function proxy(request: NextRequest) {
+  const hostname = request.headers.get('host') || ''
   const { pathname } = request.nextUrl
 
+  // ── Subdomain routing (production only) ───────────────────────────────
+  if (!hostname.includes('localhost') && !hostname.endsWith('.vercel.app')) {
+    const parts     = hostname.split('.')
+    const subdomain = parts.length >= 3 ? parts[0] : null
+
+    // user.adnexusone.com — only serves dashboard + auth
+    if (subdomain === 'user') {
+      if (pathname === '/') {
+        return NextResponse.redirect(SITE_URL)
+      }
+      if (LANDING_ONLY.some(p => pathname === p || pathname.startsWith(p + '/'))) {
+        return NextResponse.redirect(`${SITE_URL}${pathname}`)
+      }
+    }
+
+    // admin.adnexusone.com — rewrite root/non-prefixed paths to /admin/*
+    else if (subdomain === 'admin') {
+      if (!pathname.startsWith('/admin')) {
+        const url = request.nextUrl.clone()
+        url.pathname = `/admin${pathname === '/' ? '' : pathname}`
+        return NextResponse.rewrite(url)
+      }
+    }
+
+    // adnexusone.com / www — redirect user/admin paths to their subdomains
+    else {
+      if (USER_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))) {
+        return NextResponse.redirect(`${USER_URL}${pathname}${request.nextUrl.search}`)
+      }
+      if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+        return NextResponse.redirect(`${ADMIN_URL}${pathname}`)
+      }
+    }
+  }
+  // ──────────────────────────────────────────────────────────────────────
+
   // ── Admin password gate ────────────────────────────────────────────────
-  // All /admin/* routes require the admin_session cookie except /admin/login
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
     const session = request.cookies.get('admin_session')?.value
     const secret  = process.env.ADMIN_PASSWORD
@@ -45,12 +99,12 @@ export async function proxy(request: NextRequest) {
 
   const isDashboardRoute = PROTECTED_PATHS.some(p => pathname.startsWith(p))
 
-  // Unauthenticated access to protected user routes → /login
+  // Unauthenticated access to protected routes → /login
   if (isDashboardRoute && !user) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // Redirect logged-in users away from auth pages
+  // Logged-in users on auth pages → /dashboard
   if ((pathname === '/login' || pathname === '/signup') && user) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
