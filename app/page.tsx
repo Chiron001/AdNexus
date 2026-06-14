@@ -244,7 +244,7 @@ const PRICING_PLANS = [
   {
     name: 'Professional', price: '499', per: 'per month',
     desc: 'For agencies managing multiple client ad accounts.',
-    features: ['50 ad accounts', 'Adnexusone AI Engine (included)', 'White-label PDFs', 'Priority support'],
+    features: ['50 ad accounts', 'Adnexusone AI Engine', 'White-label PDFs', 'Priority support'],
     allFeatures: ['API access', 'Team collaboration', 'Client portal', 'Custom branding', 'Issue assignment', 'Multi-user roles', 'Dedicated onboarding', 'SLA commitment'],
     cta: 'Start Professional plan', href: '/signup?plan=agency', highlight: false, custom: false, aiIncluded: true,
   },
@@ -945,12 +945,6 @@ export default function HomePage() {
                     <div className="flex items-baseline gap-0.5"><span className="text-sm text-gray-500">$</span><span className="text-3xl font-black text-white tabular-nums">{price}</span></div>
                   )}
                   <p className="text-xs text-gray-500 mt-1 mb-3">{per}</p>
-                  {aiIncluded && (
-                    <div className="flex items-center gap-1.5 mb-3 px-2.5 py-1.5 rounded-lg bg-yellow-500/10 border border-yellow-500/30 w-fit">
-                      <Zap className="w-3 h-3 text-yellow-400 shrink-0" />
-                      <span className="text-[11px] font-bold text-yellow-400 uppercase tracking-wide">Adnexusone AI Engine — Included Free</span>
-                    </div>
-                  )}
                   <p className="text-sm text-gray-400 mb-5 leading-relaxed">{desc}</p>
                   <ul className="space-y-2 flex-1 mb-4">
                     {features.map((f) => (
@@ -998,12 +992,6 @@ export default function HomePage() {
                         <div className="flex items-baseline gap-0.5 mb-1"><span className="text-sm text-gray-500">$</span><span className="text-4xl font-black text-white">{price}</span></div>
                       )}
                       <p className="text-xs text-gray-500 mb-3">{per}</p>
-                      {aiIncluded && (
-                        <div className="flex items-center gap-1.5 mb-3 px-2.5 py-1.5 rounded-lg bg-yellow-500/10 border border-yellow-500/30 w-fit">
-                          <Zap className="w-3 h-3 text-yellow-400 shrink-0" />
-                          <span className="text-[11px] font-bold text-yellow-400 uppercase tracking-wide">AI Engine — Included Free</span>
-                        </div>
-                      )}
                       <p className="text-sm text-gray-400 mb-4 leading-relaxed">{desc}</p>
                       <ul className="space-y-2 mb-4">
                         {features.map((f) => (
