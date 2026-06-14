@@ -64,7 +64,7 @@ const PLAN_BADGE: Record<string, string> = {
 }
 
 interface SidebarProps {
-  plan: 'free' | 'growth' | 'agency' | 'custom'
+  plan: 'free' | 'basic' | 'growth' | 'professional' | 'agency' | 'custom'
   userName: string
   onNavigate?: () => void
 }

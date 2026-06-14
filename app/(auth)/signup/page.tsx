@@ -91,19 +91,7 @@ function SignupForm() {
       })
     }
 
-    if (plan !== 'free' && planMeta) {
-      try {
-        const res  = await fetch('/api/subscriptions/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan }),
-        })
-        const json = await res.json() as { payment_link?: string }
-        if (json.payment_link) { window.location.href = json.payment_link; return }
-      } catch { /* fall through to dashboard */ }
-    }
-
-    router.push('/dashboard')
+    router.push('/onboarding/subscribe')
     router.refresh()
   }
 

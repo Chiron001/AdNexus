@@ -26,7 +26,7 @@ const PAGE_TITLES: Record<string, string> = {
 interface TopbarProps {
   userName: string
   userEmail?: string
-  plan: 'free' | 'growth' | 'agency' | 'custom'
+  plan: 'free' | 'basic' | 'growth' | 'professional' | 'agency' | 'custom'
 }
 
 export function Topbar({ userName, userEmail, plan }: TopbarProps) {

@@ -62,8 +62,11 @@ export function CheckoutButton({ plan, label, className, onSuccess }: Props) {
         modal:   { backdropclose: false },
         handler: () => {
           toast.success('Payment successful! Activating your plan…')
-          onSuccess?.()
-          setTimeout(() => window.location.reload(), 2500)
+          if (onSuccess) {
+            setTimeout(() => onSuccess(), 2500)
+          } else {
+            setTimeout(() => window.location.reload(), 2500)
+          }
         },
       })
 
