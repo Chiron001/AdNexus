@@ -92,9 +92,9 @@ export function LandingFooter() {
             ))}
           </div>
         </div>
-        <div className="border-t border-white/[0.12] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="border-t border-white/[0.12] pt-6 flex flex-row items-center justify-between gap-4">
           <p className="text-xs text-gray-400">© 2026 Adnexusone. All rights reserved.</p>
-          <div className="flex gap-4 sm:gap-5">{['Privacy','Terms','Cookies'].map(l => <a key={l} href="#" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">{l}</a>)}</div>
+          <div className="flex gap-5">{['Privacy','Terms','Cookies'].map(l => <a key={l} href="#" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">{l}</a>)}</div>
         </div>
       </div>
 
