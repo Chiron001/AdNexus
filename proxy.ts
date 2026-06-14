@@ -44,8 +44,13 @@ export async function proxy(request: NextRequest) {
     }
 
     // admin.adnexusone.com — rewrite root/non-prefixed paths to /admin/*
+    // API routes and auth callbacks are NOT rewritten — they must pass through as-is
     else if (subdomain === 'admin') {
-      if (!pathname.startsWith('/admin')) {
+      if (
+        !pathname.startsWith('/admin') &&
+        !pathname.startsWith('/api/') &&
+        !pathname.startsWith('/auth/')
+      ) {
         const url = request.nextUrl.clone()
         url.pathname = `/admin${pathname === '/' ? '' : pathname}`
         const reqHeaders = new Headers(request.headers)
