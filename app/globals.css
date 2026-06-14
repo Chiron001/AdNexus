@@ -186,6 +186,18 @@
 }
 .animate-slide-down { animation: slideDown 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
+/* ── Typography — Poppins headings · Lato everything else ── */
+body {
+  font-family: var(--font-lato), sans-serif;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-poppins), sans-serif;
+  font-weight: 600;
+}
+p, ul, ol, li, span, a, button, input, textarea, label, select {
+  font-family: var(--font-lato), sans-serif;
+}
+
 /* ── Float ───────────────────────────────────────── */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }

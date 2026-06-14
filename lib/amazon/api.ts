@@ -58,7 +58,7 @@ export async function requestCampaignReport(
     method: 'POST',
     headers: amazonHeaders(accessToken, profileId),
     body: JSON.stringify({
-      name: `AdNexus ${adProduct} Campaign Report`,
+      name: `Adnexusone ${adProduct} Campaign Report`,
       startDate,
       endDate,
       configuration: {
@@ -108,7 +108,7 @@ export async function requestSearchTermReport(
     method: 'POST',
     headers: amazonHeaders(accessToken, profileId),
     body: JSON.stringify({
-      name: 'AdNexus Search Term Report',
+      name: 'Adnexusone Search Term Report',
       reportType: 'spSearchTerm',
       startDate,
       endDate,

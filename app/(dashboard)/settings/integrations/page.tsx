@@ -425,7 +425,7 @@ export default function IntegrationsPage() {
           <div className="w-2 h-2 rounded-full bg-emerald-400" />
         </div>
         <p className="text-xs text-zinc-500 leading-relaxed">
-          Your credentials are stored encrypted in our database and are never shared. They are used only to fetch your ad account performance data for diagnostics. AdNexus has <strong className="text-zinc-400">read-only access</strong> — we cannot create, modify, or spend on your campaigns.
+          Your credentials are stored encrypted in our database and are never shared. They are used only to fetch your ad account performance data for diagnostics. Adnexusone has <strong className="text-zinc-400">read-only access</strong> — we cannot create, modify, or spend on your campaigns.
         </p>
       </div>
 

@@ -66,14 +66,14 @@ export function GoalsClient({ current, prevSummary, progression, monthLabel }: {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('adnexus_goals')
+      const saved = localStorage.getItem('adnexusone_goals')
       if (saved) setGoals(JSON.parse(saved))
     } catch {}
   }, [])
 
   function save(updated: Goal[]) {
     setGoals(updated)
-    localStorage.setItem('adnexus_goals', JSON.stringify(updated))
+    localStorage.setItem('adnexusone_goals', JSON.stringify(updated))
   }
 
   function addGoal() {

@@ -27,13 +27,13 @@ const ANSWERS = [
 
 const TESTIMONIALS = [
   { quote: 'The AI fix for creative fatigue was spot on. We paused the campaigns it flagged, uploaded 2 new creatives, and ROAS recovered from 2.1x to 3.8x in 10 days.', name: 'Priya Sharma', role: 'Head of Growth', brand: 'D2C Skincare Brand', avatar: 'P', stars: 5 },
-  { quote: "AdNexus AI found our broken pixel in the first scan. We'd been burning ₹38K per month for 3 months attributing it to attribution errors. Fixed it in one day.", name: 'Rahul Mehta', role: 'Performance Lead', brand: 'Fashion D2C', avatar: 'R', stars: 5 },
-  { quote: 'We manage 14 D2C brands. AdNexus AI saves us 6+ hours of manual audits every week. The AI explanations are clear enough to share directly with clients.', name: 'Ananya Iyer', role: 'Founder', brand: 'Performance Agency', avatar: 'A', stars: 5 },
+  { quote: "Adnexusone AI found our broken pixel in the first scan. We'd been burning ₹38K per month for 3 months attributing it to attribution errors. Fixed it in one day.", name: 'Rahul Mehta', role: 'Performance Lead', brand: 'Fashion D2C', avatar: 'R', stars: 5 },
+  { quote: 'We manage 14 D2C brands. Adnexusone AI saves us 6+ hours of manual audits every week. The AI explanations are clear enough to share directly with clients.', name: 'Ananya Iyer', role: 'Founder', brand: 'Performance Agency', avatar: 'A', stars: 5 },
   { quote: 'Ask AI is genuinely useful. I asked why our Google CPA spiked last week and it gave me a specific answer pointing to keyword cannibalization — fixed it the same day.', name: 'Vikram Nair', role: 'Head of Marketing', brand: 'D2C Wellness Brand', avatar: 'V', stars: 5 },
   { quote: 'The real-time alert caught our budget exhausting at 2pm. We extended it immediately and saved the peak evening traffic window. That one alert paid for the entire subscription.', name: 'Neha Joshi', role: 'Growth Manager', brand: 'Baby Products D2C', avatar: 'N', stars: 5 },
-  { quote: "We were scaling Google Shopping without realising our broad-match was eating 60% of budget with zero conversions. AdNexus flagged it on day one. That's ₹55K saved every month.", name: 'Karan Malhotra', role: 'Co-founder', brand: 'D2C Fitness Brand', avatar: 'K', stars: 5 },
-  { quote: 'Platform health score went from 58 to 84 in 3 weeks just by acting on AdNexus AI recommendations. Our Meta ROAS is at a 6-month high.', name: 'Shreya Kapoor', role: 'Performance Marketer', brand: 'Food & Snacks D2C', avatar: 'S', stars: 5 },
-  { quote: 'Amazon ACOS was at 38% on auto campaigns. AdNexus AI identified the exact ASINs bleeding money and suggested negatives. ACOS is down to 19% now.', name: 'Rohan Desai', role: 'Head of E-commerce', brand: 'Home Decor D2C', avatar: 'D', stars: 5 },
+  { quote: "We were scaling Google Shopping without realising our broad-match was eating 60% of budget with zero conversions. Adnexusone flagged it on day one. That's ₹55K saved every month.", name: 'Karan Malhotra', role: 'Co-founder', brand: 'D2C Fitness Brand', avatar: 'K', stars: 5 },
+  { quote: 'Platform health score went from 58 to 84 in 3 weeks just by acting on Adnexusone AI recommendations. Our Meta ROAS is at a 6-month high.', name: 'Shreya Kapoor', role: 'Performance Marketer', brand: 'Food & Snacks D2C', avatar: 'S', stars: 5 },
+  { quote: 'Amazon ACOS was at 38% on auto campaigns. Adnexusone AI identified the exact ASINs bleeding money and suggested negatives. ACOS is down to 19% now.', name: 'Rohan Desai', role: 'Head of E-commerce', brand: 'Home Decor D2C', avatar: 'D', stars: 5 },
   { quote: "The AI-generated audit reports are client-ready. I used to spend 3 hours building these in Google Slides. Now I click export and it's done in 30 seconds.", name: 'Meera Pillai', role: 'Agency Director', brand: 'Performance Marketing Agency', avatar: 'M', stars: 5 },
 ]
 
@@ -53,7 +53,7 @@ const FEATURES = [
 ]
 
 const DISCOVER_CARDS = [
-  { icon: <Zap className="w-4 h-4 text-blue-400" />,    iconBg: 'bg-blue-500/10',   border: 'hover:border-blue-500/30',   title: 'Platform Overview',       desc: 'The complete ad health OS. See everything AdNexus does in one place.',  href: '/platform',          cta: 'Explore', ctaColor: 'text-blue-400' },
+  { icon: <Zap className="w-4 h-4 text-blue-400" />,    iconBg: 'bg-blue-500/10',   border: 'hover:border-blue-500/30',   title: 'Platform Overview',       desc: 'The complete ad health OS. See everything Adnexusone does in one place.',  href: '/platform',          cta: 'Explore', ctaColor: 'text-blue-400' },
   { icon: <Bell className="w-4 h-4 text-amber-400" />,  iconBg: 'bg-amber-500/10',  border: 'hover:border-amber-500/30',  title: 'Real-time Alerts',        desc: 'Set thresholds. Get notified instantly. Never miss a critical issue.',  href: '/platform#alerts',   cta: 'Explore', ctaColor: 'text-amber-400' },
   { icon: <FileText className="w-4 h-4 text-green-400" />, iconBg: 'bg-green-500/10', border: 'hover:border-green-500/30', title: 'Audit Reports',          desc: 'One-click white-label reports for your clients and team.',              href: '/platform#reports',  cta: 'Explore', ctaColor: 'text-green-400' },
   { icon: <BarChart3 className="w-4 h-4 text-cyan-400" />, iconBg: 'bg-cyan-500/10',  border: 'hover:border-cyan-500/30',  title: 'Performance Analytics', desc: 'Cross-platform ROAS, CPA, and spend in one unified view.',              href: '/platform#analytics', cta: 'Explore', ctaColor: 'text-cyan-400' },
@@ -425,7 +425,7 @@ export default function AIPage() {
               </h1>
 
               <p className="text-gray-400 text-lg sm:text-xl max-w-xl mb-10 leading-relaxed stagger-child">
-                AdNexus AI monitors Meta, Google, and Amazon 24/7. It surfaces issues ranked by rupee impact and writes the exact fix your team needs — powered by Claude.
+                Adnexusone AI monitors Meta, Google, and Amazon 24/7. It surfaces issues ranked by rupee impact and writes the exact fix your team needs — powered by Claude.
               </p>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 stagger-child">
@@ -501,7 +501,7 @@ export default function AIPage() {
         tagColor="text-purple-400 bg-purple-500/10 border-purple-500/20"
         accentColor="rgba(139,92,246,0.08)"
         headline={<>Claude explains the problem<br />and writes the fix</>}
-        body="Every issue AdNexus detects comes with a Claude-written action plan. Not 'your frequency is high' — but 'pause these 3 creatives, upload 2 fresh variants with a different angle, set cap to 3/week.' Specific. Actionable."
+        body="Every issue Adnexusone detects comes with a Claude-written action plan. Not 'your frequency is high' — but 'pause these 3 creatives, upload 2 fresh variants with a different angle, set cap to 3/week.' Specific. Actionable."
         bullets={[
           { icon: CHECKP, text: 'Step-by-step fix instructions for every detected issue' },
           { icon: CHECKP, text: 'Expected outcome: ROAS recovery, budget savings in rupees' },
@@ -554,7 +554,7 @@ export default function AIPage() {
                   {[...Array(5)].map((_, j) => <Star key={j} className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />)}
                 </div>
                 <p className="text-sm text-gray-300 leading-relaxed mb-6">
-                  "AdNexus AI found a broken pixel that was costing us ₹38,000 every month. It flagged it in the very first scan. Fixed in one day — ROAS went from 1.8x to 3.2x."
+                  "Adnexusone AI found a broken pixel that was costing us ₹38,000 every month. It flagged it in the very first scan. Fixed in one day — ROAS went from 1.8x to 3.2x."
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-600/30 to-purple-600/30 border border-white/[0.12] flex items-center justify-center text-sm font-bold text-blue-300">H</div>
@@ -582,7 +582,7 @@ export default function AIPage() {
         tagColor="text-cyan-400 bg-cyan-500/10 border-cyan-500/20"
         accentColor="rgba(6,182,212,0.07)"
         headline={<>30 checks. Every sync.<br />Zero effort.</>}
-        body="AdNexus runs 30 platform-specific diagnostic checks every time you sync — automatically. Creative fatigue, broken tracking, keyword cannibalization, zero-conversion spend, high ACOS — all caught, ranked, and ready to act on."
+        body="Adnexusone runs 30 platform-specific diagnostic checks every time you sync — automatically. Creative fatigue, broken tracking, keyword cannibalization, zero-conversion spend, high ACOS — all caught, ranked, and ready to act on."
         bullets={[
           { icon: CHECKC, text: 'Creative fatigue detection with frequency and CTR decline signals' },
           { icon: CHECKC, text: 'Pixel tracking validation before you scale spend' },
@@ -602,7 +602,7 @@ export default function AIPage() {
         tagColor="text-blue-400 bg-blue-500/10 border-blue-500/20"
         accentColor="rgba(59,130,246,0.07)"
         headline={<>Ask anything about<br />your campaigns</>}
-        body="Not sure why ROAS dropped? Ask AdNexus AI. Want to know which campaigns to cut before weekend? Ask. The AI has full context of your account history — answers are specific to your data, not generic advice."
+        body="Not sure why ROAS dropped? Ask Adnexusone AI. Want to know which campaigns to cut before weekend? Ask. The AI has full context of your account history — answers are specific to your data, not generic advice."
         bullets={[
           { icon: CHECKB, text: 'Natural language questions about any metric or platform' },
           { icon: CHECKB, text: 'Answers grounded in your actual campaign data' },
@@ -623,10 +623,10 @@ export default function AIPage() {
               <Activity className="w-3 h-3" /> Real-time Monitoring
             </div>
             <h2 className="text-[1.6rem] sm:text-4xl font-extrabold tracking-tight mb-4">
-              Your campaigns never stop running.<br className="hidden sm:block" /> Neither does AdNexus AI.
+              Your campaigns never stop running.<br className="hidden sm:block" /> Neither does Adnexusone AI.
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto text-base sm:text-lg leading-relaxed">
-              Set thresholds for any metric. AdNexus AI fires an alert the moment something crosses them — before it compounds into a bigger problem.
+              Set thresholds for any metric. Adnexusone AI fires an alert the moment something crosses them — before it compounds into a bigger problem.
             </p>
           </div>
 
@@ -682,7 +682,7 @@ export default function AIPage() {
       <section id="features" className="py-24 px-5 sm:px-6">
         <div ref={featRef} className="reveal max-w-6xl mx-auto">
           <div className="text-center mb-14 stagger-child">
-            <h2 className="text-[1.6rem] sm:text-4xl font-extrabold tracking-tight mb-4">Everything AdNexus AI can do</h2>
+            <h2 className="text-[1.6rem] sm:text-4xl font-extrabold tracking-tight mb-4">Everything Adnexusone AI can do</h2>
             <p className="text-gray-400 max-w-xl mx-auto">30 checks across 3 platforms, powered by Claude. Here's the full list.</p>
           </div>
           {/* Desktop grid */}
@@ -755,7 +755,7 @@ export default function AIPage() {
       <section className="py-20 px-5 sm:px-6" style={{ background: 'rgba(4,5,14,0.5)' }}>
         <div ref={discoverRef} className="reveal max-w-5xl mx-auto">
           <div className="text-center mb-10 stagger-child">
-            <h2 className="text-[1.6rem] sm:text-3xl font-extrabold tracking-tight mb-3">Explore more of AdNexus</h2>
+            <h2 className="text-[1.6rem] sm:text-3xl font-extrabold tracking-tight mb-3">Explore more of Adnexusone</h2>
           </div>
           {/* Desktop grid */}
           <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 stagger-child">
@@ -803,7 +803,7 @@ export default function AIPage() {
         <div ref={tRef} className="reveal max-w-6xl mx-auto">
           <div className="text-center mb-14 stagger-child">
             <p className="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-4">Customer stories</p>
-            <h2 className="text-[1.6rem] sm:text-4xl font-extrabold tracking-tight">What marketers say about AdNexus AI</h2>
+            <h2 className="text-[1.6rem] sm:text-4xl font-extrabold tracking-tight">What marketers say about Adnexusone AI</h2>
           </div>
 
           {/* Desktop carousel — 3 cards per page, 3 pages */}

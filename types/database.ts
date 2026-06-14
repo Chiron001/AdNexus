@@ -32,7 +32,7 @@ export interface Database {
           email: string
           full_name: string | null
           company_name: string | null
-          plan: 'free' | 'growth' | 'agency'
+          plan: 'free' | 'growth' | 'agency' | 'custom'
           plan_expires_at: string | null
           razorpay_customer_id: string | null
           phone_number: string | null
@@ -50,7 +50,7 @@ export interface Database {
           email: string
           full_name?: string | null
           company_name?: string | null
-          plan?: 'free' | 'growth' | 'agency'
+          plan?: 'free' | 'growth' | 'agency' | 'custom'
           plan_expires_at?: string | null
           razorpay_customer_id?: string | null
           phone_number?: string | null
@@ -68,7 +68,7 @@ export interface Database {
           email?: string
           full_name?: string | null
           company_name?: string | null
-          plan?: 'free' | 'growth' | 'agency'
+          plan?: 'free' | 'growth' | 'agency' | 'custom'
           plan_expires_at?: string | null
           razorpay_customer_id?: string | null
           phone_number?: string | null

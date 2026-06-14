@@ -6,9 +6,9 @@ import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingCTA, LandingFooter } from '@/components/landing/LandingFooter'
 
 const CAPABILITIES = [
-  { icon: <Globe className="w-5 h-5 text-amber-400" />, title: 'Multi-account, multi-region visibility', body: 'Enterprise brands run 10–40 ad accounts across regions, business units, and platforms. AdNexus consolidates every account into one workspace — health scores, spend at risk, and priority issues across the entire portfolio.' },
+  { icon: <Globe className="w-5 h-5 text-amber-400" />, title: 'Multi-account, multi-region visibility', body: 'Enterprise brands run 10–40 ad accounts across regions, business units, and platforms. Adnexusone consolidates every account into one workspace — health scores, spend at risk, and priority issues across the entire portfolio.' },
   { icon: <BarChart3 className="w-5 h-5 text-orange-400" />, title: 'Platform-level spend intelligence', body: 'Total cross-platform spend is visible by region, by business unit, or by platform. No more stitching together CSV exports to understand where your ₹50L monthly budget is actually going.' },
-  { icon: <Shield className="w-5 h-5 text-yellow-400" />, title: 'Brand safety and compliance monitoring', body: 'Large brands face reputational risk from ad placements and policy violations. AdNexus surfaces brand safety issues, ad disapprovals, and restricted placements before they escalate.' },
+  { icon: <Shield className="w-5 h-5 text-yellow-400" />, title: 'Brand safety and compliance monitoring', body: 'Large brands face reputational risk from ad placements and policy violations. Adnexusone surfaces brand safety issues, ad disapprovals, and restricted placements before they escalate.' },
   { icon: <FileText className="w-5 h-5 text-amber-300" />, title: 'Executive-grade reporting', body: 'Automated diagnostic summaries formatted for C-suite reporting. Issues are explained in business terms, not platform jargon — ready for weekly leadership reviews without an analyst reformatting the data.' },
   { icon: <Users className="w-5 h-5 text-orange-300" />, title: 'Team-level access controls', body: 'Assign platform and account access by team member, region, or function. Agencies and internal teams see only the accounts relevant to them — with full audit log of every action.' },
   { icon: <Zap className="w-5 h-5 text-amber-500" />, title: 'Priority issue routing by severity', body: 'Critical issues — budget exhaustion, pixel failure, policy violations — are routed to the right team immediately via Slack or email. Medium issues queue into weekly review. Nothing gets missed.' },
@@ -44,7 +44,7 @@ export default function EnterpriseBrandsPage() {
               Visibility across every account.<br /><span className="text-gradient animate-gradient">Control at enterprise scale.</span>
             </h1>
             <p className="text-gray-400 text-lg leading-relaxed mb-10">
-              Enterprise brands operate too many accounts, across too many platforms, with too many stakeholders to rely on manual audits. AdNexus is the always-on diagnostic layer that keeps every account performing at the portfolio level.
+              Enterprise brands operate too many accounts, across too many platforms, with too many stakeholders to rely on manual audits. Adnexusone is the always-on diagnostic layer that keeps every account performing at the portfolio level.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link href="/signup" className="inline-flex items-center gap-2 px-7 py-3.5 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl text-sm shadow-lg shadow-amber-500/20 transition-all">

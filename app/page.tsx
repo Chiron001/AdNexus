@@ -198,7 +198,7 @@ const FEATURE_CARDS = [
 const CASE_STUDIES = [
   {
     metric:'3.2x', label:'ROAS improvement', brand:'D2C Skincare Brand', platform:'Meta Ads',
-    quote:'Broken conversion tracking was costing us ₹38,000 per month. AdNexus found it in the first scan. Fixed in one day.',
+    quote:'Broken conversion tracking was costing us ₹38,000 per month. Adnexusone found it in the first scan. Fixed in one day.',
     gradientFrom:'#0d1a35', gradientTo:'#060810', glowColor:'rgba(37,99,235,0.7)', glowColor2:'rgba(124,58,237,0.4)', initial:'S',
   },
   {
@@ -208,20 +208,20 @@ const CASE_STUDIES = [
   },
   {
     metric:'41%', label:'ACOS improvement', brand:'Health Supplements', platform:'Amazon Ads',
-    quote:'Our auto campaigns were cannibalizing the manual ones. AdNexus caught it immediately and the fix took 20 minutes.',
+    quote:'Our auto campaigns were cannibalizing the manual ones. Adnexusone caught it immediately and the fix took 20 minutes.',
     gradientFrom:'#1f1005', gradientTo:'#0a0604', glowColor:'rgba(249,115,22,0.7)', glowColor2:'rgba(217,119,6,0.4)', initial:'H',
   },
 ]
 
 const TESTIMONIALS = [
-  { role:'Performance Marketer', company:'D2C Brand',           quote:'I used to spend 2 hours every Monday on manual audits. AdNexus does the same in 2 minutes and catches things I missed.',                                       avatar:'P', color:'from-blue-600 to-indigo-600'   },
+  { role:'Performance Marketer', company:'D2C Brand',           quote:'I used to spend 2 hours every Monday on manual audits. Adnexusone does the same in 2 minutes and catches things I missed.',                                       avatar:'P', color:'from-blue-600 to-indigo-600'   },
   { role:'Head of Growth',       company:'E-commerce Brand',    quote:'The revenue impact ranking is what sold me. I know exactly which problem to fix first and what it costs every day it sits unfixed.',                            avatar:'H', color:'from-purple-600 to-pink-600'   },
-  { role:'Agency Founder',       company:'Performance Agency',  quote:'We manage 18 client accounts. AdNexus lets us catch issues before clients notice. That has been huge for retention.',                                            avatar:'F', color:'from-emerald-600 to-teal-600'  },
-  { role:'Growth Lead',          company:'Fashion D2C',         quote:'Our Meta spend was bleeding ₹40K/month on a fatigued creative. AdNexus caught it on day one. The tool paid for itself in the first week.',                      avatar:'G', color:'from-rose-600 to-orange-600'  },
-  { role:'Co-founder & CMO',     company:'Health Brand',        quote:'Keyword cannibalization on Google was something we never had time to audit. Now AdNexus checks it every single day while we sleep.',                            avatar:'C', color:'from-cyan-600 to-blue-600'    },
-  { role:'Media Buyer',          company:'D2C Accessories',     quote:'I recommended AdNexus to every founder I know. Three months in, our ROAS is up 2.8x. The AI fixes are specific and they actually work.',                        avatar:'M', color:'from-violet-600 to-purple-600' },
-  { role:'Digital Marketing Head',company:'Lifestyle Brand',   quote:'Amazon ACOS was 68% on our auto campaigns. AdNexus flagged it in the first sync. Now we are at 32% — the margin difference is insane.',                         avatar:'D', color:'from-green-600 to-emerald-600' },
-  { role:'Founder',              company:'Skincare Brand',      quote:'As a solo founder without a dedicated performance team, AdNexus is like having a senior media buyer watching my accounts 24/7. Worth every rupee.',             avatar:'N', color:'from-amber-600 to-yellow-600'  },
+  { role:'Agency Founder',       company:'Performance Agency',  quote:'We manage 18 client accounts. Adnexusone lets us catch issues before clients notice. That has been huge for retention.',                                            avatar:'F', color:'from-emerald-600 to-teal-600'  },
+  { role:'Growth Lead',          company:'Fashion D2C',         quote:'Our Meta spend was bleeding ₹40K/month on a fatigued creative. Adnexusone caught it on day one. The tool paid for itself in the first week.',                      avatar:'G', color:'from-rose-600 to-orange-600'  },
+  { role:'Co-founder & CMO',     company:'Health Brand',        quote:'Keyword cannibalization on Google was something we never had time to audit. Now Adnexusone checks it every single day while we sleep.',                            avatar:'C', color:'from-cyan-600 to-blue-600'    },
+  { role:'Media Buyer',          company:'D2C Accessories',     quote:'I recommended Adnexusone to every founder I know. Three months in, our ROAS is up 2.8x. The AI fixes are specific and they actually work.',                        avatar:'M', color:'from-violet-600 to-purple-600' },
+  { role:'Digital Marketing Head',company:'Lifestyle Brand',   quote:'Amazon ACOS was 68% on our auto campaigns. Adnexusone flagged it in the first sync. Now we are at 32% — the margin difference is insane.',                         avatar:'D', color:'from-green-600 to-emerald-600' },
+  { role:'Founder',              company:'Skincare Brand',      quote:'As a solo founder without a dedicated performance team, Adnexusone is like having a senior media buyer watching my accounts 24/7. Worth every rupee.',             avatar:'N', color:'from-amber-600 to-yellow-600'  },
 ]
 
 /* ── Pricing plans ─────────────────────────────── */
@@ -366,7 +366,7 @@ export default function HomePage() {
               </h1>
 
               <p className="hero-animate animate-fade-up text-base sm:text-lg text-gray-400 max-w-lg leading-relaxed mb-8">
-                Stop guessing why your ROAS is dropping. AdNexus runs 30 diagnostic checks across Meta, Google, and Amazon Ads, ranks every problem by rupee impact, and gives your team an AI-written fix in minutes.
+                Stop guessing why your ROAS is dropping. Adnexusone runs 30 diagnostic checks across Meta, Google, and Amazon Ads, ranks every problem by rupee impact, and gives your team an AI-written fix in minutes.
               </p>
 
               <div className="hero-animate animate-fade-up flex flex-col sm:flex-row gap-3 mb-7">
@@ -557,7 +557,7 @@ export default function HomePage() {
           <h2 className="font-black text-white mb-6" style={{ fontSize: 'clamp(2rem, 6vw, 4.8rem)', letterSpacing: '-0.03em', lineHeight: 1.06 }}>
             30 checks.<br />Every night.
           </h2>
-          <p className="text-sm sm:text-lg text-gray-400 leading-relaxed max-w-md mx-auto mb-10">While you sleep, AdNexus is scanning your ad accounts for issues that cost you money.</p>
+          <p className="text-sm sm:text-lg text-gray-400 leading-relaxed max-w-md mx-auto mb-10">While you sleep, Adnexusone is scanning your ad accounts for issues that cost you money.</p>
           <div className="flex gap-2 flex-nowrap justify-center">
             {[{ val:'30', label:'checks per account' },{ val:'3', label:'platforms monitored' },{ val:'2am', label:'runs every night' }].map(({ val, label }) => (
               <div key={val} className="px-3 py-2.5 rounded-full border text-center flex-1 max-w-[140px]" style={{ border:'1px solid rgba(120,220,160,0.2)', background:'rgba(8,28,16,0.5)' }}>
@@ -589,7 +589,7 @@ export default function HomePage() {
               { refData:c1, val:`${c1.count}+`, label:'Diagnostic checks per account' },
               { refData:c2, val:`${c2.count}`,   label:'Ad platforms fully supported' },
               { refData:c3, val:`${c3.count}%`,  label:'Avg wasted spend recovered' },
-              { refData:c4, val:`${c4.count}+`,  label:'D2C brands on AdNexus' },
+              { refData:c4, val:`${c4.count}+`,  label:'D2C brands on Adnexusone' },
             ].map(({ refData, val, label }, i) => (
               <div key={label} ref={refData.ref}
                 className={`p-7 md:py-14 text-center border-white/[0.05]
@@ -652,18 +652,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Meet AdNexus AI ─────────────────────────── */}
+      {/* ── Meet Adnexusone AI ─────────────────────────── */}
       <section className="py-20 sm:py-28 px-5 sm:px-6" style={{ background:'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(124,58,237,0.08) 0%, transparent 70%)' }}>
         <div className="max-w-6xl mx-auto">
           <div ref={s2} className="reveal">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center">
               <div className="stagger-child order-2 lg:order-1">
-                <p className="text-[11px] font-bold text-purple-400 uppercase tracking-widest mb-3">Meet AdNexus AI</p>
+                <p className="text-[11px] font-bold text-purple-400 uppercase tracking-widest mb-3">Meet Adnexusone AI</p>
                 <h2 className="text-[1.55rem] sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-5">The intelligence behind every diagnosis</h2>
                 <p className="text-gray-400 text-base sm:text-lg leading-relaxed mb-8">Drive faster action across all three platforms with autonomous AI trained on performance marketing data.</p>
                 <div className="space-y-5">
                   {[
-                    { icon:Cpu,        color:'text-purple-400', bg:'bg-purple-500/10 border-purple-500/20', title:'Autonomous diagnostics for superior performance', desc:'AdNexus scans accounts daily, surfaces problems instantly, and ranks them by rupee cost.' },
+                    { icon:Cpu,        color:'text-purple-400', bg:'bg-purple-500/10 border-purple-500/20', title:'Autonomous diagnostics for superior performance', desc:'Adnexusone scans accounts daily, surfaces problems instantly, and ranks them by rupee cost.' },
                     { icon:Activity,   color:'text-blue-400',   bg:'bg-blue-500/10 border-blue-500/20',     title:'Ad monitoring on autopilot',                   desc:'Connect once. 30 checks run every day. No manual audits. No missed issues.' },
                     { icon:TrendingUp, color:'text-green-400',  bg:'bg-green-500/10 border-green-500/20',   title:'AI fixes trained on your data',                desc:'Every recommendation is powered by Claude AI, cross-referenced with your campaign history.' },
                   ].map(({ icon:Icon, color, bg, title, desc }) => (
@@ -786,7 +786,7 @@ export default function HomePage() {
             <div className="text-center mb-14 sm:mb-20 stagger-child">
               <p className="text-[11px] font-bold text-blue-500 uppercase tracking-widest mb-3">Diagnostic breadth</p>
               <h2 className="text-[1.55rem] sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">For unstoppable ad performance</h2>
-              <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">From 5L to 5Cr monthly spend, AdNexus covers every failure mode that costs brands money.</p>
+              <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">From 5L to 5Cr monthly spend, Adnexusone covers every failure mode that costs brands money.</p>
             </div>
             <div className="hidden md:grid md:grid-cols-3 gap-5">
               {FEATURE_CARDS.map(({ icon:Icon, color, bg, title, desc }) => (
@@ -1051,7 +1051,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── AdNexus AI Engine ─────────────────────── */}
+      {/* ── Adnexusone AI Engine ─────────────────────── */}
       <section id="ai-engine" className="py-20 sm:py-28 px-5 sm:px-6 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full opacity-[0.07] pointer-events-none" style={{ background:'radial-gradient(circle, rgba(139,92,246,1) 0%, transparent 70%)', filter:'blur(120px)' }} />
 
@@ -1067,7 +1067,7 @@ export default function HomePage() {
               <h2 className="text-[1.55rem] sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
                 Intelligence that<br className="sm:hidden" /> never sleeps
               </h2>
-              <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">AdNexus AI watches every campaign 24/7, surfaces what costs you money, and tells your team exactly how to fix it.</p>
+              <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">Adnexusone AI watches every campaign 24/7, surfaces what costs you money, and tells your team exactly how to fix it.</p>
             </div>
 
             {/* Desktop bento grid */}
@@ -1187,7 +1187,7 @@ export default function HomePage() {
                   ))}
                 </div>
 
-                <p className="absolute bottom-3 text-[9px] text-white/[0.12] font-bold uppercase tracking-[0.25em]">AdNexus AI Engine</p>
+                <p className="absolute bottom-3 text-[9px] text-white/[0.12] font-bold uppercase tracking-[0.25em]">Adnexusone AI Engine</p>
               </div>
 
               {/* Card 3: AI Fix Generator — col 3, row 1 */}
@@ -1403,7 +1403,7 @@ export default function HomePage() {
           <p className="text-[11px] font-bold text-orange-400/80 uppercase tracking-widest mb-4">Get started today</p>
           <h2 className="text-[1.7rem] sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6">
             Be unstoppable<br />
-            <span className="text-gradient animate-gradient">with AdNexus</span>
+            <span className="text-gradient animate-gradient">with Adnexusone</span>
           </h2>
           <p className="text-gray-400 text-lg sm:text-xl mb-10 max-w-lg mx-auto leading-relaxed">The only platform built to keep Indian D2C ad accounts healthy and performing at their peak.</p>
           <div className="flex flex-col sm:flex-row items-stretch justify-center gap-3 mb-5">
@@ -1434,7 +1434,7 @@ export default function HomePage() {
             <div className="col-span-2 sm:col-span-1">
               <Link href="/" className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/25"><Zap className="w-4 h-4 text-white" /></div>
-                <span className="text-sm font-bold text-white">AdNexus</span>
+                <span className="text-sm font-bold text-white">Adnexusone</span>
               </Link>
               <p className="text-xs text-gray-300 leading-relaxed mb-4">AI-powered ad diagnostics for Indian D2C brands and performance agencies.</p>
               <div className="flex gap-2">
@@ -1461,7 +1461,7 @@ export default function HomePage() {
             ))}
           </div>
           <div className="border-t border-white/[0.12] pt-6 flex flex-col sm:grid sm:grid-cols-3 items-center gap-4">
-            <p className="text-xs text-gray-400 order-3 sm:order-1">© 2026 AdNexus. All rights reserved.</p>
+            <p className="text-xs text-gray-400 order-3 sm:order-1">© 2026 Adnexusone. All rights reserved.</p>
             {/* Social icons — centered */}
             <div className="flex items-center gap-3 justify-center order-1 sm:order-2">
               {[
@@ -1483,7 +1483,7 @@ export default function HomePage() {
              style={{ fontSize:'clamp(4rem, 14vw, 11rem)', letterSpacing:'-0.03em', marginBottom:'-0.15em',
                background:'linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(148,130,255,0.28) 40%, rgba(96,165,250,0.24) 70%, rgba(255,255,255,0.20) 100%)',
                WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
-            ADNEXUS
+            ADNEXUSONE
           </p>
         </div>
       </footer>

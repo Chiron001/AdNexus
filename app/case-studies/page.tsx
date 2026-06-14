@@ -13,7 +13,7 @@ const CASES = [
     platformColor: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
     problem: 'Creative fatigue destroying ROAS',
     context: 'Running 22 active creatives across 6 ad sets. Frequency hit 6.3× on their primary retargeting audience. CTR had dropped 38% over 3 weeks but the team attributed it to seasonality.',
-    discovery: 'AdNexus flagged frequency saturation on the retargeting ad set and identified 4 specific creatives with CTR below 0.8%. The AI brief recommended a UGC-led angle targeting review objections rather than benefits.',
+    discovery: 'Adnexusone flagged frequency saturation on the retargeting ad set and identified 4 specific creatives with CTR below 0.8%. The AI brief recommended a UGC-led angle targeting review objections rather than benefits.',
     before: [{ metric: 'ROAS', value: '1.8×' }, { metric: 'CTR (primary ad set)', value: '0.7%' }, { metric: 'Frequency', value: '6.3×' }, { metric: 'Monthly spend', value: '₹3.2L' }],
     after: [{ metric: 'ROAS', value: '3.1×', up: true }, { metric: 'CTR (primary ad set)', value: '2.1%', up: true }, { metric: 'Frequency', value: '3.1×', up: false }, { metric: 'Monthly spend', value: '₹4.8L', up: true }],
     accentColor: 'border-blue-500/20',
@@ -25,8 +25,8 @@ const CASES = [
     platform: 'Google Shopping',
     platformColor: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
     problem: 'Non-brand Shopping ROAS invisible, budget misallocated',
-    context: 'The brand had a blended Shopping ROAS of 4.1× and was happy. When AdNexus segmented branded vs. non-branded, the picture changed entirely — non-brand ROAS was 1.4×.',
-    discovery: 'AdNexus detected that brand-name search terms were grouped in the same campaign as generic product terms, masking the true non-brand performance. Separating campaigns exposed the waste.',
+    context: 'The brand had a blended Shopping ROAS of 4.1× and was happy. When Adnexusone segmented branded vs. non-branded, the picture changed entirely — non-brand ROAS was 1.4×.',
+    discovery: 'Adnexusone detected that brand-name search terms were grouped in the same campaign as generic product terms, masking the true non-brand performance. Separating campaigns exposed the waste.',
     before: [{ metric: 'Blended Shopping ROAS', value: '4.1×' }, { metric: 'Non-brand ROAS', value: '1.4×' }, { metric: 'Brand spend %', value: '68%' }, { metric: 'Waste on non-brand', value: '₹1.1L/mo' }],
     after: [{ metric: 'Non-brand ROAS', value: '2.9×', up: true }, { metric: 'Brand spend %', value: '42%', up: false }, { metric: 'Monthly waste eliminated', value: '₹72K', up: true }, { metric: 'Total attributed revenue', value: '+31%', up: true }],
     accentColor: 'border-emerald-500/20',
@@ -39,7 +39,7 @@ const CASES = [
     platformColor: 'text-orange-400 bg-orange-500/10 border-orange-500/20',
     problem: 'Auto campaigns bloating ACOS without discovery value',
     context: 'Six auto campaigns running for 14+ months. ACOS at 44%. The team had never reviewed search term reports. ₹2.3L/month was running through terms with zero sales history.',
-    discovery: 'AdNexus identified 127 unique search terms with 30+ days of spend and zero conversions. It also flagged 3 zero-sale ASINs receiving ₹40K/month in sponsored spend.',
+    discovery: 'Adnexusone identified 127 unique search terms with 30+ days of spend and zero conversions. It also flagged 3 zero-sale ASINs receiving ₹40K/month in sponsored spend.',
     before: [{ metric: 'Portfolio ACOS', value: '44%' }, { metric: 'Wasted search terms', value: '127' }, { metric: 'Zero-sale ASIN spend', value: '₹40K/mo' }, { metric: 'Auto campaign ROAS', value: '0.9×' }],
     after: [{ metric: 'Portfolio ACOS', value: '26%', up: false }, { metric: 'Wasted search terms negated', value: '127', up: true }, { metric: 'Zero-sale ASIN spend', value: '₹0', up: false }, { metric: 'Auto campaign ROAS', value: '2.4×', up: true }],
     accentColor: 'border-orange-500/20',
@@ -52,7 +52,7 @@ const CASES = [
     platformColor: 'text-purple-400 bg-purple-500/10 border-purple-500/20',
     problem: 'Client issues missed between weekly reviews',
     context: 'Managing 18 client accounts. With one weekly audit cycle, budget exhaustion, pixel failures, and ROAS drops were often discovered 5–7 days after they began — sometimes after client escalation.',
-    discovery: 'AdNexus ran continuous diagnostics and surfaced 3 critical issues in the first week: a pixel failure on a ₹80K/month account, a budget exhaustion pattern on a peak-season client, and keyword cannibalization inflating CPCs by 22%.',
+    discovery: 'Adnexusone ran continuous diagnostics and surfaced 3 critical issues in the first week: a pixel failure on a ₹80K/month account, a budget exhaustion pattern on a peak-season client, and keyword cannibalization inflating CPCs by 22%.',
     before: [{ metric: 'Issue detection lag', value: '5–7 days' }, { metric: 'Client escalations/month', value: '3–4' }, { metric: 'Audit time per account', value: '2+ hrs' }, { metric: 'Accounts reviewed weekly', value: '18' }],
     after: [{ metric: 'Issue detection lag', value: '<2 hrs', up: false }, { metric: 'Client escalations/month', value: '0', up: false }, { metric: 'Audit time per account', value: '15 min', up: false }, { metric: 'Accounts covered daily', value: '18', up: true }],
     accentColor: 'border-purple-500/20',
@@ -70,7 +70,7 @@ export default function CaseStudiesPage() {
         <div className="max-w-5xl mx-auto">
           <span className="inline-flex text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border text-gray-400 bg-white/[0.04] border-white/[0.08] mb-6">Resources · Case Studies</span>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">Real accounts. Real issues. Real numbers.</h1>
-          <p className="text-gray-400 text-base max-w-xl leading-relaxed">Each case study shows the exact issue found, how AdNexus surfaced it, and the before/after performance impact.</p>
+          <p className="text-gray-400 text-base max-w-xl leading-relaxed">Each case study shows the exact issue found, how Adnexusone surfaced it, and the before/after performance impact.</p>
         </div>
       </section>
 
@@ -91,7 +91,7 @@ export default function CaseStudiesPage() {
                     <p className="text-sm text-gray-400 leading-relaxed">{c.context}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-2">What AdNexus found</p>
+                    <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-2">What Adnexusone found</p>
                     <p className="text-sm text-gray-400 leading-relaxed">{c.discovery}</p>
                   </div>
                 </div>
@@ -129,7 +129,7 @@ export default function CaseStudiesPage() {
         </div>
 
         <div className="max-w-5xl mx-auto mt-14 text-center">
-          <p className="text-gray-400 text-sm mb-5">Ready to see what AdNexus finds in your account?</p>
+          <p className="text-gray-400 text-sm mb-5">Ready to see what Adnexusone finds in your account?</p>
           <Link href="/signup" className="inline-flex items-center gap-2 px-7 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm shadow-lg shadow-blue-500/20 transition-all">
             Run free account diagnostic <ArrowRight className="w-4 h-4" />
           </Link>

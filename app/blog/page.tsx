@@ -19,7 +19,7 @@ const ARTICLES = [
   { category: 'Google', categoryColor: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', title: 'Google Shopping ROAS: brand vs. non-brand segmentation is not optional', excerpt: 'Blended Shopping ROAS hides the truth. Brand-name searches inflate the number. Here\'s the segmentation setup that shows you what Generic Shopping is actually returning.', readTime: '5 min read', date: 'Jun 1, 2026' },
   { category: 'Creative', categoryColor: 'text-purple-400 bg-purple-500/10 border-purple-500/20', title: 'Creative fatigue timeline: when does a Meta ad actually stop working?', excerpt: 'It depends on frequency, audience size, and vertical. We analyzed 200+ D2C accounts. The fatigue curve starts earlier than most creative teams expect — and the leading indicator isn\'t CTR.', readTime: '7 min read', date: 'May 28, 2026' },
   { category: 'Tracking', categoryColor: 'text-pink-400 bg-pink-500/10 border-pink-500/20', title: 'Broken pixel, broken quarter: the cost of delayed attribution detection', excerpt: 'If your Facebook Pixel stops firing purchase events, you won\'t know immediately. Your ROAS will look stable for 48–72 hours. By day 5 you\'re scaling spend against fictional performance data.', readTime: '5 min read', date: 'May 22, 2026' },
-  { category: 'Strategy', categoryColor: 'text-teal-400 bg-teal-500/10 border-teal-500/20', title: 'The D2C ad account audit framework we use before scaling', excerpt: 'Before recommending any budget increase, run this 12-point framework. It takes 30 minutes manually — or 30 seconds with AdNexus. Here\'s the full checklist with what to look for at each step.', readTime: '9 min read', date: 'May 15, 2026' },
+  { category: 'Strategy', categoryColor: 'text-teal-400 bg-teal-500/10 border-teal-500/20', title: 'The D2C ad account audit framework we use before scaling', excerpt: 'Before recommending any budget increase, run this 12-point framework. It takes 30 minutes manually — or 30 seconds with Adnexusone. Here\'s the full checklist with what to look for at each step.', readTime: '9 min read', date: 'May 15, 2026' },
   { category: 'Amazon', categoryColor: 'text-orange-400 bg-orange-500/10 border-orange-500/20', title: 'Auto vs. manual Amazon campaigns: how to structure the right split', excerpt: 'Auto campaigns are a discovery engine, not a scaling engine. Most brands run them at too high a budget for too long. Here\'s the structure that captures intent data and moves it to profitable manual campaigns.', readTime: '6 min read', date: 'May 10, 2026' },
 ]
 
@@ -31,7 +31,7 @@ export default function BlogPage() {
       {/* Header */}
       <section className="pt-36 pb-16 px-5 sm:px-6 border-b border-white/[0.05]">
         <div className="max-w-5xl mx-auto">
-          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">AdNexus Blog</p>
+          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Adnexusone Blog</p>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white">Performance marketing intelligence</h1>
           <p className="text-gray-400 text-base mt-3 max-w-xl">Deep-dives on Meta, Google, and Amazon advertising — written for performance marketers who manage real money.</p>
         </div>

@@ -18,10 +18,10 @@ const FAQS = [
   {
     section: 'Getting started',
     items: [
-      { q: 'How do I connect my Meta Ads account?', a: 'Go to Settings → Connected Accounts → Connect Meta. You\'ll be redirected to Facebook\'s OAuth flow. AdNexus requests read-only access to your Ad account — we never request the ability to create or modify campaigns. Once authenticated, your account will appear in the workspace within 2 minutes.' },
-      { q: 'Can I connect multiple ad accounts from the same platform?', a: 'Yes. AdNexus supports multiple accounts per platform and multiple platforms per workspace. From Settings → Connected Accounts, click "Add Account" and select the platform. For agencies, accounts can be organized by client using the workspace structure.' },
-      { q: 'How often does AdNexus sync my account data?', a: 'By default, AdNexus syncs every 4 hours. You can trigger a manual sync at any time from the dashboard. On Growth and Agency plans, sync frequency can be configured down to hourly.' },
-      { q: 'What permissions does AdNexus need on each platform?', a: 'Meta: Read access to ad accounts, campaigns, ad sets, ads, and insights. Google: Read access to campaigns, ad groups, keywords, and performance data. Amazon: Sponsored Products and Sponsored Brands read access. AdNexus never requests write permissions — it cannot modify, pause, or create any campaigns.' },
+      { q: 'How do I connect my Meta Ads account?', a: 'Go to Settings → Connected Accounts → Connect Meta. You\'ll be redirected to Facebook\'s OAuth flow. Adnexusone requests read-only access to your Ad account — we never request the ability to create or modify campaigns. Once authenticated, your account will appear in the workspace within 2 minutes.' },
+      { q: 'Can I connect multiple ad accounts from the same platform?', a: 'Yes. Adnexusone supports multiple accounts per platform and multiple platforms per workspace. From Settings → Connected Accounts, click "Add Account" and select the platform. For agencies, accounts can be organized by client using the workspace structure.' },
+      { q: 'How often does Adnexusone sync my account data?', a: 'By default, Adnexusone syncs every 4 hours. You can trigger a manual sync at any time from the dashboard. On Growth and Agency plans, sync frequency can be configured down to hourly.' },
+      { q: 'What permissions does Adnexusone need on each platform?', a: 'Meta: Read access to ad accounts, campaigns, ad sets, ads, and insights. Google: Read access to campaigns, ad groups, keywords, and performance data. Amazon: Sponsored Products and Sponsored Brands read access. Adnexusone never requests write permissions — it cannot modify, pause, or create any campaigns.' },
     ],
   },
   {
@@ -29,7 +29,7 @@ const FAQS = [
     items: [
       { q: 'What is the health score and how is it calculated?', a: 'The health score is a 0–100 index of your account\'s ad operational health. It\'s calculated from the number of open issues, their severity, and the percentage of spend affected. A score below 60 indicates significant issues that are actively costing you money. Above 80 is generally healthy. The score updates on every sync.' },
       { q: 'Why does my health score change without me making any changes?', a: 'Health scores respond to live account performance data. If your CTR drops, frequency increases, or ROAS falls below baseline, the score adjusts. Conversely, if yesterday\'s issue resolves naturally (e.g. a zero-sale campaign gets a conversion), the score improves automatically.' },
-      { q: 'How does AdNexus detect creative fatigue?', a: 'AdNexus tracks frequency per ad set and CTR trend over a rolling 7-day window. Fatigue is flagged when frequency exceeds your threshold (default: 4×) AND CTR has declined more than 20% over the trailing 7 days. Both conditions must be true — this avoids false positives from one-day anomalies.' },
+      { q: 'How does Adnexusone detect creative fatigue?', a: 'Adnexusone tracks frequency per ad set and CTR trend over a rolling 7-day window. Fatigue is flagged when frequency exceeds your threshold (default: 4×) AND CTR has declined more than 20% over the trailing 7 days. Both conditions must be true — this avoids false positives from one-day anomalies.' },
       { q: 'What does "spend at risk" mean?', a: '"Spend at risk" is the monthly budget equivalent being consumed by ad sets or campaigns where a diagnosed issue is actively degrading performance. It\'s calculated as: (affected campaign daily spend) × 30. It represents money that\'s being spent on a broken configuration — not money you\'ve necessarily lost yet, but money at risk of poor return until the issue is fixed.' },
     ],
   },
@@ -38,7 +38,7 @@ const FAQS = [
     items: [
       { q: 'How do I set up Slack alerts?', a: 'Go to Settings → Notifications → Slack Integration. Click "Connect Slack" and follow the OAuth flow. You can then configure which alert types route to which Slack channels — e.g. budget exhaustion alerts to #media-ops, ROAS drops to #performance-team.' },
       { q: 'Can I set different alert thresholds per account?', a: 'Yes. In Settings → Alerts, click into any account to override the workspace-level defaults. Per-account overrides let you set tighter thresholds for high-spend clients and looser ones for test accounts.' },
-      { q: 'Why am I not receiving email alerts?', a: 'Check Settings → Notifications → Email to confirm your address is verified and the alert types you want are enabled. Also check your spam folder — alerts come from alerts@adnexus.io. If verified and enabled alerts still aren\'t arriving, contact support with your account ID.' },
+      { q: 'Why am I not receiving email alerts?', a: 'Check Settings → Notifications → Email to confirm your address is verified and the alert types you want are enabled. Also check your spam folder — alerts come from alerts@adnexusone.io. If verified and enabled alerts still aren\'t arriving, contact support with your account ID.' },
     ],
   },
 ]
@@ -72,7 +72,7 @@ export default function HelpCenterPage() {
         <div className="max-w-2xl mx-auto text-center relative">
           <span className="inline-flex text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border text-violet-400 bg-violet-500/10 border-violet-500/20 mb-6">Resources · Help Center</span>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">How can we help?</h1>
-          <p className="text-gray-400 text-sm mb-8">Answers to the most common questions about AdNexus — setup, diagnostics, alerts, and billing.</p>
+          <p className="text-gray-400 text-sm mb-8">Answers to the most common questions about Adnexusone — setup, diagnostics, alerts, and billing.</p>
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
             <input
@@ -123,9 +123,14 @@ export default function HelpCenterPage() {
             <p className="text-base font-bold text-white mb-1">Still need help?</p>
             <p className="text-sm text-gray-400">Contact support and we'll reply within one business day.</p>
           </div>
-          <a href="mailto:support@adnexus.io" className="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-white/[0.06] hover:bg-white/[0.10] border border-white/[0.10] text-white font-bold rounded-xl text-sm transition-all">
-            Email support <ChevronRight className="w-4 h-4" />
-          </a>
+          <div className="flex items-center gap-3 shrink-0">
+            <a href="mailto:support@adnexusone.io" className="inline-flex items-center gap-2 px-5 py-3 bg-white/[0.06] hover:bg-white/[0.10] border border-white/[0.10] text-white font-bold rounded-xl text-sm transition-all">
+              Email support
+            </a>
+            <Link href="/contact" className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-purple-500/20">
+              Contact us <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
 

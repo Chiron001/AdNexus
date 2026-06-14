@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { exchangeCodeForTokens, getProfiles } from '@/lib/amazon/auth'
 import { apiErrorResponse } from '@/lib/utils/errors'
+import { checkAccountLimit } from '@/lib/utils/plan-gate'
 
 const INDIA_MARKETPLACE_ID = 'A21TJRUUN4KGV'
 
@@ -31,6 +32,13 @@ export async function GET(request: NextRequest) {
       (p) => p.accountInfo.marketplaceStringId === INDIA_MARKETPLACE_ID
     )
     const profilesToSave = relevantProfiles.length > 0 ? relevantProfiles : profiles
+
+    const limitCheck = await checkAccountLimit(supabase, user.id, profilesToSave.map(p => String(p.profileId)), 'amazon')
+    if (!limitCheck.allowed) {
+      return NextResponse.redirect(
+        new URL(`/accounts?error=account_limit&current=${limitCheck.currentCount}&limit=${limitCheck.limit}`, process.env.NEXT_PUBLIC_APP_URL!)
+      )
+    }
 
     for (const profile of profilesToSave) {
       await supabase.from('ad_accounts').upsert(

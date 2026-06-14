@@ -6,10 +6,10 @@ import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingCTA, LandingFooter } from '@/components/landing/LandingFooter'
 
 const CHARACTERISTICS = [
-  { icon: <ShieldCheck className="w-5 h-5 text-emerald-400" />, title: 'Restricted category constraints', body: 'Health & supplement ads face editorial and compliance review on Meta and Google. AdNexus flags ad disapprovals, policy violations, and restricted audience settings before they pause your campaigns.' },
-  { icon: <BarChart3 className="w-5 h-5 text-teal-400" />, title: 'Long conversion cycles', body: 'Supplement customers research for 2–4 weeks. Attribution windows matter more here than in impulse-buy categories. AdNexus checks attribution settings against your product\'s decision cycle.' },
-  { icon: <TrendingDown className="w-5 h-5 text-cyan-400" />, title: 'High CPM due to interest targeting depth', body: 'Health audiences are expensive. Broad targeting burns money fast, narrow targeting limits scale. AdNexus benchmarks CPM and CTR by audience type so you can find the efficient range.' },
-  { icon: <Activity className="w-5 h-5 text-green-400" />, title: 'Amazon Sponsored Products for supplements', body: 'Supplement ACOS varies wildly by category maturity. New launches vs. established SKUs need different bid strategies. AdNexus segments ACOS by campaign type and flags outliers.' },
+  { icon: <ShieldCheck className="w-5 h-5 text-emerald-400" />, title: 'Restricted category constraints', body: 'Health & supplement ads face editorial and compliance review on Meta and Google. Adnexusone flags ad disapprovals, policy violations, and restricted audience settings before they pause your campaigns.' },
+  { icon: <BarChart3 className="w-5 h-5 text-teal-400" />, title: 'Long conversion cycles', body: 'Supplement customers research for 2–4 weeks. Attribution windows matter more here than in impulse-buy categories. Adnexusone checks attribution settings against your product\'s decision cycle.' },
+  { icon: <TrendingDown className="w-5 h-5 text-cyan-400" />, title: 'High CPM due to interest targeting depth', body: 'Health audiences are expensive. Broad targeting burns money fast, narrow targeting limits scale. Adnexusone benchmarks CPM and CTR by audience type so you can find the efficient range.' },
+  { icon: <Activity className="w-5 h-5 text-green-400" />, title: 'Amazon Sponsored Products for supplements', body: 'Supplement ACOS varies wildly by category maturity. New launches vs. established SKUs need different bid strategies. Adnexusone segments ACOS by campaign type and flags outliers.' },
 ]
 
 const CHECKS = [
@@ -45,7 +45,7 @@ export default function HealthWellnessPage() {
             Ad diagnostics built around<br /><span className="text-gradient animate-gradient">health category realities</span>
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
-            Health & wellness brands operate under ad policies that punish mistakes fast. AdNexus monitors compliance signals, attribution health, and spend efficiency simultaneously — so your campaigns stay live and profitable.
+            Health & wellness brands operate under ad policies that punish mistakes fast. Adnexusone monitors compliance signals, attribution health, and spend efficiency simultaneously — so your campaigns stay live and profitable.
           </p>
           <Link href="/signup" className="inline-flex items-center gap-2 px-7 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm shadow-lg shadow-emerald-500/25 transition-all">
             Run free health brand diagnostic <ArrowRight className="w-4 h-4" />
@@ -74,7 +74,7 @@ export default function HealthWellnessPage() {
       {/* Platform checks — 3 column */}
       <section className="py-20 px-5 sm:px-6">
         <div className="max-w-5xl mx-auto">
-          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-10">AdNexus checks for health brands — by platform</p>
+          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-10">Adnexusone checks for health brands — by platform</p>
           <div className="grid sm:grid-cols-3 gap-5">
             {CHECKS.map((ch, i) => {
               const c = CLRMAP[ch.color]
@@ -99,7 +99,7 @@ export default function HealthWellnessPage() {
       <div className="py-10 px-5 sm:px-6 my-4 border-y border-emerald-500/10" style={{ background: 'rgba(16,185,129,0.04)' }}>
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center gap-4">
           <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
-          <p className="text-sm text-gray-300 text-center sm:text-left">Health & supplement brands are 3× more likely to face ad account restrictions than general retail. AdNexus surfaces policy risk signals before accounts get flagged — not after.</p>
+          <p className="text-sm text-gray-300 text-center sm:text-left">Health & supplement brands are 3× more likely to face ad account restrictions than general retail. Adnexusone surfaces policy risk signals before accounts get flagged — not after.</p>
           <Link href="/signup" className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-[11px] transition-all">
             Protect your account <ArrowRight className="w-3.5 h-3.5" />
           </Link>

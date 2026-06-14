@@ -12,9 +12,9 @@ const CHALLENGES = [
 ]
 
 const SOLUTIONS = [
-  { tag: 'Meta', tagColor: 'text-blue-400 bg-blue-500/10 border-blue-500/20', check: 'text-blue-400', title: 'Catch creative fatigue before CTR tanks', body: 'AdNexus tracks frequency, CTR trend, and reach saturation per ad set. When fatigue is detected, it flags the exact creatives to pause and writes a replacement brief.', bullets: ['Per-ad-set frequency monitoring', 'CTR decline threshold alerts with 7-day trend', 'AI brief for next creative batch — specific angle, format, and copy direction'] },
-  { tag: 'Tracking', tagColor: 'text-purple-400 bg-purple-500/10 border-purple-500/20', check: 'text-purple-400', title: 'Validate your pixel on every single sync', body: 'AdNexus checks purchase event firing rates on every account sync. If it drops even 10% below expected, you get an alert before misattribution compounds across weeks.', bullets: ['Purchase event validation on every sync', 'Conversion rate anomaly detection vs. 30-day baseline', 'Cross-platform attribution gap flagging with cost estimate'] },
-  { tag: 'Amazon', tagColor: 'text-orange-400 bg-orange-500/10 border-orange-500/20', check: 'text-orange-400', title: 'Control ACOS before it controls your margin', body: 'AdNexus benchmarks ACOS against your targets per campaign type. Zero-sale ASINs, runaway broad match, and bid bloat — all caught and quantified in rupees.', bullets: ['ACOS benchmarking per campaign: auto vs. manual vs. branded', 'Zero-sale ASIN detection with days-active and spend data', 'Search term waste flagging with recommended negatives'] },
+  { tag: 'Meta', tagColor: 'text-blue-400 bg-blue-500/10 border-blue-500/20', check: 'text-blue-400', title: 'Catch creative fatigue before CTR tanks', body: 'Adnexusone tracks frequency, CTR trend, and reach saturation per ad set. When fatigue is detected, it flags the exact creatives to pause and writes a replacement brief.', bullets: ['Per-ad-set frequency monitoring', 'CTR decline threshold alerts with 7-day trend', 'AI brief for next creative batch — specific angle, format, and copy direction'] },
+  { tag: 'Tracking', tagColor: 'text-purple-400 bg-purple-500/10 border-purple-500/20', check: 'text-purple-400', title: 'Validate your pixel on every single sync', body: 'Adnexusone checks purchase event firing rates on every account sync. If it drops even 10% below expected, you get an alert before misattribution compounds across weeks.', bullets: ['Purchase event validation on every sync', 'Conversion rate anomaly detection vs. 30-day baseline', 'Cross-platform attribution gap flagging with cost estimate'] },
+  { tag: 'Amazon', tagColor: 'text-orange-400 bg-orange-500/10 border-orange-500/20', check: 'text-orange-400', title: 'Control ACOS before it controls your margin', body: 'Adnexusone benchmarks ACOS against your targets per campaign type. Zero-sale ASINs, runaway broad match, and bid bloat — all caught and quantified in rupees.', bullets: ['ACOS benchmarking per campaign: auto vs. manual vs. branded', 'Zero-sale ASIN detection with days-active and spend data', 'Search term waste flagging with recommended negatives'] },
 ]
 
 export default function D2CEcommercePage() {
@@ -33,7 +33,7 @@ export default function D2CEcommercePage() {
             The ad intelligence OS<br /><span className="text-gradient animate-gradient">built for D2C brands</span>
           </h1>
           <p className="text-gray-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            D2C brands live and die by ROAS. AdNexus monitors Meta, Google, and Amazon continuously so your media buyer always knows what to fix next — and exactly how much it's costing.
+            D2C brands live and die by ROAS. Adnexusone monitors Meta, Google, and Amazon continuously so your media buyer always knows what to fix next — and exactly how much it's costing.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link href="/signup" className="flex items-center gap-2 px-7 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm shadow-lg shadow-blue-500/20 transition-all">
@@ -74,7 +74,7 @@ export default function D2CEcommercePage() {
       {/* Solutions — alternating rows */}
       <section className="px-5 sm:px-6 pb-24" style={{ background: 'rgba(4,5,14,0.5)' }}>
         <div className="max-w-5xl mx-auto pt-16">
-          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-12">How AdNexus solves them</p>
+          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-12">How Adnexusone solves them</p>
           {SOLUTIONS.map((s, i) => (
             <div key={i} className={`grid sm:grid-cols-2 gap-10 items-start py-10 ${i < SOLUTIONS.length - 1 ? 'border-b border-white/[0.06]' : ''}`}>
               <div className={i % 2 === 1 ? 'sm:order-2' : ''}>

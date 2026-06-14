@@ -128,7 +128,7 @@ export default function ROASCalculatorPage() {
                 <div className="bg-zinc-950/60 border border-white/[0.07] rounded-xl p-4">
                   <p className="text-[10px] font-bold text-yellow-400 uppercase tracking-widest mb-2">What this means</p>
                   <p className="text-sm text-gray-300 leading-relaxed">
-                    {roas < 2 ? 'A ROAS below 2× is unlikely to be profitable for most D2C brands once COGS and operational costs are factored in. Run an AdNexus diagnostic to find what\'s dragging down performance.' :
+                    {roas < 2 ? 'A ROAS below 2× is unlikely to be profitable for most D2C brands once COGS and operational costs are factored in. Run an Adnexusone diagnostic to find what\'s dragging down performance.' :
                      roas < 3 ? 'You\'re generating positive returns but leaving money on the table. Common causes at this ROAS level: creative fatigue, audience overlap, or wasted spend on low-converting ad sets.' :
                      roas >= 4 ? 'Strong performance. Focus on scaling the top-performing campaigns and protecting this ROAS as you increase spend — it typically drops 15–20% when budgets double.' :
                      'Good ROAS for most D2C verticals. Identify your top 2–3 campaigns by ROAS and shift more budget there before increasing total spend.'}
@@ -161,7 +161,7 @@ export default function ROASCalculatorPage() {
         <div className="max-w-4xl mx-auto mt-12 bg-zinc-950/60 border border-yellow-500/15 rounded-2xl p-7 flex flex-col sm:flex-row items-center gap-5 justify-between">
           <div>
             <p className="text-base font-bold text-white mb-1">Know your ROAS? Now find out why it's where it is.</p>
-            <p className="text-sm text-gray-400">AdNexus diagnostics pinpoint the exact campaigns, ad sets, and settings dragging your ROAS down.</p>
+            <p className="text-sm text-gray-400">Adnexusone diagnostics pinpoint the exact campaigns, ad sets, and settings dragging your ROAS down.</p>
           </div>
           <Link href="/signup" className="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-xl text-sm transition-all">
             Run free diagnostic <ArrowRight className="w-4 h-4" />

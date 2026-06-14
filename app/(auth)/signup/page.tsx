@@ -137,7 +137,7 @@ function SignupForm() {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
               <span className="text-white font-black text-base">A</span>
             </div>
-            <span className="text-2xl font-black text-white tracking-tight">AdNexus</span>
+            <span className="text-2xl font-black text-white tracking-tight">Adnexusone</span>
           </div>
           <p className="text-zinc-500 text-sm">AI-powered ad account diagnostics</p>
         </div>

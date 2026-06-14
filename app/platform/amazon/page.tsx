@@ -11,13 +11,13 @@ const cfg: FeaturePageConfig = {
   glowColor: 'rgba(249,115,22,0.10)',
   title: '10 Amazon checks. ACOS included.',
   subtitle:
-    'AdNexus audits your Sponsored Products, Sponsored Brands, and Auto campaigns — targeting every issue that erodes Amazon ROAS.',
+    'Adnexusone audits your Sponsored Products, Sponsored Brands, and Auto campaigns — targeting every issue that erodes Amazon ROAS.',
   stats: [
     ['10', 'Amazon checks'],
     ['SP + SB + Auto', 'covered'],
     ['Every sync', 'automated'],
   ],
-  featuresLabel: 'What AdNexus checks on Amazon',
+  featuresLabel: 'What Adnexusone checks on Amazon',
   features: [
     { icon: ICON, title: 'High ACOS auto campaigns', desc: 'Above-benchmark ACOS detected per campaign — flagged with cost estimate.' },
     { icon: ICON, title: 'Search term inefficiency', desc: 'Irrelevant search terms burning sponsored budget without conversions.' },

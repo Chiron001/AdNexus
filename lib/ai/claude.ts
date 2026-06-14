@@ -5,7 +5,7 @@ const client = new Anthropic()
 
 export async function generateRecommendation(issue: DiagnosticIssue): Promise<Recommendation> {
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1000,
     system: `You are an expert performance marketing consultant specialising in Meta Ads, Google Ads, and Amazon Ads for Indian D2C brands.
 

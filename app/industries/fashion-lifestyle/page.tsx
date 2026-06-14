@@ -41,7 +41,7 @@ export default function FashionLifestylePage() {
               Ad diagnostics for brands where <span className="text-gradient animate-gradient">attention is the product</span>
             </h1>
             <p className="text-gray-400 text-base sm:text-lg leading-relaxed mb-8">
-              Fashion advertising is high-frequency, high-visual, and brutally seasonal. AdNexus monitors catalogue health, creative fatigue, and audience saturation so you never waste media budget on an exhausted pool.
+              Fashion advertising is high-frequency, high-visual, and brutally seasonal. Adnexusone monitors catalogue health, creative fatigue, and audience saturation so you never waste media budget on an exhausted pool.
             </p>
             <Link href="/signup" className="inline-flex items-center gap-2 px-7 py-3.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-sm shadow-lg shadow-rose-500/20 transition-all">
               Run free fashion audit <ArrowRight className="w-4 h-4" />
@@ -79,7 +79,7 @@ export default function FashionLifestylePage() {
       {/* Solutions — stacked cards */}
       <section className="py-20 px-5 sm:px-6">
         <div className="max-w-5xl mx-auto">
-          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-10">What AdNexus monitors for fashion brands</p>
+          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-10">What Adnexusone monitors for fashion brands</p>
           <div className="space-y-5">
             {SOLUTIONS.map((s, i) => {
               const c = COLOR[s.color]

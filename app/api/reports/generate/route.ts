@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     return new Response(pdfBuffer as BodyInit, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="adnexus-audit-${new Date().toISOString().split('T')[0]}.pdf"`,
+        'Content-Disposition': `attachment; filename="adnexusone-audit-${new Date().toISOString().split('T')[0]}.pdf"`,
       },
     })
   } catch (error) {

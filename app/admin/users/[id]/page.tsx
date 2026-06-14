@@ -1,25 +1,56 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/server'
+import { PlanChangeForm } from '@/components/admin/PlanChangeForm'
 
 const PLAN_BADGE: Record<string, string> = {
   free:   'bg-zinc-100 text-zinc-600',
   growth: 'bg-blue-100 text-blue-700',
   agency: 'bg-purple-100 text-purple-700',
+  custom: 'bg-emerald-100 text-emerald-700',
 }
-
 const EVENT_COLOR: Record<string, string> = {
   'subscription.charged':   'text-green-600',
   'subscription.cancelled': 'text-yellow-600',
   'payment.failed':         'text-red-600',
   'plan.upgraded':          'text-blue-600',
   'plan.downgraded':        'text-orange-600',
+  'plan.override':          'text-purple-600',
+}
+const PLATFORM_CLS: Record<string, string> = {
+  meta:   'bg-blue-100 text-blue-700',
+  google: 'bg-red-100 text-red-700',
+  amazon: 'bg-orange-100 text-orange-700',
+}
+const SYNC_STATUS_CLS: Record<string, string> = {
+  completed: 'bg-green-100 text-green-700',
+  running:   'bg-yellow-100 text-yellow-700',
+  failed:    'bg-red-100 text-red-600',
+}
+const SEVERITY_CLS: Record<string, string> = {
+  critical: 'bg-red-100 text-red-700',
+  high:     'bg-orange-100 text-orange-700',
+  medium:   'bg-yellow-100 text-yellow-700',
+  low:      'bg-zinc-100 text-zinc-600',
 }
 
 function fmt(n: number) {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency', currency: 'INR', maximumFractionDigits: 0,
-  }).format(n)
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n)
+}
+function relTime(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime()
+  const m = Math.floor(diff / 60_000)
+  if (m < 60)  return `${m}m ago`
+  const h = Math.floor(m / 60)
+  if (h < 24)  return `${h}h ago`
+  return `${Math.floor(h / 24)}d ago`
+}
+function dur(start: string, end: string | null) {
+  if (!end) return '—'
+  const ms = new Date(end).getTime() - new Date(start).getTime()
+  if (ms < 1000) return `${ms}ms`
+  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`
+  return `${Math.floor(ms / 60000)}m`
 }
 
 export default async function UserDetailPage({
@@ -30,10 +61,14 @@ export default async function UserDetailPage({
   const { id } = await params
   const admin  = createAdminClient()
 
-  const [{ data: profile }, { data: accounts }, { data: events }] = await Promise.all([
+  const [
+    { data: profile },
+    { data: accounts },
+    { data: billingEvents },
+  ] = await Promise.all([
     admin.from('profiles').select('*').eq('id', id).single(),
     admin.from('ad_accounts')
-      .select('id, platform, account_name, account_id, status, created_at')
+      .select('id, platform, account_name, account_id, status, last_synced_at, created_at')
       .eq('user_id', id),
     admin.from('billing_events')
       .select('*')
@@ -44,25 +79,52 @@ export default async function UserDetailPage({
 
   if (!profile) notFound()
 
-  const totalSpend = (events ?? [])
+  // Sync logs for this user's accounts
+  const accountIds = (accounts ?? []).map(a => a.id)
+  const { data: syncLogs } = accountIds.length > 0
+    ? await admin.from('sync_logs')
+        .select('id, ad_account_id, sync_type, status, campaigns_synced, issues_found, error_message, started_at, completed_at')
+        .in('ad_account_id', accountIds)
+        .order('started_at', { ascending: false })
+        .limit(20)
+    : { data: [] }
+
+  const accountMap = Object.fromEntries((accounts ?? []).map(a => [a.id, a]))
+
+  // Open diagnostic issues for this user
+  const { data: openIssues } = await admin
+    .from('diagnostic_issues')
+    .select('id, platform, issue_type, severity, title, estimated_impact_inr, detected_at, ad_account_id')
+    .eq('user_id', id)
+    .eq('status', 'open')
+    .order('detected_at', { ascending: false })
+    .limit(15)
+
+  // Totals
+  const totalSpend = (billingEvents ?? [])
     .filter(e => e.event_type === 'subscription.charged')
     .reduce((s, e) => s + (e.amount_inr ?? 0), 0)
+
+  const issuesBySeverity = (openIssues ?? []).reduce((acc, i) => {
+    acc[i.severity] = (acc[i.severity] ?? 0) + 1
+    return acc
+  }, {} as Record<string, number>)
 
   const displayName = profile.full_name ?? profile.email
   const avatarText  = (profile.full_name ?? profile.email).slice(0, 2).toUpperCase()
 
   return (
-    <div className="p-8 max-w-4xl">
+    <div className="p-8 max-w-5xl">
+      {/* Breadcrumb */}
       <div className="mb-6">
-        <Link href="/admin/users" className="text-sm text-zinc-500 hover:text-zinc-700">
-          ← Users
-        </Link>
+        <Link href="/admin/users" className="text-sm text-zinc-500 hover:text-zinc-700">← Users</Link>
       </div>
 
-      <div className="grid grid-cols-3 gap-5 mb-6">
-        {/* Profile card */}
+      {/* Top row: profile + plan change + quick stats */}
+      <div className="grid grid-cols-3 gap-5 mb-5">
+        {/* Profile */}
         <div className="col-span-2 bg-white rounded-xl border border-zinc-200 p-5">
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-4 mb-5">
             <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-base font-bold text-purple-700 shrink-0">
               {avatarText}
             </div>
@@ -74,20 +136,24 @@ export default async function UserDetailPage({
                 </span>
               </div>
               <p className="text-sm text-zinc-500">{profile.email}</p>
-              {profile.phone_number && (
-                <p className="text-sm text-zinc-400">{profile.phone_number}</p>
-              )}
+              {profile.phone_number && <p className="text-sm text-zinc-400">{profile.phone_number}</p>}
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mt-5 pt-5 border-t border-zinc-100">
+          {/* Plan change */}
+          <div className="flex items-center gap-3 p-3 bg-zinc-50 rounded-lg border border-zinc-100 mb-4">
+            <span className="text-xs font-medium text-zinc-600">Change plan:</span>
+            <PlanChangeForm userId={id} currentPlan={profile.plan} />
+          </div>
+
+          <div className="grid grid-cols-3 gap-4 pt-4 border-t border-zinc-100">
             {[
-              { label: 'Joined',         value: new Date(profile.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }), cls: '' },
-              { label: 'Industry',       value: profile.industry ?? '—',           cls: '' },
-              { label: 'Onboarding',     value: profile.onboarding_completed ? 'Complete' : 'Pending', cls: profile.onboarding_completed ? 'text-green-600' : 'text-yellow-600' },
-              { label: 'Plan Expires',   value: profile.plan_expires_at ? new Date(profile.plan_expires_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—', cls: '' },
-              { label: 'WhatsApp',       value: profile.whatsapp_opted_in ? 'Opted in' : 'Off',  cls: profile.whatsapp_opted_in ? 'text-green-600' : 'text-zinc-400' },
-              { label: 'Total Revenue',  value: fmt(totalSpend),                    cls: 'text-zinc-700 font-semibold' },
+              { label: 'Joined',        value: new Date(profile.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }), cls: '' },
+              { label: 'Industry',      value: profile.industry ?? '—', cls: '' },
+              { label: 'Onboarding',    value: profile.onboarding_completed ? 'Complete' : 'Pending', cls: profile.onboarding_completed ? 'text-green-600' : 'text-yellow-600' },
+              { label: 'Plan Expires',  value: profile.plan_expires_at ? new Date(profile.plan_expires_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—', cls: '' },
+              { label: 'WhatsApp',      value: profile.whatsapp_opted_in ? 'Opted in' : 'Off', cls: profile.whatsapp_opted_in ? 'text-green-600' : 'text-zinc-400' },
+              { label: 'Total Revenue', value: fmt(totalSpend), cls: 'text-zinc-700 font-semibold' },
             ].map(row => (
               <div key={row.label}>
                 <p className="text-[11px] text-zinc-400 mb-0.5">{row.label}</p>
@@ -97,49 +163,142 @@ export default async function UserDetailPage({
           </div>
         </div>
 
-        {/* Ad accounts */}
-        <div className="bg-white rounded-xl border border-zinc-200 p-5">
-          <h3 className="text-sm font-semibold text-zinc-700 mb-3">
-            Ad Accounts ({accounts?.length ?? 0})
-          </h3>
-          {(accounts ?? []).length === 0 ? (
-            <p className="text-xs text-zinc-400">No accounts connected</p>
-          ) : (
-            <div className="space-y-3">
-              {(accounts ?? []).map(acc => (
-                <div key={acc.id} className="flex items-center justify-between">
-                  <div className="min-w-0">
-                    <p className="text-xs font-medium text-zinc-700 truncate">
-                      {acc.account_name ?? acc.account_id}
-                    </p>
-                    <p className="text-[11px] text-zinc-400 capitalize">{acc.platform}</p>
+        {/* Right column: ad accounts + issue summary */}
+        <div className="space-y-4">
+          {/* Ad accounts */}
+          <div className="bg-white rounded-xl border border-zinc-200 p-4">
+            <h3 className="text-sm font-semibold text-zinc-700 mb-3">Ad Accounts ({accounts?.length ?? 0})</h3>
+            {(accounts ?? []).length === 0 ? (
+              <p className="text-xs text-zinc-400">None connected</p>
+            ) : (
+              <div className="space-y-2.5">
+                {(accounts ?? []).map(acc => (
+                  <div key={acc.id} className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-zinc-700 truncate">{acc.account_name ?? acc.account_id}</p>
+                      <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full capitalize ${PLATFORM_CLS[acc.platform] ?? ''}`}>
+                        {acc.platform}
+                      </span>
+                    </div>
+                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded shrink-0 ${acc.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+                      {acc.status}
+                    </span>
                   </div>
-                  <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded shrink-0 ml-2 ${acc.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
-                    {acc.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Issue summary */}
+          <div className="bg-white rounded-xl border border-zinc-200 p-4">
+            <h3 className="text-sm font-semibold text-zinc-700 mb-3">
+              Open Issues ({openIssues?.length ?? 0})
+            </h3>
+            {(openIssues ?? []).length === 0 ? (
+              <p className="text-xs text-green-600 font-medium">No open issues</p>
+            ) : (
+              <div className="space-y-1.5">
+                {(['critical', 'high', 'medium', 'low'] as const).map(sev => {
+                  const count = issuesBySeverity[sev] ?? 0
+                  if (!count) return null
+                  return (
+                    <div key={sev} className="flex items-center justify-between">
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize ${SEVERITY_CLS[sev]}`}>{sev}</span>
+                      <span className="text-xs font-semibold text-zinc-700">{count}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Open issues list */}
+      {(openIssues ?? []).length > 0 && (
+        <div className="bg-white rounded-xl border border-zinc-200 p-5 mb-5">
+          <h3 className="text-sm font-semibold text-zinc-700 mb-4">Active Diagnostic Issues</h3>
+          <div className="divide-y divide-zinc-100">
+            {(openIssues ?? []).map(issue => {
+              const acct = accountMap[issue.ad_account_id]
+              return (
+                <div key={issue.id} className="py-2.5 flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-2 min-w-0">
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize shrink-0 mt-0.5 ${SEVERITY_CLS[issue.severity]}`}>
+                      {issue.severity}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-zinc-700">{issue.title}</p>
+                      <p className="text-[10px] text-zinc-400 capitalize">
+                        {issue.platform} · {acct?.account_name ?? 'unknown account'} · {relTime(issue.detected_at)}
+                      </p>
+                    </div>
+                  </div>
+                  {(issue.estimated_impact_inr ?? 0) > 0 && (
+                    <span className="text-xs font-semibold text-orange-600 shrink-0">
+                      {fmt(issue.estimated_impact_inr!)}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Sync logs */}
+      {(syncLogs ?? []).length > 0 && (
+        <div className="bg-white rounded-xl border border-zinc-200 p-5 mb-5">
+          <h3 className="text-sm font-semibold text-zinc-700 mb-4">Recent Syncs</h3>
+          <div className="divide-y divide-zinc-100">
+            {(syncLogs ?? []).map(log => {
+              const acct = accountMap[log.ad_account_id]
+              return (
+                <div key={log.id} className="py-2.5 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize ${SYNC_STATUS_CLS[log.status] ?? ''}`}>
+                      {log.status}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-xs text-zinc-600 truncate">
+                        {acct?.account_name ?? log.ad_account_id.slice(0, 8)}
+                        {acct && <span className={`ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full capitalize ${PLATFORM_CLS[acct.platform]}`}>{acct.platform}</span>}
+                      </p>
+                      <p className="text-[10px] text-zinc-400">{relTime(log.started_at)} · {log.sync_type} · {dur(log.started_at, log.completed_at)}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs text-zinc-500 shrink-0">
+                    <span>{log.campaigns_synced ?? 0} campaigns</span>
+                    {(log.issues_found ?? 0) > 0 && (
+                      <span className="text-orange-600 font-semibold">{log.issues_found} issues</span>
+                    )}
+                    {log.error_message && (
+                      <span className="text-red-500 text-[10px] max-w-[120px] truncate" title={log.error_message}>
+                        {log.error_message}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Billing history */}
       <div className="bg-white rounded-xl border border-zinc-200 p-5">
         <h3 className="text-sm font-semibold text-zinc-700 mb-4">Billing History</h3>
-        {(events ?? []).length === 0 ? (
+        {(billingEvents ?? []).length === 0 ? (
           <p className="text-sm text-zinc-400">No billing events</p>
         ) : (
           <div className="divide-y divide-zinc-100">
-            {(events ?? []).map((e, i) => (
-              <div key={i} className="flex items-center justify-between py-3">
+            {(billingEvents ?? []).map((e, i) => (
+              <div key={i} className="flex items-center justify-between py-2.5">
                 <div className="flex items-center gap-3">
                   <span className={`text-xs font-semibold capitalize ${EVENT_COLOR[e.event_type] ?? 'text-zinc-600'}`}>
                     {e.event_type.replace('.', ' › ')}
                   </span>
-                  {e.plan && (
-                    <span className="text-xs text-zinc-400 capitalize">{e.plan}</span>
-                  )}
+                  {e.plan && <span className="text-xs text-zinc-400 capitalize">{e.plan}</span>}
                 </div>
                 <div className="flex items-center gap-4 text-right">
                   {e.amount_inr != null && (

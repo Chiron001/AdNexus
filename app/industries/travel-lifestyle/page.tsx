@@ -6,10 +6,10 @@ import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingCTA, LandingFooter } from '@/components/landing/LandingFooter'
 
 const SEASONS = [
-  { season: 'Peak season', months: 'Nov – Jan', icon: <Calendar className="w-4 h-4 text-cyan-400" />, borderColor: 'border-cyan-500/20', accent: 'text-cyan-400', challenge: 'Budget exhausted before peak hour', detail: 'Daily budgets hit their cap by 2pm on high-intent days. Every hour after that is revenue abandoned to zero impression share. AdNexus alerts when budgets pace toward exhaustion so you can increase spend before the window closes.' },
-  { season: 'Pre-season ramp', months: 'Sep – Oct', icon: <Activity className="w-4 h-4 text-sky-400" />, borderColor: 'border-sky-500/20', accent: 'text-sky-400', challenge: 'Campaigns not ready for demand surge', detail: 'Travel intent spikes before most brands increase their bids and budgets. AdNexus flags under-invested impression share 3 weeks before peak — so you can ramp before your competitors take the traffic.' },
-  { season: 'Off-season', months: 'Mar – Jun', icon: <TrendingDown className="w-4 h-4 text-blue-400" />, borderColor: 'border-blue-500/20', accent: 'text-blue-400', challenge: 'Spend continuing at peak-season rates', detail: 'Off-season budgets left at peak levels waste significant margin. AdNexus detects declining CTR and conversion rates before ROAS collapses, and recommends tapering strategy with spend reallocation options.' },
-  { season: 'Shoulder season', months: 'Feb, Jul', icon: <AlertTriangle className="w-4 h-4 text-indigo-400" />, borderColor: 'border-indigo-500/20', accent: 'text-indigo-400', challenge: 'Audience fatigue from evergreen creatives', detail: 'Travel audiences shown the same destination creative for 6+ months develop fatigue. AdNexus tracks frequency per destination and flags when new creative is needed — before CTR makes it obvious.' },
+  { season: 'Peak season', months: 'Nov – Jan', icon: <Calendar className="w-4 h-4 text-cyan-400" />, borderColor: 'border-cyan-500/20', accent: 'text-cyan-400', challenge: 'Budget exhausted before peak hour', detail: 'Daily budgets hit their cap by 2pm on high-intent days. Every hour after that is revenue abandoned to zero impression share. Adnexusone alerts when budgets pace toward exhaustion so you can increase spend before the window closes.' },
+  { season: 'Pre-season ramp', months: 'Sep – Oct', icon: <Activity className="w-4 h-4 text-sky-400" />, borderColor: 'border-sky-500/20', accent: 'text-sky-400', challenge: 'Campaigns not ready for demand surge', detail: 'Travel intent spikes before most brands increase their bids and budgets. Adnexusone flags under-invested impression share 3 weeks before peak — so you can ramp before your competitors take the traffic.' },
+  { season: 'Off-season', months: 'Mar – Jun', icon: <TrendingDown className="w-4 h-4 text-blue-400" />, borderColor: 'border-blue-500/20', accent: 'text-blue-400', challenge: 'Spend continuing at peak-season rates', detail: 'Off-season budgets left at peak levels waste significant margin. Adnexusone detects declining CTR and conversion rates before ROAS collapses, and recommends tapering strategy with spend reallocation options.' },
+  { season: 'Shoulder season', months: 'Feb, Jul', icon: <AlertTriangle className="w-4 h-4 text-indigo-400" />, borderColor: 'border-indigo-500/20', accent: 'text-indigo-400', challenge: 'Audience fatigue from evergreen creatives', detail: 'Travel audiences shown the same destination creative for 6+ months develop fatigue. Adnexusone tracks frequency per destination and flags when new creative is needed — before CTR makes it obvious.' },
 ]
 
 const CAPABILITIES = [
@@ -32,7 +32,7 @@ export default function TravelLifestylePage() {
             Travel ad spend doesn't fail uniformly — <span className="text-gradient animate-gradient">it fails seasonally</span>
           </h1>
           <p className="text-gray-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            In travel, the difference between profit and waste is often a matter of hours on peak days and weeks on off-peak months. AdNexus monitors travel ad accounts with seasonal awareness — flagging the right issues at the right time.
+            In travel, the difference between profit and waste is often a matter of hours on peak days and weeks on off-peak months. Adnexusone monitors travel ad accounts with seasonal awareness — flagging the right issues at the right time.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {[['₹4.1L+','avg seasonal spend monitored'],['8 hrs','budget exhaustion lead time'],['4 seasons','of distinct ad health patterns tracked']].map(([v,l],i) => (
@@ -48,7 +48,7 @@ export default function TravelLifestylePage() {
       {/* Seasonal challenge cards */}
       <section className="py-20 px-5 sm:px-6" style={{ background: 'rgba(4,5,14,0.6)' }}>
         <div className="max-w-5xl mx-auto">
-          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-10">Seasonal challenges AdNexus monitors</p>
+          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-10">Seasonal challenges Adnexusone monitors</p>
           <div className="grid sm:grid-cols-2 gap-5">
             {SEASONS.map((s, i) => (
               <div key={i} className={`bg-zinc-950/60 border rounded-2xl p-6 ${s.borderColor}`}>

@@ -5,7 +5,7 @@ function getResend(): Resend {
   if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY ?? 're_placeholder')
   return _resend
 }
-const FROM = 'AdNexus <alerts@adnexus.in>'
+const FROM = 'Adnexusone <alerts@adnexusone.in>'
 
 interface AnomalyAlert {
   platform: string
@@ -42,12 +42,12 @@ export async function sendNewIssuesAlert(
   await getResend().emails.send({
     from: FROM,
     to: email,
-    subject: `AdNexus: ${criticalCount + highCount} critical/high issues detected`,
+    subject: `Adnexusone: ${criticalCount + highCount} critical/high issues detected`,
     html: `
       <!DOCTYPE html>
       <html>
       <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #1a1a2e;">
-        <h2 style="color: #2563eb;">⚡ AdNexus Issue Alert</h2>
+        <h2 style="color: #2563eb;">⚡ Adnexusone Issue Alert</h2>
         <p>Hi ${userName},</p>
         <p>We detected <strong>${issues.length} new issue${issues.length > 1 ? 's' : ''}</strong> in your ad accounts:</p>
         <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
@@ -103,13 +103,13 @@ export async function sendWeeklyDigest(
   await getResend().emails.send({
     from: FROM,
     to: email,
-    subject: 'Your AdNexus Weekly Digest',
+    subject: 'Your Adnexusone Weekly Digest',
     html: `
       <!DOCTYPE html>
       <html>
       <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #1a1a2e;">
         <h2 style="color: #2563eb;">📊 Weekly Ad Health Summary</h2>
-        <p>Hi ${userName}, here's your week in AdNexus:</p>
+        <p>Hi ${userName}, here's your week in Adnexusone:</p>
         <div style="display: flex; gap: 16px; margin: 24px 0;">
           <div style="flex: 1; background: #f8fafc; border-radius: 8px; padding: 16px; text-align: center;">
             <div style="font-size: 28px; font-weight: 700; color: #1e40af;">${stats.totalIssues}</div>
@@ -134,7 +134,7 @@ export async function sendWeeklyDigest(
            style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
           Open Dashboard →
         </a>
-        <p style="margin-top: 32px; font-size: 12px; color: #94a3b8;">AdNexus · AI-powered ad diagnostics</p>
+        <p style="margin-top: 32px; font-size: 12px; color: #94a3b8;">Adnexusone · AI-powered ad diagnostics</p>
       </body>
       </html>
     `,
@@ -145,13 +145,13 @@ export async function sendPaymentFailedAlert(email: string, amountInr: number): 
   await getResend().emails.send({
     from: FROM,
     to: email,
-    subject: 'AdNexus: Payment failed — action required',
+    subject: 'Adnexusone: Payment failed — action required',
     html: `
       <!DOCTYPE html>
       <html>
       <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #1a1a2e;">
         <h2 style="color: #dc2626;">Payment Failed</h2>
-        <p>We were unable to process your AdNexus subscription payment of ₹${amountInr.toLocaleString('en-IN')}.</p>
+        <p>We were unable to process your Adnexusone subscription payment of ₹${amountInr.toLocaleString('en-IN')}.</p>
         <p>To continue receiving AI-powered ad diagnostics and alerts, please update your payment method.</p>
         <a href="${process.env.NEXT_PUBLIC_APP_URL}/settings?tab=billing"
            style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
@@ -183,7 +183,7 @@ function getAnomalyHtml(userName: string, anomaly: AnomalyAlert): string {
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #1a1a2e;">
       <h2 style="color: #dc2626;">🚨 Anomaly Detected</h2>
       <p>Hi ${userName},</p>
-      <p>AdNexus detected an anomaly in your <strong>${anomaly.accountName}</strong> account:</p>
+      <p>Adnexusone detected an anomaly in your <strong>${anomaly.accountName}</strong> account:</p>
       <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin: 16px 0;">
         <strong>${anomaly.metric ?? anomaly.type.replace(/_/g, ' ')}</strong>
         ${anomaly.campaignName ? `<br><span style="color: #64748b; font-size: 13px;">Campaign: ${anomaly.campaignName}</span>` : ''}
@@ -192,7 +192,7 @@ function getAnomalyHtml(userName: string, anomaly: AnomalyAlert): string {
          style="display: inline-block; background: #dc2626; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
         Investigate Now →
       </a>
-      <p style="margin-top: 32px; font-size: 12px; color: #94a3b8;">AdNexus anomaly detection · <a href="${process.env.NEXT_PUBLIC_APP_URL}/settings" style="color: #94a3b8;">Manage alerts</a></p>
+      <p style="margin-top: 32px; font-size: 12px; color: #94a3b8;">Adnexusone anomaly detection · <a href="${process.env.NEXT_PUBLIC_APP_URL}/settings" style="color: #94a3b8;">Manage alerts</a></p>
     </body>
     </html>
   `

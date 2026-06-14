@@ -22,10 +22,10 @@ const QUESTIONS: Question[] = [
 ]
 
 function getResult(score: number) {
-  if (score >= 85) return { label: 'Excellent', color: 'text-emerald-400', borderColor: 'border-emerald-500/30', bg: 'bg-emerald-500/[0.06]', icon: <CheckCircle2 className="w-6 h-6 text-emerald-400" />, summary: 'Your ad account health practices are strong. You have the monitoring habits that prevent most costly issues. Use AdNexus to automate what you\'re doing manually and catch the edge cases you miss.' }
+  if (score >= 85) return { label: 'Excellent', color: 'text-emerald-400', borderColor: 'border-emerald-500/30', bg: 'bg-emerald-500/[0.06]', icon: <CheckCircle2 className="w-6 h-6 text-emerald-400" />, summary: 'Your ad account health practices are strong. You have the monitoring habits that prevent most costly issues. Use Adnexusone to automate what you\'re doing manually and catch the edge cases you miss.' }
   if (score >= 65) return { label: 'Good', color: 'text-blue-400', borderColor: 'border-blue-500/30', bg: 'bg-blue-500/[0.06]', icon: <CheckCircle2 className="w-6 h-6 text-blue-400" />, summary: 'You have solid foundations but some gaps that are likely costing you 10–20% of your ad ROAS. Common issues at this score: infrequent creative reviews, inconsistent negative keyword maintenance, and lack of real-time budget alerts.' }
   if (score >= 40) return { label: 'Needs Attention', color: 'text-amber-400', borderColor: 'border-amber-500/30', bg: 'bg-amber-500/[0.06]', icon: <AlertTriangle className="w-6 h-6 text-amber-400" />, summary: 'Significant gaps in your ad account health processes. At this score, it\'s likely you\'re losing 20–35% of your potential ROAS to preventable issues — pixel gaps, audience fatigue, keyword waste, or budget exhaustion.' }
-  return { label: 'Critical', color: 'text-red-400', borderColor: 'border-red-500/30', bg: 'bg-red-500/[0.06]', icon: <XCircle className="w-6 h-6 text-red-400" />, summary: 'Your ad account health processes have critical gaps. Without systematic monitoring and diagnostics, spend is almost certainly being wasted on broken configurations. Run a full AdNexus diagnostic immediately.' }
+  return { label: 'Critical', color: 'text-red-400', borderColor: 'border-red-500/30', bg: 'bg-red-500/[0.06]', icon: <XCircle className="w-6 h-6 text-red-400" />, summary: 'Your ad account health processes have critical gaps. Without systematic monitoring and diagnostics, spend is almost certainly being wasted on broken configurations. Run a full Adnexusone diagnostic immediately.' }
 }
 
 export default function AdHealthScorecardPage() {
@@ -146,7 +146,7 @@ export default function AdHealthScorecardPage() {
               <div className="bg-zinc-950/60 border border-indigo-500/20 rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-5 justify-between">
                 <div>
                   <p className="text-sm font-bold text-white mb-1">Get a real diagnostic on your actual accounts</p>
-                  <p className="text-[11px] text-gray-400">AdNexus runs 30+ checks on live data — not a questionnaire.</p>
+                  <p className="text-[11px] text-gray-400">Adnexusone runs 30+ checks on live data — not a questionnaire.</p>
                 </div>
                 <Link href="/signup" className="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-sm transition-all">
                   Connect your account <ArrowRight className="w-4 h-4" />

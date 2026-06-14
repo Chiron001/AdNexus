@@ -35,7 +35,7 @@ export function LandingCTA() {
         <p className="text-[11px] font-bold text-orange-400/80 uppercase tracking-widest mb-4">Get started today</p>
         <h2 className="text-[1.7rem] sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6">
           Be unstoppable<br/>
-          <span className="text-gradient animate-gradient">with AdNexus</span>
+          <span className="text-gradient animate-gradient">with Adnexusone</span>
         </h2>
         <p className="text-gray-400 text-lg sm:text-xl mb-10 max-w-lg mx-auto leading-relaxed">The only platform built to keep Indian D2C ad accounts healthy and performing at their peak.</p>
         <div className="flex flex-col sm:flex-row items-stretch justify-center gap-3 mb-5">
@@ -62,11 +62,12 @@ export function LandingFooter() {
       <div className="absolute pointer-events-none" style={{ bottom:0, left:'20%', right:'20%', height:'140px', background:'radial-gradient(ellipse, rgba(40,80,140,0.18) 0%, transparent 70%)', filter:'blur(35px)' }}/>
 
       <div className="max-w-6xl mx-auto relative" style={{ zIndex:1 }}>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-8 mb-10">
-          <div className="col-span-2 sm:col-span-1">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-10">
+          {/* F2 — Brand block: 1/3 */}
+          <div>
             <Link href="/" className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/25"><Zap className="w-4 h-4 text-white"/></div>
-              <span className="text-sm font-bold text-white">AdNexus</span>
+              <span className="text-sm font-bold text-white">Adnexusone</span>
             </Link>
             <p className="text-xs text-gray-300 leading-relaxed mb-4">AI-powered ad diagnostics for Indian D2C brands and performance agencies.</p>
             <div className="flex gap-2">
@@ -75,26 +76,25 @@ export function LandingFooter() {
               ))}
             </div>
           </div>
-          {[
-            { title:'Platform', links:[{l:'Platform Overview',h:'/platform'},{l:'Meta Ads',h:'/platform#meta'},{l:'Google Ads',h:'/platform#google'},{l:'Amazon Ads',h:'/platform#amazon'},{l:'AI Diagnostics',h:'/platform#ai'}] },
-            { title:'Company',  links:[{l:'Features',h:'/#features'},{l:'Customers',h:'/customers'},{l:'Pricing',h:'/#pricing'},{l:'Resources',h:'/#resources'}] },
-            { title:'Resources',links:[{l:'Case Studies',h:'/customers'},{l:'Blog',h:'#'},{l:'Guides',h:'#'},{l:'Help Center',h:'#'}] },
-            { title:'Account',  links:[{l:'Sign up free',h:'/signup'},{l:'Sign in',h:'/login'},{l:'Growth plan',h:'/signup?plan=growth'},{l:'Agency plan',h:'/signup?plan=agency'}] },
-          ].map(({ title, links }) => (
-            <div key={title}>
-              <p className="text-[11px] font-bold text-gray-200 uppercase tracking-widest mb-4">{title}</p>
-              <ul className="space-y-2.5">{links.map(({ l, h }) => <li key={l}><Link href={h} className="text-sm text-gray-400 hover:text-white transition-colors">{l}</Link></li>)}</ul>
-            </div>
-          ))}
-        </div>
-        <div className="border-t border-white/[0.12] pt-6 flex flex-col sm:grid sm:grid-cols-3 items-center gap-4">
-          <p className="text-xs text-gray-400 order-3 sm:order-1">© 2026 AdNexus. All rights reserved.</p>
-          <div className="flex items-center gap-3 justify-center order-1 sm:order-2">
-            {SOCIAL.map(({ label, svg }) => (
-              <a key={label} href="#" aria-label={label} className="w-9 h-9 rounded-lg bg-white/[0.07] border border-white/[0.10] flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.15] transition-all">{svg}</a>
+
+          {/* F1 — Nav columns: 2/3 */}
+          <div className="col-span-1 sm:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-6">
+            {[
+              { title:'Platform', links:[{l:'Platform Overview',h:'/platform'},{l:'Meta Ads',h:'/platform#meta'},{l:'Google Ads',h:'/platform#google'},{l:'Amazon Ads',h:'/platform#amazon'},{l:'AI Diagnostics',h:'/platform#ai'}] },
+              { title:'Company',  links:[{l:'Features',h:'/#features'},{l:'Customers',h:'/customers'},{l:'Pricing',h:'/#pricing'},{l:'Contact us',h:'/contact'},{l:'Resources',h:'/#resources'}] },
+              { title:'Resources',links:[{l:'Case Studies',h:'/customers'},{l:'Blog',h:'#'},{l:'Guides',h:'#'},{l:'Help Center',h:'#'}] },
+              { title:'Account',  links:[{l:'Sign up free',h:'/signup'},{l:'Sign in',h:'/login'},{l:'Growth plan',h:'/signup?plan=growth'},{l:'Agency plan',h:'/signup?plan=agency'}] },
+            ].map(({ title, links }) => (
+              <div key={title}>
+                <p className="text-[11px] font-bold text-gray-200 uppercase tracking-widest mb-4">{title}</p>
+                <ul className="space-y-2.5">{links.map(({ l, h }) => <li key={l}><Link href={h} className="text-sm text-gray-400 hover:text-white transition-colors">{l}</Link></li>)}</ul>
+              </div>
             ))}
           </div>
-          <div className="flex gap-4 sm:gap-5 justify-end order-2 sm:order-3">{['Privacy','Terms','Cookies'].map(l => <a key={l} href="#" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">{l}</a>)}</div>
+        </div>
+        <div className="border-t border-white/[0.12] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-gray-400">© 2026 Adnexusone. All rights reserved.</p>
+          <div className="flex gap-4 sm:gap-5">{['Privacy','Terms','Cookies'].map(l => <a key={l} href="#" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">{l}</a>)}</div>
         </div>
       </div>
 
@@ -103,7 +103,7 @@ export function LandingFooter() {
           style={{ fontSize:'clamp(4rem, 14vw, 11rem)', letterSpacing:'-0.03em', marginBottom:'-0.15em',
             background:'linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(148,130,255,0.28) 40%, rgba(96,165,250,0.24) 70%, rgba(255,255,255,0.20) 100%)',
             WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
-          ADNEXUS
+          ADNEXUSONE
         </p>
       </div>
     </footer>

@@ -62,10 +62,14 @@ export function LandingNav() {
         >
           <div className="max-w-7xl mx-auto px-6 h-9 flex items-center justify-between border-b border-white/[0.04]">
             <div className="flex items-center gap-6">
-              {['Partners', 'Help Center', 'Contact Us'].map((item) => (
-                <a key={item} href="#" className="text-xs text-gray-500 hover:text-gray-300 transition-colors duration-150">
-                  {item}
-                </a>
+              {[
+                { label: 'Partners',   href: '#'           },
+                { label: 'Help Center',href: '/help-center' },
+                { label: 'Contact Us', href: '/contact'     },
+              ].map(({ label, href }) => (
+                <Link key={label} href={href} className="text-xs text-gray-500 hover:text-gray-300 transition-colors duration-150">
+                  {label}
+                </Link>
               ))}
             </div>
             <div className="flex items-center gap-2">
@@ -86,7 +90,7 @@ export function LandingNav() {
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-shadow">
                 <Zap className="w-4 h-4 text-white" />
               </div>
-              <span className="text-[15px] font-bold text-white tracking-tight">AdNexus</span>
+              <span className="text-[15px] font-bold text-white tracking-tight">Adnexusone</span>
             </Link>
 
             {/* Desktop nav */}
@@ -112,7 +116,7 @@ export function LandingNav() {
               </Link>
               <Link href="/ai-engine" className="flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg transition-all duration-150 font-semibold text-purple-400/90 hover:text-purple-300 hover:bg-purple-500/[0.08]">
                 <Cpu className="w-3.5 h-3.5" />
-                AdNexus AI
+                Adnexusone AI
                 <span className="text-[9px] font-bold px-1.5 py-0.5 bg-purple-500/20 text-purple-300 rounded-full ml-0.5">New</span>
               </Link>
               <button
@@ -171,7 +175,7 @@ export function LandingNav() {
                 <p className="text-[11px] font-bold text-gray-600 uppercase tracking-widest mb-4">Overview</p>
                 {[
                   { icon: LayoutGrid, label: 'Platform Overview', desc: 'The complete ad health OS for D2C brands', color: 'text-blue-400', bg: 'bg-blue-500/10', href: '/platform' },
-                  { icon: Cpu, label: 'AdNexus AI', desc: 'Claude-powered fix recommendations', color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/ai-engine' },
+                  { icon: Cpu, label: 'Adnexusone AI', desc: 'Claude-powered fix recommendations', color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/ai-engine' },
                 ].map(({ icon: Icon, label, desc, color, bg, href }) => (
                   <Link key={label} href={href} className="group flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors mb-1">
                     <div className={`w-8 h-8 rounded-lg ${bg} flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform`}>
@@ -315,7 +319,7 @@ export function LandingNav() {
                 <p className="col-span-2 text-[11px] font-bold text-gray-600 uppercase tracking-widest mb-2">Learn and grow</p>
                 {[
                   { icon: BookOpen,       label: 'Blog',           desc: 'Insights and tips',       color: 'text-blue-400',   bg: 'bg-blue-500/10',   href: '/blog' },
-                  { icon: PlayCircle,     label: 'Platform Tour',  desc: 'See AdNexus in action',   color: 'text-green-400',  bg: 'bg-green-500/10',  href: '/platform-tour' },
+                  { icon: PlayCircle,     label: 'Platform Tour',  desc: 'See Adnexusone in action',   color: 'text-green-400',  bg: 'bg-green-500/10',  href: '/platform-tour' },
                   { icon: FileText,       label: 'Case Studies',   desc: 'Real brand results',      color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/case-studies' },
                   { icon: MessageSquare,  label: 'Help Center',    desc: 'Docs and support',        color: 'text-amber-400',  bg: 'bg-amber-500/10',  href: '/help-center' },
                 ].map(({ icon: Icon, label, desc, color, bg, href }) => (
@@ -378,7 +382,7 @@ export function LandingNav() {
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
                 <Zap className="w-4 h-4 text-white" />
               </div>
-              <span className="text-[15px] font-bold text-white tracking-tight">AdNexus</span>
+              <span className="text-[15px] font-bold text-white tracking-tight">Adnexusone</span>
             </Link>
             <button
               onClick={() => setMobileOpen(false)}
@@ -405,7 +409,7 @@ export function LandingNav() {
                   <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-3">OVERVIEW</p>
                   {[
                     { icon: LayoutGrid, label: 'Platform Overview', desc: 'The complete ad health OS for D2C brands', color: 'text-blue-400',   bg: 'bg-blue-500/10' },
-                    { icon: Cpu,        label: 'AdNexus AI',         desc: 'Claude-powered fix recommendations',       color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/ai-engine' },
+                    { icon: Cpu,        label: 'Adnexusone AI',         desc: 'Claude-powered fix recommendations',       color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/ai-engine' },
                   ].map(({ icon: Icon, label, desc, color, bg, href }) => (
                     <Link key={label} href={href ?? '/platform'} onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-3.5 py-3 rounded-xl hover:bg-white/[0.04] px-2 -mx-2 transition-colors">
@@ -475,11 +479,11 @@ export function LandingNav() {
               </div>
             </div>
 
-            {/* AdNexus AI — direct link */}
+            {/* Adnexusone AI — direct link */}
             <Link href="/ai-engine" onClick={() => setMobileOpen(false)}
               className="flex items-center justify-between px-5 py-5 border-b border-white/[0.07] group">
               <span className="text-[1.55rem] font-black uppercase tracking-tight text-purple-400 group-hover:text-purple-300 transition-colors flex items-center gap-3">
-                AdNexus AI
+                Adnexusone AI
               </span>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded-full">New</span>
@@ -508,7 +512,7 @@ export function LandingNav() {
                   <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-3">LEARN & GROW</p>
                   {[
                     { icon: BookOpen,      label: 'Blog',          desc: 'Insights and tips for ad performance', color: 'text-blue-400',   bg: 'bg-blue-500/10',   href: '/blog' },
-                    { icon: PlayCircle,    label: 'Platform Tour',  desc: 'See AdNexus in action',                color: 'text-green-400',  bg: 'bg-green-500/10',  href: '/platform-tour' },
+                    { icon: PlayCircle,    label: 'Platform Tour',  desc: 'See Adnexusone in action',                color: 'text-green-400',  bg: 'bg-green-500/10',  href: '/platform-tour' },
                     { icon: FileText,      label: 'Case Studies',   desc: 'Real brand results and stories',       color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/case-studies' },
                     { icon: MessageSquare, label: 'Help Center',    desc: 'Docs, guides and support',             color: 'text-amber-400',  bg: 'bg-amber-500/10',  href: '/help-center' },
                   ].map(({ icon: Icon, label, desc, color, bg, href }) => (

@@ -1,11 +1,14 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { NoAccounts } from '@/components/shared/NoAccounts'
+import { UpgradeWall } from '@/components/shared/UpgradeWall'
 import { SyncButton } from '@/components/shared/SyncButton'
 import { DateRangePicker } from '@/components/shared/DateRangePicker'
 import { CreativeCharts } from './CreativeCharts'
 import { RefreshCw } from 'lucide-react'
 import { buildDateParams } from '@/lib/utils/dateRange'
+import { getPlanLimits } from '@/lib/config/plans'
+import type { PlanTier } from '@/lib/config/plans'
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>
 
@@ -17,6 +20,27 @@ export default async function CreativeAnalyticsPage({ searchParams }: { searchPa
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+
+  const { data: profile } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
+  const plan = (profile?.plan ?? 'free') as PlanTier
+  const limits = getPlanLimits(plan)
+
+  if (!limits.creative_analytics) {
+    return (
+      <UpgradeWall
+        feature="Creative Analytics"
+        requiredPlan="growth"
+        currentPlan={plan}
+        bullets={[
+          'Campaign-level ROAS, CTR, and CPA breakdown',
+          'Top and bottom performing creatives',
+          'Creative fatigue scoring',
+          'Platform comparison charts',
+          'CSV export of creative data',
+        ]}
+      />
+    )
+  }
 
   const { data: accounts } = await supabase
     .from('ad_accounts')

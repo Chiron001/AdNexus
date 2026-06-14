@@ -6,7 +6,7 @@ import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingCTA, LandingFooter } from '@/components/landing/LandingFooter'
 
 const STATS = [
-  { value: '340+', label: 'D2C brands using AdNexus' },
+  { value: '340+', label: 'D2C brands using Adnexusone' },
   { value: '₹18Cr+', label: 'monthly ad spend monitored' },
   { value: '3.4×', label: 'avg ROAS improvement' },
   { value: '92%', label: 'brands renew after 90 days' },
@@ -14,7 +14,7 @@ const STATS = [
 
 const TESTIMONIALS = [
   {
-    quote: 'We had a broken Facebook Pixel for 3 weeks and had no idea. AdNexus caught it on the first sync. That one fix alone recovered ₹38K in misattributed spend and our ROAS jumped from 1.9× to 3.2× within two weeks.',
+    quote: 'We had a broken Facebook Pixel for 3 weeks and had no idea. Adnexusone caught it on the first sync. That one fix alone recovered ₹38K in misattributed spend and our ROAS jumped from 1.9× to 3.2× within two weeks.',
     name: 'Priya Sharma',
     role: 'Head of Growth',
     brand: 'D2C Skincare Brand',
@@ -26,7 +26,7 @@ const TESTIMONIALS = [
     stars: 5,
   },
   {
-    quote: 'We manage 14 D2C brands. Before AdNexus, one person spent 6 hours per week just checking accounts manually. Now AdNexus surfaces every critical issue automatically and we send audit reports to clients in minutes.',
+    quote: 'We manage 14 D2C brands. Before Adnexusone, one person spent 6 hours per week just checking accounts manually. Now Adnexusone surfaces every critical issue automatically and we send audit reports to clients in minutes.',
     name: 'Ananya Iyer',
     role: 'Founder',
     brand: 'Performance Marketing Agency',
@@ -38,7 +38,7 @@ const TESTIMONIALS = [
     stars: 5,
   },
   {
-    quote: 'Amazon ACOS was at 38% on our auto campaigns. AdNexus flagged 84 search terms with zero sales and ₹1.2L in wasted spend. We negated them, restructured the campaigns, and ACOS dropped to 21% in 3 weeks.',
+    quote: 'Amazon ACOS was at 38% on our auto campaigns. Adnexusone flagged 84 search terms with zero sales and ₹1.2L in wasted spend. We negated them, restructured the campaigns, and ACOS dropped to 21% in 3 weeks.',
     name: 'Rohan Desai',
     role: 'Head of E-commerce',
     brand: 'Home Decor D2C',
@@ -74,7 +74,7 @@ const TESTIMONIALS = [
     stars: 5,
   },
   {
-    quote: 'Platform health score went from 58 to 84 in 45 days. We just fixed the issues in order — AdNexus ranked them by impact and we worked through the list. Systematic, not guesswork.',
+    quote: 'Platform health score went from 58 to 84 in 45 days. We just fixed the issues in order — Adnexusone ranked them by impact and we worked through the list. Systematic, not guesswork.',
     name: 'Shreya Kapoor',
     role: 'Performance Marketer',
     brand: 'Food & Snacks D2C',
@@ -86,7 +86,7 @@ const TESTIMONIALS = [
     stars: 5,
   },
   {
-    quote: 'We were scaling Google Shopping without realising non-brand ROAS was 1.3×. AdNexus exposed the brand/non-brand split and we restructured campaigns. Non-brand ROAS is now 2.8× and we know exactly where growth is coming from.',
+    quote: 'We were scaling Google Shopping without realising non-brand ROAS was 1.3×. Adnexusone exposed the brand/non-brand split and we restructured campaigns. Non-brand ROAS is now 2.8× and we know exactly where growth is coming from.',
     name: 'Karan Malhotra',
     role: 'Co-founder',
     brand: 'D2C Fitness Brand',
@@ -110,7 +110,7 @@ const TESTIMONIALS = [
     stars: 5,
   },
   {
-    quote: "AdNexus flagged creative fatigue on our top-performing ad set before CTR tanked. The AI brief gave us a specific angle to test — we ran it, CTR doubled, and ROAS held. Without the early warning we would've wasted 10 more days on dead creative.",
+    quote: "Adnexusone flagged creative fatigue on our top-performing ad set before CTR tanked. The AI brief gave us a specific angle to test — we ran it, CTR doubled, and ROAS held. Without the early warning we would've wasted 10 more days on dead creative.",
     name: 'Rahul Mehta',
     role: 'Performance Lead',
     brand: 'Fashion D2C',
@@ -155,7 +155,7 @@ export default function CustomersPage() {
             Brands that fixed what was<br /><span className="text-gradient animate-gradient">costing them the most</span>
           </h1>
           <p className="text-gray-400 text-lg max-w-xl mx-auto leading-relaxed mb-10">
-            Real results from D2C brands, agencies, and performance teams who use AdNexus to diagnose and fix their ad accounts — fast.
+            Real results from D2C brands, agencies, and performance teams who use Adnexusone to diagnose and fix their ad accounts — fast.
           </p>
           <Link href="/signup" className="inline-flex items-center gap-2 px-7 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm shadow-lg shadow-blue-500/20 transition-all">
             Get your free diagnostic <ArrowRight className="w-4 h-4" />
@@ -251,7 +251,7 @@ export default function CustomersPage() {
           </div>
           <div className="bg-zinc-950/60 border border-white/[0.07] rounded-2xl p-7 flex flex-col sm:flex-row items-center gap-6 justify-between">
             <div>
-              <p className="text-base font-bold text-white mb-1">See what AdNexus finds in your account</p>
+              <p className="text-base font-bold text-white mb-1">See what Adnexusone finds in your account</p>
               <p className="text-sm text-gray-400">Free diagnostic. No credit card. Results in under 2 minutes.</p>
             </div>
             <Link href="/signup" className="shrink-0 inline-flex items-center gap-2 px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm shadow-lg shadow-blue-500/20 transition-all">

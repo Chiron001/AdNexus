@@ -199,7 +199,7 @@ function AuditReport({ data }: { data: ReportData }) {
 
   return React.createElement(
     Document,
-    { title: `AdNexus Audit — ${data.brandName}` },
+    { title: `Adnexusone Audit — ${data.brandName}` },
 
     // Cover Page
     React.createElement(
@@ -208,7 +208,7 @@ function AuditReport({ data }: { data: ReportData }) {
       React.createElement(
         View,
         { style: styles.cover },
-        React.createElement(Text, { style: styles.coverTitle }, 'AdNexus'),
+        React.createElement(Text, { style: styles.coverTitle }, 'Adnexusone'),
         React.createElement(Text, { style: styles.coverSubtitle }, 'AI-Powered Ad Account Audit'),
         React.createElement(Text, { style: { fontSize: 20, fontFamily: 'Helvetica-Bold', marginBottom: 32 } }, data.brandName),
         React.createElement(
@@ -221,7 +221,7 @@ function AuditReport({ data }: { data: ReportData }) {
       React.createElement(
         Text,
         { style: styles.coverDate },
-        `Generated ${data.generatedAt} · AdNexus.in`
+        `Generated ${data.generatedAt} · Adnexusone.in`
       )
     ),
 
@@ -330,7 +330,7 @@ function AuditReport({ data }: { data: ReportData }) {
         React.createElement(
           View,
           { style: styles.footer },
-          React.createElement(Text, { style: styles.footerText }, 'AdNexus · Confidential'),
+          React.createElement(Text, { style: styles.footerText }, 'Adnexusone · Confidential'),
           React.createElement(Text, { style: styles.footerText }, data.generatedAt)
         )
       )

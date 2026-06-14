@@ -13,10 +13,10 @@ const METRICS = [
 ]
 
 const STEPS = [
-  { icon: <Zap className="w-5 h-5 text-purple-400" />, num: '01', title: 'Connect all client accounts in one workspace', body: 'Link Meta, Google, and Amazon accounts across all clients into a single AdNexus workspace. No tab switching, no spreadsheet tracking — all accounts visible from one dashboard.' },
-  { icon: <BarChart3 className="w-5 h-5 text-violet-400" />, num: '02', title: 'Every account gets a daily diagnostic', body: 'AdNexus runs 30+ checks per account on every sync — across all three platforms. Critical issues are ranked by revenue impact, so account managers always know the single most important fix.' },
+  { icon: <Zap className="w-5 h-5 text-purple-400" />, num: '01', title: 'Connect all client accounts in one workspace', body: 'Link Meta, Google, and Amazon accounts across all clients into a single Adnexusone workspace. No tab switching, no spreadsheet tracking — all accounts visible from one dashboard.' },
+  { icon: <BarChart3 className="w-5 h-5 text-violet-400" />, num: '02', title: 'Every account gets a daily diagnostic', body: 'Adnexusone runs 30+ checks per account on every sync — across all three platforms. Critical issues are ranked by revenue impact, so account managers always know the single most important fix.' },
   { icon: <Bell className="w-5 h-5 text-fuchsia-400" />, num: '03', title: 'Alerts reach the right person instantly', body: 'Configurable alert routing by client, platform, and severity. Budget exhaustion at 11am? Wrong person running an ad? Account manager gets a Slack notification in real time — not next week.' },
-  { icon: <FileText className="w-5 h-5 text-purple-300" />, num: '04', title: 'Client reports that take 3 minutes to send', body: 'AdNexus generates client-ready audit reports in natural language. Issues explained, impact quantified, next actions spelled out — ready to forward to the client without editing.' },
+  { icon: <FileText className="w-5 h-5 text-purple-300" />, num: '04', title: 'Client reports that take 3 minutes to send', body: 'Adnexusone generates client-ready audit reports in natural language. Issues explained, impact quantified, next actions spelled out — ready to forward to the client without editing.' },
 ]
 
 const MULTICLIENT = [
@@ -46,7 +46,7 @@ export default function PerformanceAgenciesPage() {
                 Manage 14 client accounts like<br /><span className="text-gradient animate-gradient">you have a team of 14</span>
               </h1>
               <p className="text-gray-400 text-base sm:text-lg leading-relaxed mb-8">
-                Performance agencies operate on thin margins and high client volume. AdNexus gives every account manager a continuous diagnostic engine across all client accounts — so nothing slips through before the client notices.
+                Performance agencies operate on thin margins and high client volume. Adnexusone gives every account manager a continuous diagnostic engine across all client accounts — so nothing slips through before the client notices.
               </p>
               <Link href="/signup" className="inline-flex items-center gap-2 px-7 py-3.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-sm shadow-lg shadow-purple-500/25 transition-all">
                 Try free for your agency <ArrowRight className="w-4 h-4" />
@@ -67,7 +67,7 @@ export default function PerformanceAgenciesPage() {
       {/* Workflow — numbered steps */}
       <section className="py-20 px-5 sm:px-6" style={{ background: 'rgba(4,5,14,0.6)' }}>
         <div className="max-w-5xl mx-auto">
-          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-12">How agencies run AdNexus</p>
+          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-12">How agencies run Adnexusone</p>
           <div className="relative">
             <div className="absolute left-[22px] top-8 bottom-8 w-px bg-purple-500/15 hidden sm:block" />
             <div className="space-y-8">

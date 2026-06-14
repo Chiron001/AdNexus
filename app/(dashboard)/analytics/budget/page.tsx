@@ -1,11 +1,14 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { NoAccounts } from '@/components/shared/NoAccounts'
+import { UpgradeWall } from '@/components/shared/UpgradeWall'
 import { SyncButton } from '@/components/shared/SyncButton'
 import { DateRangePicker } from '@/components/shared/DateRangePicker'
 import { BudgetCharts } from './BudgetCharts'
 import { RefreshCw } from 'lucide-react'
 import { buildDateParams } from '@/lib/utils/dateRange'
+import { getPlanLimits } from '@/lib/config/plans'
+import type { PlanTier } from '@/lib/config/plans'
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>
 
@@ -17,6 +20,27 @@ export default async function BudgetPage({ searchParams }: { searchParams: Searc
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+
+  const { data: profile } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
+  const plan = (profile?.plan ?? 'free') as PlanTier
+  const limits = getPlanLimits(plan)
+
+  if (!limits.budget_analytics) {
+    return (
+      <UpgradeWall
+        feature="Budget & Spend Analytics"
+        requiredPlan="growth"
+        currentPlan={plan}
+        bullets={[
+          'Daily budget pacing view per campaign',
+          'Budget utilisation % and under-delivery alerts',
+          'Cross-platform spend allocation comparison',
+          'Spend trend charts over 90 days',
+          'CSV export of budget data',
+        ]}
+      />
+    )
+  }
 
   const { data: accounts } = await supabase
     .from('ad_accounts')

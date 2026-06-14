@@ -2,13 +2,16 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Users, CreditCard, Bell, Shield, ArrowLeft } from 'lucide-react'
+import { LayoutDashboard, Users, CreditCard, Bell, Shield, ArrowLeft, Link2, Activity, Mail } from 'lucide-react'
 
 const NAV = [
-  { href: '/admin/dashboard',      icon: LayoutDashboard, label: 'Overview'       },
-  { href: '/admin/users',          icon: Users,           label: 'Users'          },
-  { href: '/admin/billing',        icon: CreditCard,      label: 'Billing'        },
-  { href: '/admin/notifications',  icon: Bell,            label: 'Notifications'  },
+  { href: '/admin/dashboard',     icon: LayoutDashboard, label: 'Overview'      },
+  { href: '/admin/users',         icon: Users,           label: 'Users'         },
+  { href: '/admin/accounts',      icon: Link2,           label: 'Accounts'      },
+  { href: '/admin/activity',      icon: Activity,        label: 'Sync Activity' },
+  { href: '/admin/billing',       icon: CreditCard,      label: 'Billing'       },
+  { href: '/admin/inquiries',     icon: Mail,            label: 'Inquiries'     },
+  { href: '/admin/notifications', icon: Bell,            label: 'Notifications' },
 ]
 
 export function AdminSidebar({ role }: { role: string }) {

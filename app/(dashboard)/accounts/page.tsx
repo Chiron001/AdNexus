@@ -3,8 +3,11 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { CheckCircle2, AlertCircle, RefreshCw, Loader2, ExternalLink, ArrowRight, Zap, Clock } from 'lucide-react'
+import { CheckCircle2, AlertCircle, RefreshCw, Loader2, ArrowRight, Zap, Clock, Sparkles, BarChart3 } from 'lucide-react'
 import { formatRelativeTime } from '@/lib/utils/format'
+import { PLAN_LIMITS, PLAN_DISPLAY } from '@/lib/config/plans'
+import type { PlanTier } from '@/lib/config/plans'
+import { useRouter } from 'next/navigation'
 
 const platformInfo = {
   meta: {
@@ -48,11 +51,15 @@ interface AdAccount {
 }
 
 export default function AccountsPage() {
-  const [accounts,  setAccounts]  = useState<AdAccount[]>([])
-  const [loading,   setLoading]   = useState(true)
-  const [syncing,   setSyncing]   = useState<string | null>(null)
-  const [authUrls,  setAuthUrls]  = useState<Record<string, string | null>>({})
-  const [connecting, setConnecting] = useState<Platform | null>(null)
+  const router = useRouter()
+  const [accounts,      setAccounts]      = useState<AdAccount[]>([])
+  const [loading,       setLoading]       = useState(true)
+  const [syncing,       setSyncing]       = useState<string | null>(null)
+  const [authUrls,      setAuthUrls]      = useState<Record<string, string | null>>({})
+  const [connecting,    setConnecting]    = useState<Platform | null>(null)
+  const [plan,          setPlan]          = useState<PlanTier>('free')
+  const [checksUsed,    setChecksUsed]    = useState(0)
+  const [errorBanner,   setErrorBanner]   = useState<string | null>(null)
 
   useEffect(() => { loadData() }, [])
 
@@ -61,16 +68,41 @@ export default function AccountsPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
-    const { data } = await supabase
-      .from('ad_accounts')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+    const [accountsRes, profileRes, urlRes] = await Promise.all([
+      supabase.from('ad_accounts').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+      supabase.from('profiles').select('plan').eq('id', user.id).single(),
+      fetch('/api/auth/urls'),
+    ])
 
-    setAccounts(data ?? [])
+    const userPlan = (profileRes.data?.plan as PlanTier) ?? 'free'
+    setPlan(userPlan)
+    setAccounts(accountsRes.data ?? [])
+    if (urlRes.ok) setAuthUrls(await urlRes.json() as Record<string, string | null>)
 
-    const res = await fetch('/api/auth/urls')
-    if (res.ok) setAuthUrls(await res.json() as Record<string, string | null>)
+    // Count manual syncs this month
+    const startOfMonth = new Date()
+    startOfMonth.setDate(1)
+    startOfMonth.setHours(0, 0, 0, 0)
+    const accountIds = (accountsRes.data ?? []).map((a: AdAccount) => a.id)
+    if (accountIds.length > 0) {
+      const { count } = await supabase
+        .from('sync_logs')
+        .select('*', { count: 'exact', head: true })
+        .eq('sync_type', 'manual')
+        .in('ad_account_id', accountIds)
+        .gte('started_at', startOfMonth.toISOString())
+      setChecksUsed(count ?? 0)
+    }
+
+    // Check URL error params
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('error') === 'account_limit') {
+      const current = params.get('current')
+      const limit   = params.get('limit')
+      setErrorBanner(`Account limit reached (${current}/${limit}). Upgrade your plan to connect more ad accounts.`)
+      window.history.replaceState({}, '', '/accounts')
+    }
+
     setLoading(false)
   }
 
@@ -118,6 +150,66 @@ export default function AccountsPage() {
           Connect your ad platforms to start getting automated diagnostics and health scores.
         </p>
       </div>
+
+      {/* Error banner — account limit hit during OAuth */}
+      {errorBanner && (
+        <div className="flex items-center justify-between gap-4 bg-orange-500/10 border border-orange-500/20 rounded-2xl px-5 py-4">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-orange-400 flex-shrink-0" />
+            <p className="text-sm text-orange-300">{errorBanner}</p>
+          </div>
+          <button
+            onClick={() => router.push('/settings?tab=billing')}
+            className="flex-shrink-0 flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+          >
+            <Sparkles className="w-3 h-3" /> Upgrade
+          </button>
+        </div>
+      )}
+
+      {/* Usage stats strip */}
+      {!loading && (
+        <div className="grid grid-cols-2 gap-3">
+          {/* Account usage */}
+          <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl px-5 py-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs text-zinc-500 font-medium uppercase tracking-wide mb-1">Ad Accounts</p>
+              <p className="text-2xl font-semibold text-white">
+                {accounts.length}
+                <span className="text-zinc-600 text-sm font-normal">
+                  /{PLAN_LIMITS[plan].max_ad_accounts === -1 ? '∞' : PLAN_LIMITS[plan].max_ad_accounts}
+                </span>
+              </p>
+            </div>
+            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${PLAN_DISPLAY[plan].badgeCls}`}>
+              {PLAN_DISPLAY[plan].label}
+            </span>
+          </div>
+
+          {/* Monthly checks usage */}
+          <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl px-5 py-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs text-zinc-500 font-medium uppercase tracking-wide mb-1">Syncs This Month</p>
+              <p className="text-2xl font-semibold text-white">
+                {checksUsed}
+                <span className="text-zinc-600 text-sm font-normal">
+                  /{PLAN_LIMITS[plan].max_diagnostic_checks === -1 ? '∞' : PLAN_LIMITS[plan].max_diagnostic_checks}
+                </span>
+              </p>
+            </div>
+            {PLAN_LIMITS[plan].max_diagnostic_checks !== -1 && checksUsed >= PLAN_LIMITS[plan].max_diagnostic_checks ? (
+              <button
+                onClick={() => router.push('/settings?tab=billing')}
+                className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+              >
+                <Sparkles className="w-3 h-3" /> Upgrade
+              </button>
+            ) : (
+              <BarChart3 className="w-5 h-5 text-zinc-600" />
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Info strip — only shown when no platforms are ready yet */}
       {!loading && !allConfigured && accounts.length === 0 && (
@@ -280,8 +372,8 @@ export default function AccountsPage() {
           <div className="grid sm:grid-cols-3 gap-5">
             {[
               { step: '01', title: 'Click Connect', desc: 'You\'re redirected to the platform\'s official login page — Meta, Google, or Amazon.' },
-              { step: '02', title: 'Authorise access', desc: 'Grant AdNexus read-only access to your ad account data. We cannot edit or spend your budget.' },
-              { step: '03', title: 'Diagnostics run', desc: 'AdNexus runs 30+ checks on your account and shows you a health score within minutes.' },
+              { step: '02', title: 'Authorise access', desc: 'Grant Adnexusone read-only access to your ad account data. We cannot edit or spend your budget.' },
+              { step: '03', title: 'Diagnostics run', desc: 'Adnexusone runs 30+ checks on your account and shows you a health score within minutes.' },
             ].map((s) => (
               <div key={s.step} className="flex gap-3">
                 <span className="text-2xl font-black text-zinc-800 leading-none shrink-0">{s.step}</span>
@@ -294,7 +386,7 @@ export default function AccountsPage() {
           </div>
           <div className="mt-5 pt-4 border-t border-zinc-800/60 flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <p className="text-xs text-zinc-500">AdNexus requests <strong className="text-zinc-400">read-only</strong> permissions — we can never create, edit, pause, or spend on your campaigns.</p>
+            <p className="text-xs text-zinc-500">Adnexusone requests <strong className="text-zinc-400">read-only</strong> permissions — we can never create, edit, pause, or spend on your campaigns.</p>
           </div>
         </div>
       )}

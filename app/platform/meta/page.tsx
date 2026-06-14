@@ -11,13 +11,13 @@ const cfg: FeaturePageConfig = {
   glowColor: 'rgba(59,130,246,0.12)',
   title: '10 Meta checks. Every sync.',
   subtitle:
-    'AdNexus monitors your Facebook and Instagram campaigns for the issues that hurt D2C brands most — from creative fatigue to pixel failures.',
+    'Adnexusone monitors your Facebook and Instagram campaigns for the issues that hurt D2C brands most — from creative fatigue to pixel failures.',
   stats: [
     ['10', 'Meta checks'],
     ['FB + IG', 'covered'],
     ['Every sync', 'automated'],
   ],
-  featuresLabel: 'What AdNexus checks on Meta',
+  featuresLabel: 'What Adnexusone checks on Meta',
   features: [
     { icon: ICON, title: 'Creative fatigue', desc: 'Frequency and CTR decline detected per ad set before ROAS drops.' },
     { icon: ICON, title: 'Broken Facebook Pixel', desc: 'Purchase event validation before you scale spend on broken tracking.' },

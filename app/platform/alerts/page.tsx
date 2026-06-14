@@ -9,7 +9,7 @@ const cfg: FeaturePageConfig = {
   glowColor: 'rgba(245,158,11,0.10)',
   title: 'Know the moment something breaks',
   subtitle:
-    'Set thresholds for any metric. The moment a campaign crosses them, AdNexus fires an alert — so you respond in minutes, not days.',
+    'Set thresholds for any metric. The moment a campaign crosses them, Adnexusone fires an alert — so you respond in minutes, not days.',
   stats: [
     ['6', 'alert types'],
     ['Instant', 'notification'],

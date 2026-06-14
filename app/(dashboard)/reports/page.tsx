@@ -18,7 +18,7 @@ const PLATFORM_LABELS: Record<string, string> = {
 }
 
 export default function ReportsPage() {
-  const [plan,        setPlan]        = useState<'free' | 'growth' | 'agency'>('free')
+  const [plan,        setPlan]        = useState<'free' | 'growth' | 'agency' | 'custom'>('free')
   const [adAccounts,  setAdAccounts]  = useState<AdAccount[]>([])
   const [downloading, setDownloading] = useState<string | null>(null)
   const [loading,     setLoading]     = useState(true)
@@ -60,7 +60,7 @@ export default function ReportsPage() {
       const url  = URL.createObjectURL(blob)
       const a    = document.createElement('a')
       a.href     = url
-      a.download = `adnexus-audit-${new Date().toISOString().split('T')[0]}.pdf`
+      a.download = `adnexusone-audit-${new Date().toISOString().split('T')[0]}.pdf`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)

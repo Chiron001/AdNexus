@@ -24,7 +24,7 @@ const PAGE_TITLES: Record<string, string> = {
 
 interface TopbarProps {
   userName: string
-  plan: 'free' | 'growth' | 'agency'
+  plan: 'free' | 'growth' | 'agency' | 'custom'
 }
 
 export function Topbar({ userName, plan }: TopbarProps) {
@@ -34,7 +34,7 @@ export function Topbar({ userName, plan }: TopbarProps) {
 
   const title = Object.entries(PAGE_TITLES).find(([route]) =>
     pathname.startsWith(route)
-  )?.[1] ?? 'AdNexus'
+  )?.[1] ?? 'Adnexusone'
 
   async function handleLogout() {
     const supabase = createClient()

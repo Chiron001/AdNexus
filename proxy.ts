@@ -6,9 +6,22 @@ const PROTECTED_PATHS = [
   '/recommendations', '/reports', '/settings',
 ]
 
-const ADMIN_PATHS = ['/admin']
-
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // ── Admin password gate ────────────────────────────────────────────────
+  // All /admin/* routes require the admin_session cookie except /admin/login
+  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
+    const session = request.cookies.get('admin_session')?.value
+    const secret  = process.env.ADMIN_PASSWORD
+    if (!secret || session !== secret) {
+      const loginUrl = new URL('/admin/login', request.url)
+      loginUrl.searchParams.set('next', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+  }
+  // ──────────────────────────────────────────────────────────────────────
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -29,13 +42,11 @@ export async function proxy(request: NextRequest) {
   )
 
   const { data: { user } } = await supabase.auth.getUser()
-  const { pathname } = request.nextUrl
 
   const isDashboardRoute = PROTECTED_PATHS.some(p => pathname.startsWith(p))
-  const isAdminRoute     = ADMIN_PATHS.some(p => pathname.startsWith(p))
 
-  // Unauthenticated access to protected routes
-  if ((isDashboardRoute || isAdminRoute) && !user) {
+  // Unauthenticated access to protected user routes → /login
+  if (isDashboardRoute && !user) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
@@ -45,7 +56,6 @@ export async function proxy(request: NextRequest) {
   }
 
   // Plan expiry check — delegates actual downgrade to /api/billing/expire
-  // (keeps admin DB writes out of the Edge-compatible proxy)
   if (user && isDashboardRoute) {
     const { data: profile } = await supabase
       .from('profiles')
@@ -64,9 +74,6 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(expireUrl)
     }
   }
-
-  // Admin role check is deferred to /admin layout (can't use service-role client in Edge)
-  // proxy just ensures the user is authenticated before reaching /admin
 
   return supabaseResponse
 }

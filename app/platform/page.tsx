@@ -328,9 +328,9 @@ const INTEGRATIONS = [
 ]
 
 const TESTIMONIALS = [
-  { quote:'AdNexus found a broken pixel that was costing us ₹38K every month. Fixed it in one click. Wish we had this 2 years ago.', name:'Priya Sharma', role:'Head of Growth', brand:'D2C Skincare Brand', avatar:'P', stars:5 },
+  { quote:'Adnexusone found a broken pixel that was costing us ₹38K every month. Fixed it in one click. Wish we had this 2 years ago.', name:'Priya Sharma', role:'Head of Growth', brand:'D2C Skincare Brand', avatar:'P', stars:5 },
   { quote:'The AI recommendations are shockingly accurate. It told us to pause 3 ad sets, we did, ROAS jumped from 2.8x to 4.3x in 10 days.', name:'Rahul Mehta', role:'Performance Lead', brand:'Fashion D2C', avatar:'R', stars:5 },
-  { quote:'As an agency we manage 14 brands. AdNexus saves us 6+ hours every week on manual audits and our clients love the white-label reports.', name:'Ananya Iyer', role:'Founder', brand:'Performance Agency', avatar:'A', stars:5 },
+  { quote:'As an agency we manage 14 brands. Adnexusone saves us 6+ hours every week on manual audits and our clients love the white-label reports.', name:'Ananya Iyer', role:'Founder', brand:'Performance Agency', avatar:'A', stars:5 },
 ]
 
 export default function PlatformPage() {
@@ -424,7 +424,7 @@ export default function PlatformPage() {
         tagColor="text-cyan-400 bg-cyan-500/10 border-cyan-500/20"
         accentColor="rgba(6,182,212,0.07)"
         headline={<>30 checks. Every sync.<br/>Every account.</>}
-        body="AdNexus runs 30 diagnostic checks across your Meta, Google, and Amazon accounts every time you sync — catching creative fatigue, broken pixels, budget inefficiencies, keyword problems, and more before they drain your budget."
+        body="Adnexusone runs 30 diagnostic checks across your Meta, Google, and Amazon accounts every time you sync — catching creative fatigue, broken pixels, budget inefficiencies, keyword problems, and more before they drain your budget."
         bullets={[
           { icon:CHECK, text:'Creative fatigue detection with frequency and CTR decline signals' },
           { icon:CHECK, text:'Pixel tracking validation — catches broken events before you scale spend' },
@@ -442,7 +442,7 @@ export default function PlatformPage() {
         tagColor="text-purple-400 bg-purple-500/10 border-purple-500/20"
         accentColor="rgba(139,92,246,0.08)"
         headline={<>Plain-English fixes,<br/>not just data.</>}
-        body="Powered by Claude, AdNexus doesn't just tell you what's wrong — it tells you exactly what to do. Every issue comes with a step-by-step fix, expected outcome, and one-click implementation where possible."
+        body="Powered by Claude, Adnexusone doesn't just tell you what's wrong — it tells you exactly what to do. Every issue comes with a step-by-step fix, expected outcome, and one-click implementation where possible."
         bullets={[
           { icon:CHECKP, text:'Action-ready instructions for every detected issue' },
           { icon:CHECKP, text:'Predicted ROAS recovery and revenue impact per fix' },
@@ -480,7 +480,7 @@ export default function PlatformPage() {
         tagColor="text-amber-400 bg-amber-500/10 border-amber-500/20"
         accentColor="rgba(245,158,11,0.06)"
         headline={<>Know before your<br/>budget bleeds.</>}
-        body="Set custom thresholds for ROAS, CPA, spend, frequency, and CTR. AdNexus monitors your accounts 24/7 and fires alerts via Email, WhatsApp, or in-app the moment something crosses a threshold."
+        body="Set custom thresholds for ROAS, CPA, spend, frequency, and CTR. Adnexusone monitors your accounts 24/7 and fires alerts via Email, WhatsApp, or in-app the moment something crosses a threshold."
         bullets={[
           { icon:CHEKA, text:'Custom rules for any metric — ROAS, CPA, Frequency, CTR, Spend' },
           { icon:CHEKA, text:'Multi-channel delivery: Email, WhatsApp, in-app notifications' },
@@ -518,7 +518,7 @@ export default function PlatformPage() {
         tagColor="text-blue-400 bg-blue-500/10 border-blue-500/20"
         accentColor="rgba(59,130,246,0.06)"
         headline={<>Meta. Google. Amazon.<br/>One unified view.</>}
-        body="AdNexus connects to all three major performance platforms with platform-specific diagnostic logic — understanding the nuances of each ad ecosystem so issues aren't missed."
+        body="Adnexusone connects to all three major performance platforms with platform-specific diagnostic logic — understanding the nuances of each ad ecosystem so issues aren't missed."
         bullets={[
           { icon:CHECK, text:'10 Meta-specific checks — creatives, audiences, pixel, frequency' },
           { icon:CHECK, text:'10 Google-specific checks — Quality Score, ROAS targets, bidding' },

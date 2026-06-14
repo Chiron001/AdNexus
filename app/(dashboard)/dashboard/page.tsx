@@ -198,7 +198,7 @@ export default async function DashboardPage() {
             Connect your first ad account
           </h3>
           <p className="text-zinc-500 max-w-md mb-7 text-sm leading-relaxed">
-            Link Meta Ads, Google Ads, or Amazon Ads. AdNexus will automatically scan for issues,
+            Link Meta Ads, Google Ads, or Amazon Ads. Adnexusone will automatically scan for issues,
             calculate your health score, and give you AI-powered recommendations in minutes.
           </p>
           <Link

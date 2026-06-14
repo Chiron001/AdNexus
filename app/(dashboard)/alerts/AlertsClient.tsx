@@ -46,14 +46,14 @@ export function AlertsClient({ issues, recommendations, accountCount }: {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('adnexus_alert_rules')
+      const saved = localStorage.getItem('adnexusone_alert_rules')
       if (saved) setRules(JSON.parse(saved))
     } catch {}
   }, [])
 
   function save(updated: Rule[]) {
     setRules(updated)
-    localStorage.setItem('adnexus_alert_rules', JSON.stringify(updated))
+    localStorage.setItem('adnexusone_alert_rules', JSON.stringify(updated))
   }
 
   function addRule() {

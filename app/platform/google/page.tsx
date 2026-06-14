@@ -11,13 +11,13 @@ const cfg: FeaturePageConfig = {
   glowColor: 'rgba(34,197,94,0.10)',
   title: '10 Google checks. Built for performance.',
   subtitle:
-    'AdNexus runs deep diagnostics on your Search, Shopping, and Display campaigns — catching what the Google dashboard misses.',
+    'Adnexusone runs deep diagnostics on your Search, Shopping, and Display campaigns — catching what the Google dashboard misses.',
   stats: [
     ['10', 'Google checks'],
     ['Search + Shopping', 'covered'],
     ['Every sync', 'automated'],
   ],
-  featuresLabel: 'What AdNexus checks on Google',
+  featuresLabel: 'What Adnexusone checks on Google',
   features: [
     { icon: ICON, title: 'Keyword cannibalization', desc: 'Competing ad groups splitting impression share and inflating bids.' },
     { icon: ICON, title: 'Quality Score drop', desc: 'High-spend keywords scoring below 5 — flagged before cost climbs.' },

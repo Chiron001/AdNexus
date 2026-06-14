@@ -9,7 +9,7 @@ const cfg: FeaturePageConfig = {
   glowColor: 'rgba(6,182,212,0.12)',
   title: '30 checks. Every sync. Zero effort.',
   subtitle:
-    'AdNexus automatically scans Meta, Google, and Amazon every time you sync — surfacing every issue ranked by its monthly rupee cost.',
+    'Adnexusone automatically scans Meta, Google, and Amazon every time you sync — surfacing every issue ranked by its monthly rupee cost.',
   stats: [
     ['30', 'checks per sync'],
     ['3', 'platforms covered'],
@@ -32,7 +32,7 @@ const cfg: FeaturePageConfig = {
   ],
   steps: [
     { num: '01', title: 'Connect your accounts', desc: 'Link Meta, Google, and Amazon Ads in under 2 minutes using secure OAuth — no passwords stored.' },
-    { num: '02', title: 'Sync and scan', desc: 'AdNexus runs all 30 checks automatically every time you sync. No manual setup or configuration.' },
+    { num: '02', title: 'Sync and scan', desc: 'Adnexusone runs all 30 checks automatically every time you sync. No manual setup or configuration.' },
     { num: '03', title: 'Act on what matters', desc: 'Every issue shows the estimated monthly rupee cost. AI writes the exact fix your team needs.' },
   ],
 }

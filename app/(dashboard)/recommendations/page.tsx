@@ -4,8 +4,10 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { UpgradeWall } from '@/components/shared/UpgradeWall'
 import { toast } from 'sonner'
 import { Lightbulb, Clock, CheckCircle2, Loader2 } from 'lucide-react'
+import type { PlanTier } from '@/lib/config/plans'
 
 interface DiagnosticIssue {
   title: string
@@ -51,11 +53,15 @@ export default function RecommendationsPage() {
   const [loading,  setLoading]  = useState(true)
   const [sort,     setSort]     = useState<'impact' | 'effort'>('impact')
   const [applying, setApplying] = useState<string | null>(null)
+  const [plan,     setPlan]     = useState<PlanTier>('free')
 
   const loadRecommendations = useCallback(async () => {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
+
+    const { data: profile } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
+    setPlan((profile?.plan as PlanTier) ?? 'free')
 
     const { data } = await supabase
       .from('recommendations')
@@ -100,6 +106,23 @@ export default function RecommendationsPage() {
           <div key={i} className="h-48 bg-zinc-900/40 border border-zinc-800/60 rounded-2xl animate-pulse" />
         ))}
       </div>
+    )
+  }
+
+  if (plan === 'free') {
+    return (
+      <UpgradeWall
+        feature="AI Recommendations"
+        requiredPlan="growth"
+        currentPlan={plan}
+        bullets={[
+          'AI-generated fixes for every issue detected',
+          'Plain-English action steps — no jargon',
+          'Estimated ₹ revenue impact per recommendation',
+          'Effort level and time-to-implement for each fix',
+          'Recommendations generated on every sync automatically',
+        ]}
+      />
     )
   }
 

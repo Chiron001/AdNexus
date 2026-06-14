@@ -8,6 +8,7 @@ import {
 import { refreshAccessToken } from '@/lib/amazon/auth'
 import { runAmazonDiagnostics } from '@/lib/amazon/diagnostics'
 import { apiErrorResponse } from '@/lib/utils/errors'
+import { checkSyncAllowed } from '@/lib/utils/plan-gate'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyClient = any
@@ -24,6 +25,17 @@ export async function POST(request: NextRequest) {
       .from('ad_accounts').select('*')
       .eq('id', account_id).eq('user_id', user.id).eq('platform', 'amazon').single()
     if (!account) return Response.json({ error: 'Account not found' }, { status: 404 })
+
+    const gateResult = await checkSyncAllowed(supabase, user.id, account_id)
+    if (!gateResult.allowed) {
+      return Response.json({
+        error: gateResult.reason,
+        checksUsed: gateResult.checksUsed,
+        checksLimit: gateResult.checksLimit,
+        retryAfterMs: gateResult.retryAfterMs,
+        upgrade_required: true,
+      }, { status: 429 })
+    }
 
     const { data: syncLog } = await (supabase as AnyClient)
       .from('sync_logs')

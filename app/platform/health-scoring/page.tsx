@@ -10,7 +10,7 @@ const cfg: FeaturePageConfig = {
   glowColor: 'rgba(244,63,94,0.10)',
   title: 'One score per platform. No guessing.',
   subtitle:
-    'AdNexus calculates a live health score (0–100) for Meta, Google, and Amazon — updated every sync, based on your actual account data.',
+    'Adnexusone calculates a live health score (0–100) for Meta, Google, and Amazon — updated every sync, based on your actual account data.',
   stats: [
     ['0–100', 'score range'],
     ['3', 'platform scores'],

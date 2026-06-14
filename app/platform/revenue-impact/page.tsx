@@ -10,7 +10,7 @@ const cfg: FeaturePageConfig = {
   glowColor: 'rgba(59,130,246,0.10)',
   title: 'Every issue comes with a price tag',
   subtitle:
-    "AdNexus doesn't just flag problems — it tells you exactly how much each one is costing your business every month, in rupees.",
+    "Adnexusone doesn't just flag problems — it tells you exactly how much each one is costing your business every month, in rupees.",
   stats: [
     ['₹ cost', 'per issue'],
     ['Ranked', 'by impact'],
@@ -44,7 +44,7 @@ const cfg: FeaturePageConfig = {
 const WHY = [
   { title: 'Prioritize by business impact', desc: 'Fix the ₹42K problem before the ₹3K one. Every single time.' },
   { title: 'Build the case for fixes', desc: 'Share a rupee estimate with finance, leadership, or your client — not just a severity label.' },
-  { title: 'Track recovered revenue', desc: "As you resolve issues, AdNexus tracks total rupee impact resolved — your team's measurable ROI." },
+  { title: 'Track recovered revenue', desc: "As you resolve issues, Adnexusone tracks total rupee impact resolved — your team's measurable ROI." },
 ]
 
 export default function RevenueImpactPage() {

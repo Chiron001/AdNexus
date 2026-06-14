@@ -7,7 +7,11 @@ import {
   fetchMetaAdsets, fetchMetaAds, insightToMetrics,
 } from '@/lib/meta/api'
 import { runMetaDiagnostics } from '@/lib/meta/diagnostics'
+import { generateAllRecommendations } from '@/lib/ai/claude'
+import type { DiagnosticIssue } from '@/lib/diagnostics/types'
 import { apiErrorResponse } from '@/lib/utils/errors'
+import { checkSyncAllowed, getUserPlan } from '@/lib/utils/plan-gate'
+import { getPlanLimits } from '@/lib/config/plans'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyClient = any
@@ -24,6 +28,18 @@ export async function POST(request: NextRequest) {
       .from('ad_accounts').select('*')
       .eq('id', account_id).eq('user_id', user.id).eq('platform', 'meta').single()
     if (!account) return Response.json({ error: 'Account not found' }, { status: 404 })
+
+    // Plan gate: check monthly limit + cooldown
+    const gateResult = await checkSyncAllowed(supabase, user.id, account_id)
+    if (!gateResult.allowed) {
+      return Response.json({
+        error: gateResult.reason,
+        checksUsed: gateResult.checksUsed,
+        checksLimit: gateResult.checksLimit,
+        retryAfterMs: gateResult.retryAfterMs,
+        upgrade_required: true,
+      }, { status: 429 })
+    }
 
     const { data: syncLog } = await (supabase as AnyClient)
       .from('sync_logs')
@@ -114,11 +130,26 @@ export async function POST(request: NextRequest) {
       // Diagnostics
       const issues = runMetaDiagnostics({ insights: campaignInsights as any, adSets: adsets, ads, accountId })
 
+      // Collect IDs of currently open issues so we can delete their stale recommendations
+      const { data: openIssuesToFix } = await supabase
+        .from('diagnostic_issues').select('id')
+        .eq('ad_account_id', account.id).eq('status', 'open')
+
       await supabase.from('diagnostic_issues').update({ status: 'fixed' })
         .eq('ad_account_id', account.id).eq('status', 'open')
 
+      // Remove pending recommendations tied to issues that are now fixed
+      if (openIssuesToFix && openIssuesToFix.length > 0) {
+        await supabase.from('recommendations')
+          .delete()
+          .in('diagnostic_issue_id', openIssuesToFix.map(i => i.id))
+          .eq('status', 'pending')
+      }
+
+      // Insert new issues and collect their DB rows (with IDs) for AI generation
+      const insertedIssues: Array<DiagnosticIssue & { id: string; ad_account_id: string; user_id: string }> = []
       for (const issue of issues) {
-        await supabase.from('diagnostic_issues').insert({
+        const { data } = await supabase.from('diagnostic_issues').insert({
           ad_account_id: account.id, user_id: user.id,
           platform: issue.platform, issue_type: issue.issue_type, severity: issue.severity,
           title: issue.title, description: issue.description,
@@ -127,7 +158,29 @@ export async function POST(request: NextRequest) {
           affected_entity_name: issue.affected_entity_name,
           estimated_impact_inr: issue.estimated_impact_inr,
           raw_data: issue.raw_data,
-        })
+        }).select().single()
+        if (data) insertedIssues.push(data as DiagnosticIssue & { id: string; ad_account_id: string; user_id: string })
+      }
+
+      // Generate AI recommendations — only for plans that have this feature
+      const userPlan = await getUserPlan(supabase, user.id)
+      const planLimits = getPlanLimits(userPlan)
+      let recommendationsGenerated = 0
+      if (insertedIssues.length > 0 && planLimits.ai_recommendations) {
+        try {
+          const recommendations = await generateAllRecommendations(insertedIssues)
+          for (const { issue_id, recommendation } of recommendations) {
+            await supabase.from('recommendations').insert({
+              diagnostic_issue_id: issue_id,
+              user_id: user.id,
+              ...recommendation,
+              status: 'pending',
+            })
+          }
+          recommendationsGenerated = recommendations.length
+        } catch (aiErr) {
+          console.error('[sync/meta] AI recommendation generation failed:', aiErr)
+        }
       }
 
       await supabase.from('ad_accounts')
@@ -150,6 +203,7 @@ export async function POST(request: NextRequest) {
         adsets_synced: adsetInsights.length,
         ads_synced: adInsights.length,
         issues_found: issues.length,
+        recommendations_generated: recommendationsGenerated,
       })
     } catch (syncError) {
       if (syncLogId) {

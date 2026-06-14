@@ -20,7 +20,7 @@ export default async function DashboardLayout({
     .single()
 
   const userName = profile?.full_name || user.email?.split('@')[0] || 'User'
-  const plan = (profile?.plan as 'free' | 'growth' | 'agency') || 'free'
+  const plan = (profile?.plan as 'free' | 'growth' | 'agency' | 'custom') || 'free'
 
   return (
     <div
