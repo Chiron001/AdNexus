@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, Mail, Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { Loader2, Mail, Eye, EyeOff, ArrowLeft, Zap } from 'lucide-react'
 
 /* ── Shooting-star configs ─────────────────────────── */
 const STARS = [
@@ -92,36 +92,36 @@ export default function LoginPage() {
       </div>
 
       {/* ── Card ──────────────────────────────────────── */}
-      <div className="relative z-10 w-full max-w-sm animate-fade-up">
+      <div className="relative z-10 w-full max-w-[360px] animate-fade-up">
 
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2.5 mb-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
-              <span className="text-white font-black text-base">A</span>
+        <div className="text-center mb-5">
+          <div className="inline-flex items-center gap-2.5 mb-1.5">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <Zap className="w-4 h-4 text-white" />
             </div>
-            <span className="text-2xl font-black text-white tracking-tight">Adnexusone</span>
+            <span className="text-xl font-black text-white tracking-tight">Adnexusone</span>
           </div>
           <p className="text-zinc-500 text-sm">AI-powered ad account diagnostics</p>
         </div>
 
         <div
-          className="bg-zinc-900/80 backdrop-blur-2xl border border-zinc-800/60 rounded-2xl p-8"
+          className="bg-zinc-900/80 backdrop-blur-2xl border border-zinc-800/60 rounded-2xl p-6"
           style={{ boxShadow: '0 0 0 1px rgba(255,255,255,0.03) inset, 0 32px 64px -12px rgba(0,0,0,0.75)' }}
         >
           {view === 'options' ? (
             <>
-              <div className="mb-7 text-center">
+              <div className="mb-5 text-center">
                 <h1 className="text-xl font-bold text-white">Welcome back</h1>
-                <p className="text-zinc-500 text-sm mt-1">Sign in to your account</p>
+                <p className="text-zinc-500 text-sm mt-0.5">Sign in to your account</p>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {/* Google */}
                 <button
                   onClick={() => handleOAuth('google')}
                   disabled={!!oauthLoading}
-                  className="w-full flex items-center gap-4 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.09] hover:border-white/[0.16] text-white text-sm font-medium py-3 px-5 rounded-xl transition-all disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-3 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.09] hover:border-white/[0.16] text-white text-sm font-medium py-2.5 px-4 rounded-xl transition-all disabled:opacity-50"
                 >
                   {oauthLoading === 'google' ? <Loader2 className="w-[18px] h-[18px] animate-spin flex-shrink-0" /> : <GoogleIcon />}
                   <span>Continue with Google</span>
@@ -131,14 +131,14 @@ export default function LoginPage() {
                 <button
                   onClick={() => handleOAuth('azure')}
                   disabled={!!oauthLoading}
-                  className="w-full flex items-center gap-4 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.09] hover:border-white/[0.16] text-white text-sm font-medium py-3 px-5 rounded-xl transition-all disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-3 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.09] hover:border-white/[0.16] text-white text-sm font-medium py-2.5 px-4 rounded-xl transition-all disabled:opacity-50"
                 >
                   {oauthLoading === 'azure' ? <Loader2 className="w-[18px] h-[18px] animate-spin flex-shrink-0" /> : <MicrosoftIcon />}
                   <span>Continue with Microsoft</span>
                 </button>
 
                 {/* Divider */}
-                <div className="relative py-1">
+                <div className="relative py-0.5">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-zinc-800" />
                   </div>
@@ -150,14 +150,14 @@ export default function LoginPage() {
                 {/* Email */}
                 <button
                   onClick={() => setView('email')}
-                  className="w-full flex items-center gap-4 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.09] hover:border-white/[0.16] text-white text-sm font-medium py-3 px-5 rounded-xl transition-all"
+                  className="w-full flex items-center justify-center gap-3 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.09] hover:border-white/[0.16] text-white text-sm font-medium py-2.5 px-4 rounded-xl transition-all"
                 >
                   <Mail className="w-[18px] h-[18px] flex-shrink-0 text-zinc-400" />
                   <span>Continue with Email</span>
                 </button>
               </div>
 
-              <p className="text-center text-sm text-zinc-600 mt-7">
+              <p className="text-center text-sm text-zinc-600 mt-5">
                 Don&apos;t have an account?{' '}
                 <Link href="/signup" className="text-purple-400 hover:text-purple-300 font-semibold transition-colors">
                   Sign up free
