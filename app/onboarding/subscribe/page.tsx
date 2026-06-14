@@ -74,6 +74,7 @@ export default function SubscribePage() {
   const [userName, setUserName] = useState('')
   const [selected, setSelected] = useState<'basic' | 'growth' | 'professional'>('basic')
   const [loading, setLoading] = useState(true)
+  const [activating, setActivating] = useState(false)
 
   useEffect(() => {
     async function check() {
@@ -99,6 +100,29 @@ export default function SubscribePage() {
     check()
   }, [router])
 
+  async function handleSuccess() {
+    setActivating(true)
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { router.push('/dashboard'); return }
+
+    // Poll until webhook updates the plan (max 30s)
+    let attempts = 0
+    const timer = setInterval(async () => {
+      attempts++
+      const { data } = await supabase
+        .from('profiles')
+        .select('plan')
+        .eq('id', user.id)
+        .single()
+
+      if ((data?.plan && data.plan !== 'free') || attempts >= 15) {
+        clearInterval(timer)
+        router.push('/dashboard')
+      }
+    }, 2000)
+  }
+
   const trialEnd = new Date()
   trialEnd.setDate(trialEnd.getDate() + 30)
   const trialEndStr = trialEnd.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -107,6 +131,18 @@ export default function SubscribePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-950">
         <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  if (activating) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-950 gap-5">
+        <div className="w-12 h-12 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: 3 }} />
+        <div className="text-center">
+          <p className="text-white font-bold text-lg">Activating your account…</p>
+          <p className="text-zinc-500 text-sm mt-1">This usually takes a few seconds</p>
+        </div>
       </div>
     )
   }
@@ -192,7 +228,7 @@ export default function SubscribePage() {
           plan={selected}
           label={activePlan.cta}
           className={`w-full py-3 rounded-xl text-sm font-bold text-white transition-colors ${c.btn}`}
-          onSuccess={() => router.push('/dashboard')}
+          onSuccess={handleSuccess}
         />
 
         <div className="flex items-center justify-center gap-4 text-[11px] text-zinc-600">
