@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Users, CreditCard, Bell, Shield,
   Link2, Activity, Mail, FileText, Search, Zap,
-  ChevronRight, HardDrive,
+  ChevronRight, HardDrive, Bot, ArrowLeftRight, Code2,
 } from 'lucide-react'
 
 const GROUPS = [
@@ -18,25 +18,33 @@ const GROUPS = [
   {
     label: 'Users & Revenue',
     items: [
-      { href: '/admin/users',   icon: Users,      label: 'Users'   },
-      { href: '/admin/billing', icon: CreditCard,  label: 'Billing' },
-      { href: '/admin/inquiries', icon: Mail,      label: 'Inquiries' },
+      { href: '/admin/users',     icon: Users,      label: 'Users'     },
+      { href: '/admin/billing',   icon: CreditCard, label: 'Billing'   },
+      { href: '/admin/inquiries', icon: Mail,       label: 'Inquiries' },
     ],
   },
   {
     label: 'Platform',
     items: [
-      { href: '/admin/accounts',      icon: Link2,     label: 'Ad Accounts'   },
-      { href: '/admin/activity',      icon: Activity,  label: 'Sync Activity' },
-      { href: '/admin/notifications', icon: Bell,      label: 'Notifications' },
+      { href: '/admin/accounts',      icon: Link2,    label: 'Ad Accounts'   },
+      { href: '/admin/activity',      icon: Activity, label: 'Sync Activity' },
+      { href: '/admin/notifications', icon: Bell,     label: 'Notifications' },
     ],
   },
   {
     label: 'Content & SEO',
     items: [
-      { href: '/admin/media', icon: HardDrive, label: 'Media'       },
-      { href: '/admin/blog',  icon: FileText, label: 'Blog Posts'  },
-      { href: '/admin/seo',   icon: Search,   label: 'SEO Manager' },
+      { href: '/admin/media',            icon: HardDrive,      label: 'Media'       },
+      { href: '/admin/blog',             icon: FileText,       label: 'Blog Posts'  },
+      { href: '/admin/seo',              icon: Search,         label: 'SEO Manager' },
+      { href: '/admin/seo/crawlers',     icon: Bot,            label: 'Crawlers'    },
+      { href: '/admin/redirects',        icon: ArrowLeftRight, label: 'Redirects'   },
+    ],
+  },
+  {
+    label: 'Developer',
+    items: [
+      { href: '/admin/scripts', icon: Code2, label: 'Script Manager' },
     ],
   },
 ]

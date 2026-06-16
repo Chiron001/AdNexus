@@ -3,6 +3,30 @@ import { Poppins, Lato } from 'next/font/google'
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { Analytics } from '@vercel/analytics/next'
+import { createRawAdminClient } from '@/lib/supabase/server'
+
+export const revalidate = 60
+
+interface SiteScript {
+  id: string
+  script_html: string
+  position: string
+  is_active: boolean
+}
+
+async function getActiveScripts(): Promise<SiteScript[]> {
+  try {
+    const admin = createRawAdminClient()
+    const { data } = await admin
+      .from('site_scripts')
+      .select('id, script_html, position, is_active')
+      .eq('is_active', true)
+      .order('created_at')
+    return data ?? []
+  } catch {
+    return []
+  }
+}
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -87,11 +111,16 @@ const SOFTWARE_SCHEMA = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const scripts = await getActiveScripts()
+  const headScripts    = scripts.filter(s => s.position === 'head')
+  const bodyStartScripts = scripts.filter(s => s.position === 'body_start')
+  const bodyEndScripts = scripts.filter(s => s.position === 'body_end')
+
   return (
     <html lang="en" className={`${poppins.variable} ${lato.variable} h-full antialiased`}>
       <head>
@@ -109,7 +138,17 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
+        {/* Scripts injected from Script Manager (head position loads before content) */}
+        {headScripts.map(s => (
+          <div key={s.id} dangerouslySetInnerHTML={{ __html: s.script_html }} />
+        ))}
+        {bodyStartScripts.map(s => (
+          <div key={s.id} dangerouslySetInnerHTML={{ __html: s.script_html }} />
+        ))}
         {children}
+        {bodyEndScripts.map(s => (
+          <div key={s.id} dangerouslySetInnerHTML={{ __html: s.script_html }} />
+        ))}
         <Toaster richColors position="bottom-right" />
         <Analytics />
       </body>

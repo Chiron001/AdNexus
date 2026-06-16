@@ -1,6 +1,31 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// ── URL Redirect cache (module-level, 60-second TTL) ────────────────────
+interface CachedRedirect { source_path: string; destination_path: string; redirect_type: number }
+let _redirectCache: CachedRedirect[] | null = null
+let _redirectExpiry = 0
+
+async function getRedirects(): Promise<CachedRedirect[]> {
+  if (_redirectCache && Date.now() < _redirectExpiry) return _redirectCache
+  const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!sbUrl || !sbKey) return []
+  try {
+    const res = await fetch(
+      `${sbUrl}/rest/v1/url_redirects?is_active=eq.true&select=source_path,destination_path,redirect_type`,
+      { headers: { apikey: sbKey, Authorization: `Bearer ${sbKey}` } }
+    )
+    if (!res.ok) return _redirectCache ?? []
+    _redirectCache  = await res.json()
+    _redirectExpiry = Date.now() + 60_000
+    return _redirectCache!
+  } catch {
+    return _redirectCache ?? []
+  }
+}
+// ────────────────────────────────────────────────────────────────────────
+
 const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL  || 'https://adnexusone.com'
 const USER_URL  = process.env.NEXT_PUBLIC_USER_URL  || 'https://user.adnexusone.com'
 const ADMIN_URL = process.env.NEXT_PUBLIC_ADMIN_URL || 'https://admin.adnexusone.com'
@@ -67,6 +92,31 @@ export async function proxy(request: NextRequest) {
       if (pathname === '/admin' || pathname.startsWith('/admin/')) {
         return NextResponse.redirect(`${ADMIN_URL}${pathname}`)
       }
+    }
+  }
+  // ──────────────────────────────────────────────────────────────────────
+
+  // ── URL Redirects (from admin panel) ─────────────────────────────────
+  if (!pathname.startsWith('/api/') && !pathname.startsWith('/admin/') &&
+      !pathname.startsWith('/_next/') && pathname !== '/robots.txt' &&
+      pathname !== '/llm.txt' && pathname !== '/sitemap.xml') {
+    const redirects = await getRedirects()
+    const match = redirects.find(r => r.source_path === pathname)
+    if (match) {
+      const dest = match.destination_path.startsWith('http')
+        ? match.destination_path
+        : new URL(match.destination_path, request.url).toString()
+      // Fire-and-forget hit counter
+      const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+      const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+      if (sbUrl && sbKey) {
+        fetch(`${sbUrl}/rest/v1/rpc/increment_redirect_hits`, {
+          method: 'POST',
+          headers: { apikey: sbKey, Authorization: `Bearer ${sbKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ p_source: pathname }),
+        }).catch(() => {})
+      }
+      return NextResponse.redirect(dest, { status: match.redirect_type })
     }
   }
   // ──────────────────────────────────────────────────────────────────────
