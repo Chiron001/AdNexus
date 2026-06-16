@@ -2,7 +2,17 @@ import Link from 'next/link'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 
-export const metadata = { title: 'Privacy Policy — Adnexusone' }
+import type { Metadata } from 'next'
+import { getPageMetadata } from '@/lib/seo'
+
+export const revalidate = 3600
+
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('/privacy', {
+    title: 'Privacy Policy — Adnexusone',
+    description: 'How Adnexusone collects, uses, and protects your personal data and ad account information.',
+  })
+}
 
 const LAST_UPDATED = 'June 14, 2026'
 
@@ -11,7 +21,7 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-[#080808] text-white">
       <LandingNav />
 
-      <main className="max-w-3xl mx-auto px-5 sm:px-6 pt-32 pb-24">
+      <main className="max-w-3xl mx-auto px-5 sm:px-6 pt-20 sm:pt-32 pb-24">
         {/* Header */}
         <div className="mb-12">
           <p className="text-[11px] font-bold text-purple-400 uppercase tracking-widest mb-3">Legal</p>

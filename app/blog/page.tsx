@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/server'
 import { LandingNav } from '@/components/landing/LandingNav'
-import { LandingCTA, LandingFooter } from '@/components/landing/LandingFooter'
+import { LandingBottom } from '@/components/landing/LandingFooter'
 import { Calendar, Clock, Tag, ArrowRight } from 'lucide-react'
 
 export const revalidate = 60
@@ -58,7 +58,7 @@ export default async function BlogPage() {
       <LandingNav />
       <main className="min-h-screen text-white" style={{ background: '#070810' }}>
         {/* Hero */}
-        <section className="pt-36 pb-16 px-5 sm:px-6 border-b border-white/[0.05]">
+        <section className="pt-20 sm:pt-36 pb-16 px-5 sm:px-6 border-b border-white/[0.05]">
           <div className="max-w-5xl mx-auto">
             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">AdNexus Blog</p>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-white">Performance marketing intelligence</h1>
@@ -154,8 +154,7 @@ export default async function BlogPage() {
           </>
         )}
       </main>
-      <LandingCTA />
-      <LandingFooter />
+      <LandingBottom />
     </>
   )
 }

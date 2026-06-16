@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/server'
 import { LandingNav } from '@/components/landing/LandingNav'
-import { LandingCTA, LandingFooter } from '@/components/landing/LandingFooter'
+import { LandingBottom } from '@/components/landing/LandingFooter'
 import { Calendar, Clock, Tag, ArrowLeft, Share2 } from 'lucide-react'
 
 export const revalidate = 60
@@ -210,8 +210,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
         )}
       </main>
 
-      <LandingCTA />
-      <LandingFooter />
+      <LandingBottom />
     </>
   )
 }

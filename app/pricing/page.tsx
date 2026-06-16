@@ -1,9 +1,19 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle2, X, Minus, Zap, ArrowRight, MessageSquare } from 'lucide-react'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
+import { getPageMetadata } from '@/lib/seo'
 
-export const metadata = { title: 'Pricing — Adnexusone', description: 'Simple, transparent pricing for every stage of your ad growth. Start free, scale as you grow.' }
+export const revalidate = 60
+
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('/pricing', {
+    title: 'Pricing — Adnexusone Ad Diagnostics',
+    description: 'Simple, transparent pricing for D2C brands and performance agencies. Start with a free diagnostic — upgrade when you see the value.',
+  })
+}
+
 
 const PLANS = [
   {
@@ -198,7 +208,7 @@ export default function PricingPage() {
       <LandingNav />
 
       {/* ── Hero ──────────────────────────────────────────────────── */}
-      <section className="pt-32 pb-16 px-5 sm:px-6 text-center">
+      <section className="pt-20 sm:pt-32 pb-16 px-5 sm:px-6 text-center">
         <div className="max-w-3xl mx-auto">
           <p className="text-[11px] font-bold text-blue-400 uppercase tracking-widest mb-4">Pricing</p>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-5">

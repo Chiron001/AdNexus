@@ -2,7 +2,17 @@ import Link from 'next/link'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 
-export const metadata = { title: 'Refund Policy — Adnexusone' }
+import type { Metadata } from 'next'
+import { getPageMetadata } from '@/lib/seo'
+
+export const revalidate = 3600
+
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('/refund', {
+    title: 'Refund Policy — Adnexusone',
+    description: 'Adnexusone\'s refund and cancellation policy for subscription plans.',
+  })
+}
 
 const LAST_UPDATED = 'June 14, 2026'
 
@@ -11,7 +21,7 @@ export default function RefundPage() {
     <div className="min-h-screen bg-[#080808] text-white">
       <LandingNav />
 
-      <main className="max-w-3xl mx-auto px-5 sm:px-6 pt-32 pb-24">
+      <main className="max-w-3xl mx-auto px-5 sm:px-6 pt-20 sm:pt-32 pb-24">
         <div className="mb-12">
           <p className="text-[11px] font-bold text-purple-400 uppercase tracking-widest mb-3">Legal</p>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">Refund Policy</h1>
