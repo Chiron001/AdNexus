@@ -173,19 +173,19 @@ export const PLAN_LEVEL: Record<PlanTier, number> = {
 }
 
 export const PLAN_DISPLAY: Record<PlanTier, { label: string; priceInr: string; color: string; badgeCls: string }> = {
-  free:         { label: 'Free',         priceInr: '—',             color: 'text-zinc-400',    badgeCls: 'bg-zinc-800 text-zinc-400 border border-zinc-700'               },
-  basic:        { label: 'Basic',        priceInr: '₹1,800/mo',     color: 'text-teal-400',    badgeCls: 'bg-teal-500/15 text-teal-300 border border-teal-500/25'          },
-  growth:       { label: 'Growth',       priceInr: '₹8,999/mo',     color: 'text-blue-400',    badgeCls: 'bg-blue-500/15 text-blue-300 border border-blue-500/25'          },
-  professional: { label: 'Professional', priceInr: '₹46,999/mo',    color: 'text-purple-400',  badgeCls: 'bg-purple-500/15 text-purple-300 border border-purple-500/25'    },
-  agency:       { label: 'Professional', priceInr: '₹46,999/mo',    color: 'text-purple-400',  badgeCls: 'bg-purple-500/15 text-purple-300 border border-purple-500/25'    },
-  custom:       { label: 'Custom',       priceInr: 'Contact Sales',  color: 'text-emerald-400', badgeCls: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25' },
+  free:         { label: 'Free',         priceInr: '—',            color: 'text-zinc-400',    badgeCls: 'bg-zinc-800 text-zinc-400 border border-zinc-700'               },
+  basic:        { label: 'Basic',        priceInr: '$22/mo',       color: 'text-teal-400',    badgeCls: 'bg-teal-500/15 text-teal-300 border border-teal-500/25'          },
+  growth:       { label: 'Growth',       priceInr: '$109/mo',      color: 'text-blue-400',    badgeCls: 'bg-blue-500/15 text-blue-300 border border-blue-500/25'          },
+  professional: { label: 'Professional', priceInr: '$569/mo',      color: 'text-purple-400',  badgeCls: 'bg-purple-500/15 text-purple-300 border border-purple-500/25'    },
+  agency:       { label: 'Professional', priceInr: '$569/mo',      color: 'text-purple-400',  badgeCls: 'bg-purple-500/15 text-purple-300 border border-purple-500/25'    },
+  custom:       { label: 'Custom',       priceInr: 'Contact Sales', color: 'text-emerald-400', badgeCls: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25' },
 }
 
 export const MIN_PLAN_LABELS: Record<PlanTier, string> = {
-  free:         'Basic (₹1,800/mo after 30-day trial)',
-  basic:        'Basic (₹1,800/mo)',
-  growth:       'Growth (₹8,999/mo)',
-  professional: 'Professional (₹46,999/mo)',
-  agency:       'Professional (₹46,999/mo)',
+  free:         'Basic ($22/mo after 30-day trial)',
+  basic:        'Basic ($22/mo)',
+  growth:       'Growth ($109/mo)',
+  professional: 'Professional ($569/mo)',
+  agency:       'Professional ($569/mo)',
   custom:       'Custom',
 }

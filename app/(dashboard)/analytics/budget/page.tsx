@@ -134,7 +134,7 @@ export default async function BudgetPage({ searchParams }: { searchParams: Searc
     .slice(0, 5)
 
   const totalWaste = wastedSpend.reduce((s, c) => s + c.spend, 0)
-  const fmtINR = (v: number) => v >= 100000 ? `₹${(v / 100000).toFixed(1)}L` : `₹${(v / 1000).toFixed(1)}k`
+  const fmtINR = (v: number) => v >= 1000000 ? `$${(v / 1000000).toFixed(1)}M` : `$${(v / 1000).toFixed(1)}k`
 
   const usedPlatforms = Array.from(byPlatform.keys())
 

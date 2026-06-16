@@ -8,7 +8,7 @@ import {
   AlertTriangle,
   Link2,
   TrendingUp,
-  IndianRupee,
+  DollarSign,
   Plus,
   CheckCircle2,
 } from 'lucide-react'
@@ -168,7 +168,7 @@ export default async function DashboardPage() {
               <p className="text-xs text-zinc-600 mt-1">estimated / month</p>
             </div>
             <div className="w-11 h-11 bg-orange-500/10 ring-1 ring-orange-500/25 rounded-xl flex items-center justify-center">
-              <IndianRupee className="w-5 h-5 text-orange-400" />
+              <DollarSign className="w-5 h-5 text-orange-400" />
             </div>
           </div>
         </DarkCard>

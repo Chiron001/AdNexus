@@ -250,7 +250,7 @@ function PlatformCard({
             <p className="text-sm font-bold text-white">{cfg.name}</p>
             <p className="text-xs text-zinc-500 mt-0.5">
               {isConnected
-                ? `Connected${status?.last_tested_at ? ` · verified ${new Date(status.last_tested_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}` : ''}`
+                ? `Connected${status?.last_tested_at ? ` · verified ${new Date(status.last_tested_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}` : ''}`
                 : 'Not connected — enter credentials to activate'}
             </p>
           </div>

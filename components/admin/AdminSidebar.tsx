@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Users, CreditCard, Bell, Shield,
   Link2, Activity, Mail, FileText, Search, Zap,
-  ChevronRight,
+  ChevronRight, HardDrive,
 } from 'lucide-react'
 
 const GROUPS = [
@@ -34,8 +34,9 @@ const GROUPS = [
   {
     label: 'Content & SEO',
     items: [
-      { href: '/admin/blog', icon: FileText, label: 'Blog Posts'  },
-      { href: '/admin/seo',  icon: Search,   label: 'SEO Manager' },
+      { href: '/admin/media', icon: HardDrive, label: 'Media'       },
+      { href: '/admin/blog',  icon: FileText, label: 'Blog Posts'  },
+      { href: '/admin/seo',   icon: Search,   label: 'SEO Manager' },
     ],
   },
 ]

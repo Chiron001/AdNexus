@@ -127,14 +127,14 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
     pct:     totals.spend > 0 ? Math.round((v.spend / totals.spend) * 100) : 0,
   }))
 
-  const fmtINR = (v: number) => v >= 100000 ? `₹${(v / 100000).toFixed(1)}L` : v > 0 ? `₹${(v / 1000).toFixed(0)}k` : '₹0'
+  const fmtINR = (v: number) => v >= 1000000 ? `$${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `$${(v / 1000).toFixed(0)}k` : v > 0 ? `$${v}` : '$0'
 
   const kpis = [
     { label: 'Total Spend',   value: fmtINR(totals.spend),      cmp: cmpTotals ? deltaPercent(totals.spend, cmpTotals.spend) : null, invert: true },
     { label: 'Total Revenue', value: fmtINR(totals.revenue),    cmp: cmpTotals ? deltaPercent(totals.revenue, cmpTotals.revenue) : null },
     { label: 'Blended ROAS',  value: `${blendedRoas.toFixed(2)}x`, cmp: cmpTotals ? deltaPercent(blendedRoas, cmpRoas) : null },
-    { label: 'Conversions',   value: totals.conversions.toLocaleString('en-IN'), cmp: cmpTotals ? deltaPercent(totals.conversions, cmpTotals.conversions) : null },
-    { label: 'Avg CPA',       value: totals.conversions > 0 ? `₹${Math.round(avgCpa).toLocaleString('en-IN')}` : '—', cmp: cmpTotals ? deltaPercent(avgCpa, cmpCpa) : null, invert: true },
+    { label: 'Conversions',   value: totals.conversions.toLocaleString('en-US'), cmp: cmpTotals ? deltaPercent(totals.conversions, cmpTotals.conversions) : null },
+    { label: 'Avg CPA',       value: totals.conversions > 0 ? `$${Math.round(avgCpa).toLocaleString('en-US')}` : '—', cmp: cmpTotals ? deltaPercent(avgCpa, cmpCpa) : null, invert: true },
     { label: 'Blended CTR',   value: `${avgCtr.toFixed(2)}%`,   cmp: cmpTotals ? deltaPercent(avgCtr, cmpCtr) : null },
   ]
 
@@ -247,7 +247,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
                 <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>{fmtINR(p.spend)}</td>
                 <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>{fmtINR(p.revenue)}</td>
                 <td className={`py-3 text-right font-mono ${hasData ? 'text-emerald-400' : 'text-zinc-600'}`}>{p.roas}x</td>
-                <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>{p.cpa > 0 ? `₹${p.cpa.toLocaleString('en-IN')}` : '—'}</td>
+                <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>{p.cpa > 0 ? `$${p.cpa.toLocaleString('en-US')}` : '—'}</td>
                 <td className="py-3 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">

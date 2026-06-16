@@ -18,15 +18,16 @@ export async function POST(
 
   const body = await req.json() as { plan?: string }
   const plan = body.plan
-  const validPlans = ['free', 'growth', 'agency', 'custom'] as const
-  if (!plan || !validPlans.includes(plan as typeof validPlans[number])) {
+  const validPlans = ['free', 'basic', 'growth', 'professional', 'agency', 'custom']
+  if (!plan || !validPlans.includes(plan)) {
     return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
   }
 
   // Update profile
   const { error: updateError } = await admin
     .from('profiles')
-    .update({ plan: plan as typeof validPlans[number], updated_at: new Date().toISOString() })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .update({ plan: plan as any, updated_at: new Date().toISOString() })
     .eq('id', id)
 
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 })

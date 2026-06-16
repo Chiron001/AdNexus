@@ -87,7 +87,7 @@ export default async function GoalsPage() {
     cpa:     prev.conversions > 0 ? Math.round(prev.spend / prev.conversions) : 0,
   }
 
-  const monthLabel = now.toLocaleString('en-IN', { month: 'long', year: 'numeric' })
+  const monthLabel = now.toLocaleString('en-US', { month: 'long', year: 'numeric' })
 
   return (
     <GoalsClient

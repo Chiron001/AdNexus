@@ -248,7 +248,7 @@ function AuditReport({ data }: { data: ReportData }) {
         React.createElement(
           View,
           { style: { ...styles.statBox, marginRight: 0 } },
-          React.createElement(Text, { style: { ...styles.statValue, color: '#dc2626', fontSize: 16 } }, `₹${Math.round(totalRevenueAtRisk).toLocaleString('en-IN')}`),
+          React.createElement(Text, { style: { ...styles.statValue, color: '#dc2626', fontSize: 16 } }, `$${Math.round(totalRevenueAtRisk).toLocaleString('en-US')}`),
           React.createElement(Text, { style: styles.statLabel }, 'Revenue at Risk')
         )
       ),
@@ -301,7 +301,7 @@ function AuditReport({ data }: { data: ReportData }) {
               Text,
               { style: styles.issueImpact },
               issue.estimated_impact_inr > 0
-                ? `₹${Math.round(issue.estimated_impact_inr).toLocaleString('en-IN')}`
+                ? `$${Math.round(issue.estimated_impact_inr).toLocaleString('en-US')}`
                 : ''
             )
           )
@@ -321,8 +321,8 @@ function AuditReport({ data }: { data: ReportData }) {
             View,
             { key: String(i), style: { ...styles.tableRow, backgroundColor: i % 2 === 0 ? '#ffffff' : '#f8fafc' } },
             React.createElement(Text, { style: { ...styles.tableCell, flex: 3 } }, (m.campaign_name ?? 'Unknown').substring(0, 40)),
-            React.createElement(Text, { style: { ...styles.tableCell, flex: 1, textAlign: 'right' } }, `₹${Math.round(m.spend).toLocaleString('en-IN')}`),
-            React.createElement(Text, { style: { ...styles.tableCell, flex: 1, textAlign: 'right' } }, `₹${Math.round(m.revenue).toLocaleString('en-IN')}`),
+            React.createElement(Text, { style: { ...styles.tableCell, flex: 1, textAlign: 'right' } }, `$${Math.round(m.spend).toLocaleString('en-US')}`),
+            React.createElement(Text, { style: { ...styles.tableCell, flex: 1, textAlign: 'right' } }, `$${Math.round(m.revenue).toLocaleString('en-US')}`),
             React.createElement(Text, { style: { ...styles.tableCell, flex: 1, textAlign: 'right', color: m.roas >= 1 ? '#16a34a' : '#dc2626' } }, `${m.roas.toFixed(2)}x`),
           )
         ),

@@ -29,12 +29,12 @@ type BillingEvent = {
 
 /* ── Constants ─────────────────────────────────────── */
 const PLAN_META: Record<PlanKey, { label: string; priceInr: string; color: string; badge: string }> = {
-  free:         { label: 'No Plan',      priceInr: '—',          color: 'text-zinc-400',   badge: 'bg-zinc-800 text-zinc-400 border border-zinc-700' },
-  basic:        { label: 'Basic',        priceInr: '₹1,800/mo',  color: 'text-teal-400',   badge: 'bg-teal-500/15 text-teal-300 border border-teal-500/25' },
-  growth:       { label: 'Growth',       priceInr: '₹8,999/mo',  color: 'text-blue-400',   badge: 'bg-blue-500/15 text-blue-300 border border-blue-500/25' },
-  professional: { label: 'Professional', priceInr: '₹46,999/mo', color: 'text-purple-400', badge: 'bg-purple-500/15 text-purple-300 border border-purple-500/25' },
-  agency:       { label: 'Professional', priceInr: '₹46,999/mo', color: 'text-purple-400', badge: 'bg-purple-500/15 text-purple-300 border border-purple-500/25' },
-  custom:       { label: 'Custom',       priceInr: 'Custom',     color: 'text-emerald-400',badge: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25' },
+  free:         { label: 'No Plan',      priceInr: '—',       color: 'text-zinc-400',   badge: 'bg-zinc-800 text-zinc-400 border border-zinc-700' },
+  basic:        { label: 'Basic',        priceInr: '$22/mo',  color: 'text-teal-400',   badge: 'bg-teal-500/15 text-teal-300 border border-teal-500/25' },
+  growth:       { label: 'Growth',       priceInr: '$109/mo', color: 'text-blue-400',   badge: 'bg-blue-500/15 text-blue-300 border border-blue-500/25' },
+  professional: { label: 'Professional', priceInr: '$569/mo', color: 'text-purple-400', badge: 'bg-purple-500/15 text-purple-300 border border-purple-500/25' },
+  agency:       { label: 'Professional', priceInr: '$569/mo', color: 'text-purple-400', badge: 'bg-purple-500/15 text-purple-300 border border-purple-500/25' },
+  custom:       { label: 'Custom',       priceInr: 'Custom',  color: 'text-emerald-400',badge: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25' },
 }
 
 const EVENT_LABEL: Record<string, string> = {
@@ -48,7 +48,7 @@ const EVENT_LABEL: Record<string, string> = {
 
 /* ── Helpers ───────────────────────────────────────── */
 function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+  return new Date(iso).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function trialDaysLeft(trialEndsAt: string | null): number | null {
@@ -213,7 +213,7 @@ export default function BillingPage() {
                 <span className="text-sm font-bold text-white">Basic</span>
                 {plan === 'basic' && <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-500/15 text-teal-300 border border-teal-500/25">Current</span>}
               </div>
-              <p className="text-2xl font-black text-teal-400 mt-2">₹1,800<span className="text-sm font-normal text-zinc-500">/mo</span></p>
+              <p className="text-2xl font-black text-teal-400 mt-2">$22<span className="text-sm font-normal text-zinc-500">/mo</span></p>
               <p className="text-[11px] text-teal-600 font-medium mb-3">30-day free trial</p>
               <ul className="space-y-1.5 text-xs text-zinc-400 mb-5 flex-1">
                 <li>✓ 1 ad account (Meta, Google, or Amazon)</li>
@@ -239,7 +239,7 @@ export default function BillingPage() {
                 <span className="text-sm font-bold text-white">Growth</span>
                 {plan === 'growth' && <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 border border-blue-500/25">Current</span>}
               </div>
-              <p className="text-2xl font-black text-blue-400 mt-2">₹8,999<span className="text-sm font-normal text-zinc-500">/mo</span></p>
+              <p className="text-2xl font-black text-blue-400 mt-2">$109<span className="text-sm font-normal text-zinc-500">/mo</span></p>
               <p className="text-[11px] text-zinc-600 mb-3">No trial</p>
               <ul className="space-y-1.5 text-xs text-zinc-400 mb-5 flex-1">
                 <li>✓ 5 ad accounts</li>
@@ -268,7 +268,7 @@ export default function BillingPage() {
                 <span className="text-sm font-bold text-white">Professional</span>
                 {(plan === 'professional' || plan === 'agency') && <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/25">Current</span>}
               </div>
-              <p className="text-2xl font-black text-purple-400 mt-2">₹46,999<span className="text-sm font-normal text-zinc-500">/mo</span></p>
+              <p className="text-2xl font-black text-purple-400 mt-2">$569<span className="text-sm font-normal text-zinc-500">/mo</span></p>
               <p className="text-[11px] text-zinc-600 mb-3">No trial</p>
               <ul className="space-y-1.5 text-xs text-zinc-400 mb-5 flex-1">
                 <li>✓ 50 ad accounts</li>
@@ -352,7 +352,7 @@ export default function BillingPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-bold text-white">AI Add-on</p>
-                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">₹6,499/mo</span>
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">$79/mo</span>
                     {hasAI && <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">Active</span>}
                   </div>
                   <p className="text-xs text-zinc-500 mt-0.5">
@@ -387,20 +387,20 @@ export default function BillingPage() {
                 {hasAI && (
                   <div className="flex justify-between">
                     <span className="text-zinc-400">AI Add-on</span>
-                    <span className="text-white font-medium">₹6,499/mo</span>
+                    <span className="text-white font-medium">$79/mo</span>
                   </div>
                 )}
                 <div className="flex justify-between pt-2 border-t border-white/[0.07] font-semibold">
                   <span className="text-zinc-300">Total / month</span>
                   <span className="text-white">
-                    ₹{(
-                      (plan === 'basic' ? 1800 : plan === 'growth' ? 8999 : plan === 'professional' || plan === 'agency' ? 46999 : 0)
-                      + (hasAI ? 6499 : 0)
-                    ).toLocaleString('en-IN')}
+                    ${(
+                      (plan === 'basic' ? 22 : plan === 'growth' ? 109 : plan === 'professional' || plan === 'agency' ? 569 : 0)
+                      + (hasAI ? 79 : 0)
+                    )}
                   </span>
                 </div>
               </div>
-              <p className="text-xs text-zinc-600 mt-3">All amounts in INR · Billed monthly · Cancel anytime from Razorpay dashboard</p>
+              <p className="text-xs text-zinc-600 mt-3">Billed monthly · Cancel anytime</p>
             </Card>
           )}
         </div>
@@ -412,7 +412,7 @@ export default function BillingPage() {
           <div className="grid grid-cols-2 gap-4">
             <Card className="p-4">
               <p className="text-xs text-zinc-500 mb-1">Total Paid</p>
-              <p className="text-2xl font-black text-white">₹{totalPaid.toLocaleString('en-IN')}</p>
+              <p className="text-2xl font-black text-white">${totalPaid.toLocaleString('en-US')}</p>
             </Card>
             <Card className="p-4">
               <p className="text-xs text-zinc-500 mb-1">Payments</p>
@@ -438,7 +438,7 @@ export default function BillingPage() {
                     </div>
                     <div className="text-right shrink-0">
                       {ev.amount_inr != null && ev.amount_inr > 0 && (
-                        <p className="text-sm font-semibold text-white">₹{ev.amount_inr.toLocaleString('en-IN')}</p>
+                        <p className="text-sm font-semibold text-white">${ev.amount_inr.toLocaleString('en-US')}</p>
                       )}
                       <p className="text-xs text-zinc-600">{fmtDate(ev.created_at)}</p>
                     </div>

@@ -8,7 +8,7 @@ import {
 interface TrendPoint { day: string; spend: number; revenue: number; roas: number }
 interface PlatformRow { name: string; spend: number; revenue: number; roas: number; cpa: number; color: string; pct: number }
 
-const fmt = (v: number) => v >= 100000 ? `₹${(v / 100000).toFixed(1)}L` : `₹${(v / 1000).toFixed(0)}k`
+const fmt = (v: number) => v >= 1000000 ? `$${(v / 1000000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k`
 
 export function TrendChart({ data }: { data: TrendPoint[] }) {
   return (

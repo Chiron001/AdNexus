@@ -1,13 +1,13 @@
 export function formatINR(amount: number): string {
-  return new Intl.NumberFormat('en-IN', {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'INR',
+    currency: 'USD',
     maximumFractionDigits: 0,
   }).format(amount)
 }
 
 export function formatNumber(value: number, decimals = 0): string {
-  return new Intl.NumberFormat('en-IN', {
+  return new Intl.NumberFormat('en-US', {
     maximumFractionDigits: decimals,
   }).format(value)
 }
@@ -32,11 +32,11 @@ export function formatRelativeTime(dateString: string): string {
   if (diffMins < 60) return `${diffMins}m ago`
   if (diffHours < 24) return `${diffHours}h ago`
   if (diffDays < 7) return `${diffDays}d ago`
-  return date.toLocaleDateString('en-IN')
+  return date.toLocaleDateString('en-US')
 }
 
 export function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('en-IN', {
+  return new Date(dateString).toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

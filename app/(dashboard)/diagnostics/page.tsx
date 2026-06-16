@@ -120,7 +120,7 @@ export default async function DiagnosticsPage({
                     )}
                     {issue.estimated_impact_inr != null && (
                       <span className="text-orange-400 font-medium">
-                        ₹{issue.estimated_impact_inr.toLocaleString('en-IN')} at risk
+                        ${issue.estimated_impact_inr.toLocaleString('en-US')} at risk
                       </span>
                     )}
                     <span>{formatRelativeTime(issue.detected_at)}</span>

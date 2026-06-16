@@ -198,11 +198,11 @@ export default async function CreativeAnalyticsPage({ searchParams }: { searchPa
                     <span className="text-xs bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded capitalize">{c.platform}</span>
                   </td>
                   <td className="py-3 text-right font-mono text-zinc-300">
-                    {c.spend >= 100000 ? `₹${(c.spend/100000).toFixed(1)}L` : `₹${(c.spend/1000).toFixed(1)}k`}
+                    {c.spend >= 1000000 ? `$${(c.spend/1000000).toFixed(1)}M` : `$${(c.spend/1000).toFixed(1)}k`}
                   </td>
                   <td className={`py-3 text-right font-mono ${c.roas >= 4 ? 'text-emerald-400' : c.roas >= 2 ? 'text-yellow-400' : 'text-red-400'}`}>{c.roas}x</td>
                   <td className="py-3 text-right font-mono text-zinc-300">{c.ctr}%</td>
-                  <td className="py-3 text-right font-mono text-zinc-300">{c.cpa > 0 ? `₹${c.cpa}` : '—'}</td>
+                  <td className="py-3 text-right font-mono text-zinc-300">{c.cpa > 0 ? `$${c.cpa}` : '—'}</td>
                   <td className="py-3 text-right font-mono text-zinc-300">{c.conversions}</td>
                 </tr>
               ))}

@@ -11,9 +11,9 @@ interface Goal           { id: string; metric: string; target: number; unit: str
 
 const METRIC_OPTIONS = [
   { label: 'Blended ROAS', key: 'roas', unit: 'x', direction: 'above' as const },
-  { label: 'Monthly Revenue', key: 'revenue', unit: '₹', direction: 'above' as const },
-  { label: 'Avg CPA', key: 'cpa', unit: '₹', direction: 'below' as const },
-  { label: 'Total Spend', key: 'spend', unit: '₹', direction: 'below' as const },
+  { label: 'Monthly Revenue', key: 'revenue', unit: '$', direction: 'above' as const },
+  { label: 'Avg CPA', key: 'cpa', unit: '$', direction: 'below' as const },
+  { label: 'Total Spend', key: 'spend', unit: '$', direction: 'below' as const },
   { label: 'CTR', key: 'ctr', unit: '%', direction: 'above' as const },
 ]
 
@@ -45,10 +45,10 @@ const STATUS_BAR: Record<string, string> = {
 }
 
 function fmtVal(v: number, unit: string) {
-  if (unit === '₹') {
-    if (v >= 1000000) return `₹${(v / 1000000).toFixed(1)}M`
-    if (v >= 1000)    return `₹${(v / 1000).toFixed(0)}k`
-    return `₹${v}`
+  if (unit === '$') {
+    if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`
+    if (v >= 1000)    return `$${(v / 1000).toFixed(0)}k`
+    return `$${v}`
   }
   return `${v}${unit}`
 }
@@ -202,9 +202,9 @@ export function GoalsClient({ current, prevSummary, progression, monthLabel }: {
             <LineChart data={progression}>
               <CartesianGrid strokeDasharray="3 3" stroke="#27272a"/>
               <XAxis dataKey="day" tick={{ fill: '#71717a', fontSize: 10 }} axisLine={false} tickLine={false}/>
-              <YAxis tickFormatter={v => `₹${(v / 1000).toFixed(0)}k`} tick={{ fill: '#71717a', fontSize: 10 }} axisLine={false} tickLine={false}/>
+              <YAxis tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} tick={{ fill: '#71717a', fontSize: 10 }} axisLine={false} tickLine={false}/>
               <Tooltip contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8, fontSize: 12 }}
-                formatter={(v: any, name: any) => name === 'revenue' ? [`₹${(v/1000).toFixed(0)}k`, 'Revenue'] : [`${v}x`, 'ROAS']}/>
+                formatter={(v: any, name: any) => name === 'revenue' ? [`$${(v/1000).toFixed(0)}k`, 'Revenue'] : [`${v}x`, 'ROAS']}/>
               <Line type="monotone" dataKey="revenue" name="revenue" stroke="#a78bfa" strokeWidth={2} dot={false}/>
             </LineChart>
           </ResponsiveContainer>

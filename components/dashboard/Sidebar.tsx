@@ -40,11 +40,11 @@ const navGroups: { label: string; items: NavItem[] }[] = [
   {
     label: 'AI & Intelligence',
     items: [
-      { href: '/ai',             label: 'AI Insights',    icon: Brain,        minPlan: 'growth' },
-      { href: '/diagnostics',    label: 'Diagnostics',    icon: AlertTriangle                   },
-      { href: '/recommendations',label: 'Recommendations',icon: Lightbulb,    minPlan: 'growth' },
-      { href: '/alerts',         label: 'Alerts',         icon: Bell,         minPlan: 'growth' },
-      { href: '/goals',          label: 'Goals & KPIs',   icon: Target,       minPlan: 'growth' },
+      { href: '/ai',             label: 'AI Insights',    icon: Brain,        minPlan: 'professional' },
+      { href: '/diagnostics',    label: 'Diagnostics',    icon: AlertTriangle                        },
+      { href: '/recommendations',label: 'Recommendations',icon: Lightbulb,    minPlan: 'professional' },
+      { href: '/alerts',         label: 'Alerts',         icon: Bell,         minPlan: 'basic'        },
+      { href: '/goals',          label: 'Goals & KPIs',   icon: Target,       minPlan: 'growth'       },
     ],
   },
   {
@@ -57,10 +57,12 @@ const navGroups: { label: string; items: NavItem[] }[] = [
 ]
 
 const PLAN_BADGE: Record<string, string> = {
-  free:   'bg-zinc-800 text-zinc-400 border border-zinc-700',
-  growth: 'bg-blue-500/15 text-blue-300 border border-blue-500/25',
-  agency: 'bg-purple-500/15 text-purple-300 border border-purple-500/25',
-  custom: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25',
+  free:         'bg-zinc-800 text-zinc-400 border border-zinc-700',
+  basic:        'bg-teal-500/15 text-teal-300 border border-teal-500/25',
+  growth:       'bg-blue-500/15 text-blue-300 border border-blue-500/25',
+  professional: 'bg-purple-500/15 text-purple-300 border border-purple-500/25',
+  agency:       'bg-purple-500/15 text-purple-300 border border-purple-500/25',
+  custom:       'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25',
 }
 
 interface SidebarProps {

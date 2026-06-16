@@ -118,7 +118,7 @@ export default function RecommendationsPage() {
         bullets={[
           'AI-generated fixes for every issue detected',
           'Plain-English action steps — no jargon',
-          'Estimated ₹ revenue impact per recommendation',
+          'Estimated $ revenue impact per recommendation',
           'Effort level and time-to-implement for each fix',
           'Recommendations generated on every sync automatically',
         ]}
@@ -205,7 +205,7 @@ export default function RecommendationsPage() {
                     <div className="flex-shrink-0 bg-orange-500/10 border border-orange-500/20 px-3 py-2 rounded-xl text-right">
                       <p className="text-xs text-zinc-500">Revenue at risk</p>
                       <p className="font-bold text-orange-400 text-lg">
-                        ₹{issue!.estimated_impact_inr!.toLocaleString('en-IN')}
+                        ${issue!.estimated_impact_inr!.toLocaleString('en-US')}
                       </p>
                     </div>
                   )}

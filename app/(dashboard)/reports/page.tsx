@@ -93,7 +93,7 @@ export default function ReportsPage() {
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-white text-sm">PDF reports are a Growth plan feature</p>
             <p className="text-sm text-orange-300/70 mt-0.5">
-              Upgrade to Growth (₹2,999/month) to download detailed audit reports.
+              Upgrade to Growth ($109/month) to download detailed audit reports.
             </p>
           </div>
           <button

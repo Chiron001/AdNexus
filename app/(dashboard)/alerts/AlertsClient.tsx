@@ -16,9 +16,9 @@ const SEVERITY_COLORS: Record<string, string> = {
 
 const TEMPLATES = [
   { name: 'ROAS drops below 2x',      metric: 'ROAS',        threshold: '2',      direction: 'below' as const },
-  { name: 'Daily spend > ₹50k',       metric: 'Daily Spend', threshold: '50000',  direction: 'above' as const },
+  { name: 'Daily spend > $600',        metric: 'Daily Spend', threshold: '600',    direction: 'above' as const },
   { name: 'CTR drops below 1%',       metric: 'CTR',         threshold: '1',      direction: 'below' as const },
-  { name: 'CPA exceeds ₹300',         metric: 'CPA',         threshold: '300',    direction: 'above' as const },
+  { name: 'CPA exceeds $4',            metric: 'CPA',         threshold: '4',      direction: 'above' as const },
   { name: 'Zero conversions in 48h',  metric: 'Conversions', threshold: '0',      direction: 'below' as const },
 ]
 
@@ -136,7 +136,7 @@ export function AlertsClient({ issues, recommendations, accountCount }: {
                   </div>
                   <div className="text-right shrink-0">
                     {(issue.estimated_impact_inr ?? 0) > 0 && (
-                      <p className="text-xs font-mono text-red-400">-₹{((issue.estimated_impact_inr ?? 0) / 1000).toFixed(0)}k/mo</p>
+                      <p className="text-xs font-mono text-red-400">-${((issue.estimated_impact_inr ?? 0) / 1000).toFixed(0)}k/mo</p>
                     )}
                     <p className="text-[10px] text-zinc-600 mt-0.5">{timeAgo(issue.detected_at)}</p>
                   </div>

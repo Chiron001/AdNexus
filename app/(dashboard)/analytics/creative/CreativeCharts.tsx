@@ -30,7 +30,7 @@ export function CreativeCharts({ campaigns, formatData }: { campaigns: Campaign[
         <ResponsiveContainer width="100%" height={180}>
           <ScatterChart>
             <CartesianGrid strokeDasharray="3 3" stroke="#27272a"/>
-            <XAxis dataKey="x" name="Spend (₹k)" type="number" tick={{ fill: '#71717a', fontSize: 10 }} axisLine={false} tickLine={false} label={{ value: 'Spend (₹k) →', position: 'insideBottom', offset: -2, fill: '#52525b', fontSize: 10 }}/>
+            <XAxis dataKey="x" name="Spend ($k)" type="number" tick={{ fill: '#71717a', fontSize: 10 }} axisLine={false} tickLine={false} label={{ value: 'Spend ($k) →', position: 'insideBottom', offset: -2, fill: '#52525b', fontSize: 10 }}/>
             <YAxis dataKey="y" name="ROAS" type="number" tick={{ fill: '#71717a', fontSize: 10 }} axisLine={false} tickLine={false}/>
             <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8, fontSize: 12 }}/>
             <Scatter data={scatterData} fill="#34d399" opacity={0.8}/>

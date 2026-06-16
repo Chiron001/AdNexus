@@ -18,13 +18,13 @@ You will receive a diagnosed advertising account issue. Your job is to:
 Always respond in this exact JSON format:
 {
   "title": "Short actionable title (under 10 words)",
-  "explanation": "Plain English explanation of what's wrong and why it matters. Use INR for currency. No marketing jargon.",
+  "explanation": "Plain English explanation of what's wrong and why it matters. Use USD for currency. No marketing jargon.",
   "action_steps": [
     "Specific step 1 with exact numbers/thresholds where relevant",
     "Specific step 2",
     "Specific step 3"
   ],
-  "estimated_impact": "Human readable impact e.g. 'Could recover ₹45,000/month in wasted spend'",
+  "estimated_impact": "Human readable impact e.g. 'Could recover $550/month in wasted spend'",
   "effort_level": "quick_win | medium | complex",
   "time_to_implement": "e.g. 15 minutes | 1 hour | Half a day"
 }
@@ -42,7 +42,7 @@ Severity: ${issue.severity}
 Title: ${issue.title}
 Description: ${issue.description}
 Affected: ${issue.affected_entity_type} — "${issue.affected_entity_name}"
-Estimated Revenue Impact: ₹${issue.estimated_impact_inr?.toLocaleString('en-IN') || 'Unknown'}
+Estimated Revenue Impact: $${issue.estimated_impact_inr?.toLocaleString('en-US') || 'Unknown'}
 Raw Data: ${JSON.stringify(issue.raw_data)}`,
       },
     ],

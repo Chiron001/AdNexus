@@ -71,7 +71,7 @@ export default async function AudiencesPage({ searchParams }: { searchParams: Se
     ctr:     v.impressions > 0 ? Math.round((v.clicks / v.impressions) * 10000) / 100 : 0,
   }))
 
-  const fmtINR = (v: number) => v >= 100000 ? `₹${(v / 100000).toFixed(1)}L` : `₹${(v / 1000).toFixed(0)}k`
+  const fmtINR = (v: number) => v >= 1000000 ? `$${(v / 1000000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k`
 
   const bestRoas  = platformData.length > 0 ? Math.max(...platformData.map(p => p.roas)) : 0
   const lowestCpa = platformData.filter(p => p.cpa > 0).length > 0
@@ -112,7 +112,7 @@ export default async function AudiencesPage({ searchParams }: { searchParams: Se
         {[
           { label: 'Platforms',  value: String(byPlatform.size) },
           { label: 'Best ROAS',  value: hasData ? `${bestRoas}x` : '—' },
-          { label: 'Lowest CPA', value: hasData && lowestCpa > 0 ? `₹${lowestCpa}` : '—' },
+          { label: 'Lowest CPA', value: hasData && lowestCpa > 0 ? `$${lowestCpa}` : '—' },
           { label: 'Top CTR',    value: hasData ? `${topCtr}%` : '—' },
         ].map(k => (
           <div key={k.label} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
@@ -145,7 +145,7 @@ export default async function AudiencesPage({ searchParams }: { searchParams: Se
                 <td className="py-3 text-right font-mono text-zinc-300">{fmtINR(p.spend)}</td>
                 <td className="py-3 text-right font-mono text-zinc-300">{fmtINR(p.revenue)}</td>
                 <td className={`py-3 text-right font-mono ${p.roas >= 4 ? 'text-emerald-400' : p.roas >= 2 ? 'text-yellow-400' : 'text-red-400'}`}>{p.roas}x</td>
-                <td className="py-3 text-right font-mono text-zinc-300">{p.cpa > 0 ? `₹${p.cpa}` : '—'}</td>
+                <td className="py-3 text-right font-mono text-zinc-300">{p.cpa > 0 ? `$${p.cpa}` : '—'}</td>
                 <td className="py-3 text-right font-mono text-zinc-300">{p.ctr}%</td>
               </tr>
             ))}

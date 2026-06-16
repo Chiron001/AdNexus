@@ -70,7 +70,7 @@ export async function sendNewIssuesAlert(
                   </span>
                 </td>
                 <td style="padding: 8px 12px; font-size: 13px; text-align: right;">
-                  ${issue.estimated_impact_inr > 0 ? `₹${issue.estimated_impact_inr.toLocaleString('en-IN')}` : '—'}
+                  ${issue.estimated_impact_inr > 0 ? `$${issue.estimated_impact_inr.toLocaleString('en-US')}` : '—'}
                 </td>
               </tr>
             `).join('')}
@@ -120,7 +120,7 @@ export async function sendWeeklyDigest(
             <div style="font-size: 13px; color: #64748b; margin-top: 4px;">Fixed This Week</div>
           </div>
           <div style="flex: 1; background: #fff7ed; border-radius: 8px; padding: 16px; text-align: center;">
-            <div style="font-size: 20px; font-weight: 700; color: #ea580c;">₹${stats.revenueAtRisk.toLocaleString('en-IN')}</div>
+            <div style="font-size: 20px; font-weight: 700; color: #ea580c;">$${stats.revenueAtRisk.toLocaleString('en-US')}</div>
             <div style="font-size: 13px; color: #64748b; margin-top: 4px;">Revenue at Risk</div>
           </div>
         </div>
@@ -151,7 +151,7 @@ export async function sendPaymentFailedAlert(email: string, amountInr: number): 
       <html>
       <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #1a1a2e;">
         <h2 style="color: #dc2626;">Payment Failed</h2>
-        <p>We were unable to process your Adnexusone subscription payment of ₹${amountInr.toLocaleString('en-IN')}.</p>
+        <p>We were unable to process your Adnexusone subscription payment of $${amountInr.toLocaleString('en-US')}.</p>
         <p>To continue receiving AI-powered ad diagnostics and alerts, please update your payment method.</p>
         <a href="${process.env.NEXT_PUBLIC_APP_URL}/settings?tab=billing"
            style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">

@@ -82,7 +82,7 @@ export function AIInsightsClient({ aiInsights, recommendations, issues, accountC
                 </div>
                 {issue.estimated_impact_inr > 0 && (
                   <span className="text-xs font-mono text-red-400 shrink-0 whitespace-nowrap">
-                    -₹{(issue.estimated_impact_inr / 1000).toFixed(0)}k/mo
+                    -${(issue.estimated_impact_inr / 1000).toFixed(0)}k/mo
                   </span>
                 )}
               </div>
