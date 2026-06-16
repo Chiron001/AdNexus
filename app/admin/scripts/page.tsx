@@ -1,22 +1,22 @@
 'use client'
 
-import { useState, useEffect, useTransition } from 'react'
+import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
-import { Plus, Trash2, ToggleLeft, ToggleRight, Code2, ChevronDown, ChevronUp } from 'lucide-react'
+import { Plus, Trash2, Code2, ChevronDown, ChevronUp } from 'lucide-react'
 
-const CARD = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }
-const INPUT_STYLE = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }
+const CARD: React.CSSProperties = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }
+const INPUT: React.CSSProperties = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }
 
-const POSITION_LABELS: Record<string, { label: string; desc: string; color: string }> = {
-  head:       { label: '<head>',      desc: 'Loads before page — for analytics & tag managers', color: '#a78bfa' },
-  body_start: { label: '<body> top',  desc: 'Loads after body opens',                           color: '#60a5fa' },
-  body_end:   { label: '<body> end',  desc: 'Loads after page content — for chat widgets',      color: '#34d399' },
+const POSITION_META: Record<string, { label: string; color: string }> = {
+  head:       { label: '<head>',      color: '#a78bfa' },
+  body_start: { label: '<body> top',  color: '#60a5fa' },
+  body_end:   { label: '<body> end',  color: '#34d399' },
 }
 
 const TEMPLATES = [
   {
     name: 'Google Tag Manager',
-    description: 'GTM container — replace GTM-XXXXXXX with your container ID',
+    description: 'Replace GTM-XXXXXXX with your container ID',
     position: 'head',
     script_html: `<!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -28,7 +28,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   },
   {
     name: 'Google Analytics 4',
-    description: 'GA4 measurement ID — replace G-XXXXXXXXXX',
+    description: 'Replace G-XXXXXXXXXX with your measurement ID',
     position: 'head',
     script_html: `<!-- Google Analytics 4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -41,7 +41,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   },
   {
     name: 'Meta Pixel',
-    description: 'Facebook / Instagram tracking pixel — replace YOUR_PIXEL_ID',
+    description: 'Replace YOUR_PIXEL_ID with your Pixel ID',
     position: 'head',
     script_html: `<!-- Meta Pixel -->
 <script>
@@ -56,11 +56,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   },
   {
     name: 'Custom Script',
-    description: 'Paste any tracking or analytics script',
+    description: 'Paste any custom tracking code',
     position: 'head',
-    script_html: `<script>
-  // Your custom script here
-</script>`,
+    script_html: `<script>\n  // Your custom script here\n</script>`,
   },
 ]
 
@@ -74,87 +72,90 @@ interface Script {
   created_at: string
 }
 
+const EMPTY_FORM = { name: '', description: '', script_html: '', position: 'head' }
+
 export default function ScriptsPage() {
-  const [scripts, setScripts] = useState<Script[]>([])
+  const [scripts, setScripts]   = useState<Script[]>([])
   const [loading, setLoading]   = useState(true)
+  const [saving, setSaving]     = useState(false)
   const [showAdd, setShowAdd]   = useState(false)
   const [expanded, setExpanded] = useState<string | null>(null)
-  const [pending, start]        = useTransition()
+  const [form, setForm]         = useState(EMPTY_FORM)
 
-  const [form, setForm] = useState({
-    name:        '',
-    description: '',
-    script_html: '',
-    position:    'head',
-  })
+  useEffect(() => { load() }, [])
 
-  useEffect(() => { loadScripts() }, [])
-
-  function loadScripts() {
+  async function load() {
     setLoading(true)
-    fetch('/api/admin/scripts')
-      .then(r => r.json())
-      .then(setScripts)
-      .catch(() => toast.error('Failed to load scripts'))
-      .finally(() => setLoading(false))
+    try {
+      const res = await fetch('/api/admin/scripts')
+      if (!res.ok) throw new Error('Failed to load')
+      setScripts(await res.json())
+    } catch {
+      toast.error('Could not load scripts — make sure you have run the database migration')
+    } finally {
+      setLoading(false)
+    }
   }
 
   function applyTemplate(t: typeof TEMPLATES[0]) {
     setForm({ name: t.name, description: t.description, script_html: t.script_html, position: t.position })
   }
 
-  function addScript() {
-    if (!form.name || !form.script_html) {
-      toast.error('Name and script are required')
+  async function addScript() {
+    if (!form.name.trim() || !form.script_html.trim()) {
+      toast.error('Name and script code are required')
       return
     }
-    start(async () => {
-      try {
-        const res = await fetch('/api/admin/scripts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(form),
-        })
-        if (!res.ok) throw new Error((await res.json()).error)
-        toast.success('Script added — injected into all pages within 60 seconds')
-        setForm({ name: '', description: '', script_html: '', position: 'head' })
-        setShowAdd(false)
-        loadScripts()
-      } catch (e: unknown) {
-        toast.error(e instanceof Error ? e.message : 'Failed to add script')
-      }
-    })
+    setSaving(true)
+    try {
+      const res = await fetch('/api/admin/scripts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) throw new Error((await res.json()).error)
+      toast.success('Script added — injected into all pages within 60 seconds')
+      setForm(EMPTY_FORM)
+      setShowAdd(false)
+      load()
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : 'Failed to add script')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  function toggleActive(s: Script) {
-    start(async () => {
-      try {
-        const res = await fetch(`/api/admin/scripts/${s.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ is_active: !s.is_active }),
-        })
-        if (!res.ok) throw new Error((await res.json()).error)
-        setScripts(prev => prev.map(x => x.id === s.id ? { ...x, is_active: !s.is_active } : x))
-        toast.success(s.is_active ? 'Script disabled' : 'Script enabled — live within 60 seconds')
-      } catch (e: unknown) {
-        toast.error(e instanceof Error ? e.message : 'Failed to update')
-      }
-    })
+  async function toggleActive(s: Script) {
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/admin/scripts/${s.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: !s.is_active }),
+      })
+      if (!res.ok) throw new Error((await res.json()).error)
+      setScripts(prev => prev.map(x => x.id === s.id ? { ...x, is_active: !s.is_active } : x))
+      toast.success(s.is_active ? 'Script disabled' : 'Script enabled — live within 60 seconds')
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : 'Failed to update')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  function deleteScript(id: string) {
+  async function deleteScript(id: string) {
     if (!confirm('Delete this script? It will be removed from all pages.')) return
-    start(async () => {
-      try {
-        const res = await fetch(`/api/admin/scripts/${id}`, { method: 'DELETE' })
-        if (!res.ok) throw new Error((await res.json()).error)
-        setScripts(prev => prev.filter(x => x.id !== id))
-        toast.success('Script deleted')
-      } catch (e: unknown) {
-        toast.error(e instanceof Error ? e.message : 'Failed to delete')
-      }
-    })
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/admin/scripts/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error((await res.json()).error)
+      setScripts(prev => prev.filter(x => x.id !== id))
+      toast.success('Script deleted')
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : 'Failed to delete')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const activeCount = scripts.filter(s => s.is_active).length
@@ -165,7 +166,7 @@ export default function ScriptsPage() {
         <div>
           <h1 className="text-2xl font-bold text-white">Script Manager</h1>
           <p className="text-sm text-zinc-500 mt-0.5">
-            Add tracking scripts, analytics, and tag managers — injected into every page automatically
+            Add tracking scripts that inject into every page automatically — no code deploy needed
           </p>
         </div>
         <button
@@ -179,18 +180,16 @@ export default function ScriptsPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 mb-5">
-        <div className="rounded-xl p-4" style={CARD}>
-          <p className="text-xs text-zinc-500 mb-1">Total Scripts</p>
-          <p className="text-2xl font-bold text-zinc-300">{scripts.length}</p>
-        </div>
-        <div className="rounded-xl p-4" style={CARD}>
-          <p className="text-xs text-zinc-500 mb-1">Active</p>
-          <p className="text-2xl font-bold text-emerald-400">{activeCount}</p>
-        </div>
-        <div className="rounded-xl p-4" style={CARD}>
-          <p className="text-xs text-zinc-500 mb-1">Disabled</p>
-          <p className="text-2xl font-bold text-zinc-600">{scripts.length - activeCount}</p>
-        </div>
+        {[
+          { label: 'Total Scripts', value: scripts.length,                color: 'text-zinc-300' },
+          { label: 'Active',        value: activeCount,                    color: 'text-emerald-400' },
+          { label: 'Disabled',      value: scripts.length - activeCount,   color: 'text-zinc-600' },
+        ].map(s => (
+          <div key={s.label} className="rounded-xl p-4" style={CARD}>
+            <p className="text-xs text-zinc-500 mb-1">{s.label}</p>
+            <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+          </div>
+        ))}
       </div>
 
       {/* Add form */}
@@ -198,7 +197,6 @@ export default function ScriptsPage() {
         <div className="rounded-xl p-5 mb-5" style={{ ...CARD, border: '1px solid rgba(124,58,237,0.3)' }}>
           <p className="text-xs font-bold text-purple-400 uppercase tracking-widest mb-4">New Script</p>
 
-          {/* Templates */}
           <div className="mb-4">
             <p className="text-xs text-zinc-500 mb-2">Quick templates:</p>
             <div className="flex flex-wrap gap-2">
@@ -223,7 +221,7 @@ export default function ScriptsPage() {
                 onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
                 placeholder="e.g. Google Analytics"
                 className="w-full text-sm rounded-lg px-3 py-2 text-white placeholder-zinc-600 outline-none"
-                style={INPUT_STYLE}
+                style={INPUT}
               />
             </div>
             <div>
@@ -232,13 +230,11 @@ export default function ScriptsPage() {
                 value={form.position}
                 onChange={e => setForm(p => ({ ...p, position: e.target.value }))}
                 className="w-full text-sm rounded-lg px-3 py-2 text-white outline-none"
-                style={{ ...INPUT_STYLE, background: 'rgba(255,255,255,0.06)' }}
+                style={{ ...INPUT, background: 'rgba(255,255,255,0.06)' }}
               >
-                {Object.entries(POSITION_LABELS).map(([val, { label, desc }]) => (
-                  <option key={val} value={val} style={{ background: '#0f0f1a' }}>
-                    {label} — {desc}
-                  </option>
-                ))}
+                <option value="head"       style={{ background: '#0f0f1a' }}>&lt;head&gt; — analytics, tag managers</option>
+                <option value="body_start" style={{ background: '#0f0f1a' }}>&lt;body&gt; top — loads after opening tag</option>
+                <option value="body_end"   style={{ background: '#0f0f1a' }}>&lt;body&gt; end — chat widgets, lazy scripts</option>
               </select>
             </div>
           </div>
@@ -250,7 +246,7 @@ export default function ScriptsPage() {
               onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
               placeholder="What this script does"
               className="w-full text-sm rounded-lg px-3 py-2 text-white placeholder-zinc-600 outline-none"
-              style={INPUT_STYLE}
+              style={INPUT}
             />
           </div>
 
@@ -259,7 +255,7 @@ export default function ScriptsPage() {
             <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
               <div className="flex items-center gap-2 px-3 py-2" style={{ background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 <Code2 className="w-3 h-3 text-zinc-600" />
-                <span className="text-[11px] text-zinc-600 font-mono">Paste full {`<script>...</script>`} tag or raw JS</span>
+                <span className="text-[11px] text-zinc-600 font-mono">Paste full &lt;script&gt;...&lt;/script&gt; tag or raw JS</span>
               </div>
               <textarea
                 value={form.script_html}
@@ -276,14 +272,14 @@ export default function ScriptsPage() {
           <div className="flex gap-2">
             <button
               onClick={addScript}
-              disabled={pending}
+              disabled={saving}
               className="px-4 py-2 rounded-lg text-sm font-semibold text-white disabled:opacity-50"
               style={{ background: 'rgba(124,58,237,0.85)' }}
             >
-              {pending ? 'Adding…' : 'Add Script'}
+              {saving ? 'Adding…' : 'Add Script'}
             </button>
             <button
-              onClick={() => { setShowAdd(false); setForm({ name: '', description: '', script_html: '', position: 'head' }) }}
+              onClick={() => { setShowAdd(false); setForm(EMPTY_FORM) }}
               className="px-4 py-2 rounded-lg text-sm text-zinc-400 hover:text-white transition-colors"
               style={{ background: 'rgba(255,255,255,0.05)' }}
             >
@@ -305,20 +301,24 @@ export default function ScriptsPage() {
       ) : (
         <div className="space-y-2">
           {scripts.map(s => {
-            const pos = POSITION_LABELS[s.position] ?? POSITION_LABELS.head
-            const isExpanded = expanded === s.id
+            const pos = POSITION_META[s.position] ?? POSITION_META.head
+            const isOpen = expanded === s.id
             return (
               <div key={s.id} className="rounded-xl overflow-hidden" style={CARD}>
                 <div className="flex items-center gap-3 px-5 py-3.5">
                   <button
-                    onClick={() => setExpanded(isExpanded ? null : s.id)}
-                    className="flex-1 flex items-center gap-3 text-left"
+                    onClick={() => setExpanded(isOpen ? null : s.id)}
+                    className="flex-1 flex items-center gap-3 text-left min-w-0"
                   >
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className={`text-sm font-semibold truncate ${s.is_active ? 'text-zinc-200' : 'text-zinc-600'}`}>{s.name}</p>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
-                          style={{ background: `${pos.color}18`, color: pos.color, border: `1px solid ${pos.color}30` }}>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className={`text-sm font-semibold truncate ${s.is_active ? 'text-zinc-200' : 'text-zinc-600'}`}>
+                          {s.name}
+                        </p>
+                        <span
+                          className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
+                          style={{ background: `${pos.color}18`, color: pos.color, border: `1px solid ${pos.color}30` }}
+                        >
                           {pos.label}
                         </span>
                         {!s.is_active && (
@@ -329,27 +329,36 @@ export default function ScriptsPage() {
                         <p className="text-xs text-zinc-600 truncate mt-0.5">{s.description}</p>
                       )}
                     </div>
-                    {isExpanded
-                      ? <ChevronUp  className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
+                    {isOpen
+                      ? <ChevronUp   className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
                       : <ChevronDown className="w-3.5 h-3.5 text-zinc-600 shrink-0" />}
                   </button>
 
-                  <button onClick={() => toggleActive(s)} disabled={pending} className="transition-colors shrink-0">
-                    {s.is_active
-                      ? <ToggleRight className="w-5 h-5 text-emerald-400" />
-                      : <ToggleLeft  className="w-5 h-5 text-zinc-600" />}
+                  {/* CSS toggle */}
+                  <button
+                    onClick={() => toggleActive(s)}
+                    disabled={saving}
+                    title={s.is_active ? 'Click to disable' : 'Click to enable'}
+                    className="relative inline-flex w-9 h-5 rounded-full transition-colors duration-200 shrink-0 disabled:opacity-50"
+                    style={{ background: s.is_active ? '#10b981' : 'rgba(255,255,255,0.15)' }}
+                  >
+                    <span
+                      className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200"
+                      style={{ left: s.is_active ? '18px' : '2px' }}
+                    />
                   </button>
+
                   <button
                     onClick={() => deleteScript(s.id)}
-                    disabled={pending}
-                    className="p-1.5 rounded-lg text-zinc-600 hover:text-red-400 transition-colors"
+                    disabled={saving}
+                    className="p-1.5 rounded-lg text-zinc-600 hover:text-red-400 transition-colors shrink-0 disabled:opacity-40"
                     style={{ background: 'rgba(255,255,255,0.04)' }}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
-                {isExpanded && (
+                {isOpen && (
                   <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.2)' }}>
                     <pre className="px-5 py-4 text-xs text-zinc-400 font-mono overflow-x-auto leading-relaxed whitespace-pre-wrap">
                       {s.script_html}
@@ -362,14 +371,21 @@ export default function ScriptsPage() {
         </div>
       )}
 
-      <div className="mt-5 rounded-xl p-4" style={{ background: 'rgba(139,92,246,0.05)', border: '1px solid rgba(139,92,246,0.15)' }}>
-        <p className="text-xs text-purple-300 font-semibold mb-1">How Script Injection Works</p>
-        <p className="text-xs text-zinc-500 leading-relaxed">
-          Active scripts are fetched from the database and injected into the HTML of <strong className="text-zinc-400">every page</strong> on the site.
-          Scripts in <code className="text-purple-400">&lt;head&gt;</code> load before the page renders — use this for analytics and tag managers.
-          Scripts at <code className="text-purple-400">&lt;body&gt; end</code> load after content — use this for chat widgets and non-critical tools.
-          Changes go live within ~60 seconds (ISR cache).
-        </p>
+      <div className="mt-5 space-y-3">
+        <div className="rounded-xl p-4" style={{ background: 'rgba(139,92,246,0.05)', border: '1px solid rgba(139,92,246,0.15)' }}>
+          <p className="text-xs text-purple-300 font-semibold mb-1">How Script Injection Works</p>
+          <p className="text-xs text-zinc-500 leading-relaxed">
+            Active scripts are fetched from the database and injected into every page on the site.
+            Scripts in <code className="text-purple-400">&lt;head&gt;</code> load before page content — use this for analytics and tag managers.
+            <code className="text-green-400"> &lt;body&gt; end</code> loads after content — use this for chat widgets. Changes reflect within ~60 seconds.
+          </p>
+        </div>
+        <div className="rounded-xl p-4" style={{ background: 'rgba(245,158,11,0.05)', border: '1px solid rgba(245,158,11,0.15)' }}>
+          <p className="text-xs text-amber-400 font-semibold mb-1">⚠ First-time setup required</p>
+          <p className="text-xs text-zinc-500">
+            Run <span className="text-zinc-300 font-mono">supabase/migrations/20260616_admin_seo_tools.sql</span> in your Supabase SQL editor to create the required tables before using this page.
+          </p>
+        </div>
       </div>
     </div>
   )

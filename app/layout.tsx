@@ -4,25 +4,24 @@ import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { Analytics } from '@vercel/analytics/next'
 import { createRawAdminClient } from '@/lib/supabase/server'
-
-export const revalidate = 60
+import { unstable_noStore as noStore } from 'next/cache'
 
 interface SiteScript {
   id: string
   script_html: string
   position: string
-  is_active: boolean
 }
 
 async function getActiveScripts(): Promise<SiteScript[]> {
+  noStore() // always fresh — scripts must reflect immediately after admin changes
   try {
     const admin = createRawAdminClient()
     const { data } = await admin
       .from('site_scripts')
-      .select('id, script_html, position, is_active')
+      .select('id, script_html, position')
       .eq('is_active', true)
       .order('created_at')
-    return data ?? []
+    return (data ?? []) as SiteScript[]
   } catch {
     return []
   }
@@ -117,9 +116,9 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const scripts = await getActiveScripts()
-  const headScripts    = scripts.filter(s => s.position === 'head')
+  const headScripts     = scripts.filter(s => s.position === 'head')
   const bodyStartScripts = scripts.filter(s => s.position === 'body_start')
-  const bodyEndScripts = scripts.filter(s => s.position === 'body_end')
+  const bodyEndScripts  = scripts.filter(s => s.position === 'body_end')
 
   return (
     <html lang="en" className={`${poppins.variable} ${lato.variable} h-full antialiased`}>
@@ -138,7 +137,6 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
-        {/* Scripts injected from Script Manager (head position loads before content) */}
         {headScripts.map(s => (
           <div key={s.id} dangerouslySetInnerHTML={{ __html: s.script_html }} />
         ))}
