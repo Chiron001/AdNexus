@@ -10,18 +10,18 @@ export const revalidate = 60
 export async function generateMetadata(): Promise<Metadata> {
   const admin = createAdminClient()
   const { data: seo } = await admin.from('page_seo').select('*').eq('page_path', '/blog').single()
-  const title       = seo?.meta_title       ?? 'Blog — AdNexus Ad Intelligence Insights'
-  const description = seo?.meta_description ?? 'Performance marketing tips and D2C growth insights from the AdNexus team.'
-  const ogImage     = seo?.og_image_url     ?? undefined
+  const title       = seo?.meta_title       || 'Blog — AdNexus Ad Intelligence Insights'
+  const description = seo?.meta_description || 'Performance marketing tips and D2C growth insights from the AdNexus team.'
+  const ogImage     = seo?.og_image_url     || undefined
 
   return {
     title,
     description,
-    robots:     seo?.robots_directive ?? 'index,follow',
-    alternates: { canonical: seo?.canonical_url ?? 'https://adnexusone.com/blog' },
+    robots:     seo?.robots_directive || 'index,follow',
+    alternates: { canonical: seo?.canonical_url || 'https://adnexusone.com/blog' },
     openGraph: {
-      title:       seo?.og_title       ?? title,
-      description: seo?.og_description ?? description,
+      title:       seo?.og_title       || title,
+      description: seo?.og_description || description,
       url:         'https://adnexusone.com/blog',
       siteName:    'AdNexus',
       type:        'website',
@@ -29,8 +29,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card:        'summary_large_image',
-      title:       seo?.og_title       ?? title,
-      description: seo?.og_description ?? description,
+      title:       seo?.og_title       || title,
+      description: seo?.og_description || description,
       ...(ogImage ? { images: [ogImage] } : {}),
     },
   }

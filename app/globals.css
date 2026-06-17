@@ -207,20 +207,15 @@ p, ul, ol, li, span, a, button, input, textarea, label, select {
 .animate-float-slow { animation: float 6s ease-in-out infinite; }
 .animate-float-delay{ animation: float 5s ease-in-out 1.5s infinite; }
 
-/* ── Pulse glow ──────────────────────────────────── */
+/* ── Pulse glow (transform/opacity — compositor-safe) ── */
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 20px rgba(37,99,235,0.3); }
-  50%       { box-shadow: 0 0 40px rgba(37,99,235,0.6); }
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%       { opacity: 1;    transform: scale(1.05); }
 }
-.animate-pulse-glow { animation: pulseGlow 2.5s ease-in-out infinite; }
+.animate-pulse-glow { box-shadow: 0 0 30px rgba(37,99,235,0.45); animation: pulseGlow 2.5s ease-in-out infinite; }
 
-/* ── Gradient shift ──────────────────────────────── */
-@keyframes gradientShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.animate-gradient { background-size: 200% 200%; animation: gradientShift 6s ease infinite; }
+/* ── Gradient text — static (animation removed, background-position can't run on the compositor) ── */
+.animate-gradient { background-size: 160% 160%; background-position: 30% 50%; }
 
 /* ── Scale in ────────────────────────────────────── */
 @keyframes scaleIn {
@@ -501,19 +496,21 @@ section, footer, nav { position: relative; z-index: 1; }
   z-index: 10;
 }
 
-/* ── CSS shooting star ───────────────────────────── */
+/* ── CSS shooting star (transform/opacity — compositor-safe) ── */
 @keyframes shootingStarAnim {
-  0%   { transform: translateX(0) translateY(0) rotate(-32deg); opacity: 0; width: 0; }
+  0%   { transform: translate(0, 0) rotate(-32deg) scaleX(0); opacity: 0; }
   2%   { opacity: 1; }
-  30%  { width: 120px; opacity: 0.9; }
-  60%  { width: 60px; opacity: 0.5; }
-  100% { transform: translateX(300px) translateY(155px) rotate(-32deg); opacity: 0; width: 0; }
+  30%  { transform: translate(90px, 46px) rotate(-32deg) scaleX(1); opacity: 0.9; }
+  60%  { transform: translate(180px, 93px) rotate(-32deg) scaleX(0.5); opacity: 0.5; }
+  100% { transform: translate(300px, 155px) rotate(-32deg) scaleX(0); opacity: 0; }
 }
 .shooting-star {
   position: absolute;
+  width: 120px;
   height: 1px;
   background: linear-gradient(90deg, rgba(255,255,255,0.9), transparent);
   border-radius: 1px;
+  transform-origin: left center;
   animation: shootingStarAnim linear infinite;
   pointer-events: none;
 }
@@ -527,14 +524,14 @@ section, footer, nav { position: relative; z-index: 1; }
   100% { transform: translateY(160px); opacity: 0; }
 }
 
-/* ── AI Orb ──────────────────────────────────────── */
+/* ── AI Orb (transform/opacity — compositor-safe; box-shadow now static) ── */
 @keyframes orbGlow {
-  0%, 100% { box-shadow: 0 0 50px rgba(139,92,246,0.45), 0 0 100px rgba(59,130,246,0.12), inset 0 0 30px rgba(180,120,255,0.15); }
-  50%       { box-shadow: 0 0 90px rgba(139,92,246,0.75), 0 0 180px rgba(59,130,246,0.22), inset 0 0 50px rgba(180,120,255,0.25); }
+  0%, 100% { opacity: 0.75; transform: scale(0.97); }
+  50%       { opacity: 1;    transform: scale(1.04); }
 }
 @keyframes orbSpinCW  { from { transform: rotate(0deg);    } to { transform: rotate(360deg); } }
 @keyframes orbSpinCCW { from { transform: rotate(0deg); }    to { transform: rotate(-360deg); } }
-.ai-orb     { animation: orbGlow 4s ease-in-out infinite; }
+.ai-orb     { box-shadow: 0 0 70px rgba(139,92,246,0.55), 0 0 140px rgba(59,130,246,0.16), inset 0 0 40px rgba(180,120,255,0.18); animation: orbGlow 4s ease-in-out infinite; }
 .ai-ring-cw { animation: orbSpinCW  8s linear infinite; }
 .ai-ring-ccw{ animation: orbSpinCCW 14s linear infinite; }
 
@@ -571,12 +568,8 @@ section, footer, nav { position: relative; z-index: 1; }
     radial-gradient(1px   1px   at 57% 72%, rgba(255,255,255,0.040) 0%, transparent 0%);
 }
 
-/* ── Number glow pulse ───────────────────────────── */
-@keyframes numGlow {
-  0%, 100% { text-shadow: 0 0 20px rgba(59,130,246,0); }
-  50%       { text-shadow: 0 0 30px rgba(59,130,246,0.5), 0 0 60px rgba(139,92,246,0.2); }
-}
-.num-glow { animation: numGlow 3s ease-in-out infinite; }
+/* ── Number glow — static (animation removed, text-shadow can't run on the compositor) ── */
+.num-glow { text-shadow: 0 0 26px rgba(59,130,246,0.4), 0 0 50px rgba(139,92,246,0.18); }
 
 /* ── Star twinkle ────────────────────────────────── */
 @keyframes twinkle {

@@ -3,7 +3,8 @@
 import Link from 'next/link'
 import { Zap, ArrowRight } from 'lucide-react'
 
-const BG_IMAGE = `url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&q=80')`
+const USER_URL = process.env.NEXT_PUBLIC_USER_URL ?? ''
+const BG_IMAGE = `url('/images/cta-bg.webp')`
 
 const FOOTER_STARS = Array.from({ length: 28 }, (_, i) => ({
   x: (i * 37 + 11) % 100, y: (i * 23 + 7) % 100,
@@ -49,12 +50,12 @@ function CTAContent() {
         <div className="flex flex-col sm:flex-row items-stretch justify-center gap-3 mb-5">
           <div className="flex items-stretch bg-white/[0.06] border border-white/10 rounded-xl overflow-hidden w-full sm:max-w-md">
             <input type="email" placeholder="Enter your work email" className="flex-1 px-5 py-3.5 bg-transparent text-sm text-white placeholder-gray-600 outline-none min-w-0"/>
-            <Link href="/signup" className="btn-blue flex items-center gap-2 px-5 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold whitespace-nowrap transition-colors">
-              Get started <ArrowRight className="w-3.5 h-3.5"/>
+            <Link href={`${USER_URL}/signup`} className="btn-blue flex items-center gap-2 px-5 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold whitespace-nowrap transition-colors">
+              Get started <ArrowRight className="w-3.5 h-3.5" aria-hidden="true"/>
             </Link>
           </div>
         </div>
-        <p className="text-xs text-gray-600">30-day free trial. No charge until day 30. Cancel anytime.</p>
+        <p className="text-xs text-gray-400">30-day free trial. No charge until day 30. Cancel anytime.</p>
       </div>
     </section>
   )

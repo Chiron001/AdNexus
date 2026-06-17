@@ -156,9 +156,10 @@ export function LandingNav() {
               </Link>
               <button
                 onClick={() => setMobileOpen(true)}
+                aria-label="Open menu"
                 className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:bg-white/[0.10] transition-colors"
               >
-                <Menu className="w-5 h-5" />
+                <Menu className="w-5 h-5" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -390,9 +391,10 @@ export function LandingNav() {
             </Link>
             <button
               onClick={() => setMobileOpen(false)}
+              aria-label="Close menu"
               className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-400 hover:text-white transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
 
