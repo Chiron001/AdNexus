@@ -827,12 +827,12 @@ export default function HomeClient() {
             </div>
             <div className="stagger-child grid grid-cols-2 md:grid-cols-6 gap-3 mb-8">
               {([
-                { name:'Meta Ads',     icon:<SiMeta size={20} />,       bg:'bg-[#0081FB]/10 border-[#0081FB]/25',      iconColor:'text-[#0081FB]',    desc:'Facebook & Instagram'  },
-                { name:'Google Ads',   icon:<SiGoogleads size={20} />,  bg:'bg-[#4285F4]/10 border-[#4285F4]/25',      iconColor:'text-[#4285F4]',    desc:'Search & Shopping'     },
-                { name:'Amazon Ads',   icon:<FaAmazon size={20} />,     bg:'bg-[#FF9900]/10 border-[#FF9900]/25',      iconColor:'text-[#FF9900]',    desc:'Sponsored Products'    },
-                { name:'Supabase',     icon:<SiSupabase size={20} />,   bg:'bg-[#3ECF8E]/10 border-[#3ECF8E]/25',      iconColor:'text-[#3ECF8E]',    desc:'Auth & Database'       },
-                { name:'Razorpay',     icon:<SiRazorpay size={20} />,   bg:'bg-[#072654]/40 border-[#3395FF]/25',      iconColor:'text-[#3395FF]',    desc:'Payments'              },
-                { name:'Email Alerts', icon:<Mail size={18} />,          bg:'bg-white/[0.04] border-white/[0.12]',      iconColor:'text-gray-300',     desc:'Instant notifications' },
+                { name:'Meta Ads',     icon:<SiMeta size={20} aria-hidden="true" />,       bg:'bg-[#0081FB]/10 border-[#0081FB]/25',      iconColor:'text-[#0081FB]',    desc:'Facebook & Instagram'  },
+                { name:'Google Ads',   icon:<SiGoogleads size={20} aria-hidden="true" />,  bg:'bg-[#4285F4]/10 border-[#4285F4]/25',      iconColor:'text-[#4285F4]',    desc:'Search & Shopping'     },
+                { name:'Amazon Ads',   icon:<FaAmazon size={20} aria-hidden="true" />,     bg:'bg-[#FF9900]/10 border-[#FF9900]/25',      iconColor:'text-[#FF9900]',    desc:'Sponsored Products'    },
+                { name:'Supabase',     icon:<SiSupabase size={20} aria-hidden="true" />,   bg:'bg-[#3ECF8E]/10 border-[#3ECF8E]/25',      iconColor:'text-[#3ECF8E]',    desc:'Auth & Database'       },
+                { name:'Razorpay',     icon:<SiRazorpay size={20} aria-hidden="true" />,   bg:'bg-[#072654]/40 border-[#3395FF]/25',      iconColor:'text-[#3395FF]',    desc:'Payments'              },
+                { name:'Email Alerts', icon:<Mail size={18} aria-hidden="true" />,          bg:'bg-white/[0.04] border-white/[0.12]',      iconColor:'text-gray-300',     desc:'Instant notifications' },
               ] as const).map(({ name, icon, bg, iconColor, desc }) => (
                 <div key={name} className="glow-card flex items-center gap-3 px-4 py-3 rounded-xl border border-white/[0.07] bg-white/[0.02]">
                   <div className={`w-9 h-9 rounded-lg border flex items-center justify-center shadow-lg shrink-0 ${bg} ${iconColor}`}>{icon}</div>

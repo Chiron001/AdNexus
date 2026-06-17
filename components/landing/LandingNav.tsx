@@ -222,9 +222,9 @@ export function LandingNav() {
                 <p className="text-[11px] font-bold text-gray-600 uppercase tracking-widest mb-4">Channels</p>
                 <div className="space-y-1">
                   {[
-                    { label: 'Meta Ads',    desc: 'Facebook & Instagram', href: '/platform/meta',    icon: <SiMeta size={18} />,       bg: 'bg-[#0081FB]/10 border border-[#0081FB]/25', iconColor: 'text-[#0081FB]' },
-                    { label: 'Google Ads',  desc: 'Search & Shopping',    href: '/platform/google',  icon: <SiGoogleads size={18} />,  bg: 'bg-[#4285F4]/10 border border-[#4285F4]/25', iconColor: 'text-[#4285F4]' },
-                    { label: 'Amazon Ads',  desc: 'Sponsored Products',   href: '/platform/amazon',  icon: <FaAmazon size={18} />,     bg: 'bg-[#FF9900]/10 border border-[#FF9900]/25', iconColor: 'text-[#FF9900]' },
+                    { label: 'Meta Ads',    desc: 'Facebook & Instagram', href: '/platform/meta',    icon: <SiMeta size={18} aria-hidden="true" />,       bg: 'bg-[#0081FB]/10 border border-[#0081FB]/25', iconColor: 'text-[#0081FB]' },
+                    { label: 'Google Ads',  desc: 'Search & Shopping',    href: '/platform/google',  icon: <SiGoogleads size={18} aria-hidden="true" />,  bg: 'bg-[#4285F4]/10 border border-[#4285F4]/25', iconColor: 'text-[#4285F4]' },
+                    { label: 'Amazon Ads',  desc: 'Sponsored Products',   href: '/platform/amazon',  icon: <FaAmazon size={18} aria-hidden="true" />,     bg: 'bg-[#FF9900]/10 border border-[#FF9900]/25', iconColor: 'text-[#FF9900]' },
                   ].map(({ icon, label, desc, bg, iconColor, href }) => (
                     <Link key={label} href={href} className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.05] transition-colors group">
                       <div className={`w-9 h-9 rounded-lg ${bg} ${iconColor} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}>
@@ -252,7 +252,7 @@ export function LandingNav() {
                   </div>
                   <p className="text-sm font-semibold text-white mb-1">Run a free scan now</p>
                   <p className="text-xs text-gray-500 mb-4 leading-relaxed">See your ad health score and top issues in under 2 minutes. No credit card.</p>
-                  <Link href="/signup" className="btn-blue flex items-center justify-center gap-1.5 py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl w-full">
+                  <Link href={`${USER_URL}/signup`} className="btn-blue flex items-center justify-center gap-1.5 py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl w-full">
                     Start free scan <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -356,7 +356,7 @@ export function LandingNav() {
                 <p className="text-[11px] font-bold text-gray-600 uppercase tracking-widest mb-4">Tools</p>
                 <div className="space-y-1">
                   {[
-                    { label: 'Free Account Diagnostic', badge: 'Free', href: '/signup',  badgeColor: 'bg-green-500/15 text-green-400' },
+                    { label: 'Free Account Diagnostic', badge: 'Free', href: `${USER_URL}/signup`,  badgeColor: 'bg-green-500/15 text-green-400' },
                     { label: 'ROAS Calculator',          badge: 'New',  href: '/tools/roas-calculator',     badgeColor: 'bg-blue-500/15 text-blue-400' },
                     { label: 'Ad Health Scorecard',      badge: '',     href: '/tools/ad-health-scorecard', badgeColor: '' },
                   ].map(({ label, badge, href, badgeColor }) => (
