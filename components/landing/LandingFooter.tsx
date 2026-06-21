@@ -122,7 +122,7 @@ function FooterContent() {
           </div>
 
           {/* Copyright + legal links */}
-          <div className="order-2 sm:order-1 border-t border-white/[0.12] pt-5 mt-5 sm:mt-0">
+          <div className="order-2 sm:order-1 border-t border-white/[0.12] sm:border-t-0 pt-5 mt-5 sm:mt-0 sm:pt-0">
             <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center gap-2.5 sm:gap-0 sm:justify-between">
               <p className="text-xs text-gray-400 text-center sm:text-left">© 2026 Adnexusone. All rights reserved.</p>
               <div className="flex flex-wrap justify-center gap-5">
