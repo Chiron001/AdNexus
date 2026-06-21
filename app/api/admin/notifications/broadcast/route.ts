@@ -1,23 +1,19 @@
 export const dynamic = 'force-dynamic'
 
 import { NextRequest } from 'next/server'
-import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import type { NotificationType } from '@/types/database'
+
+function checkAuth(req: NextRequest) {
+  const cookie = req.cookies.get('admin_session')?.value
+  return cookie && cookie === process.env.ADMIN_PASSWORD
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!checkAuth(request)) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
     const admin = createAdminClient()
-
-    const { data: adminUser } = await admin
-      .from('admin_users')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-    if (!adminUser) return Response.json({ error: 'Forbidden' }, { status: 403 })
 
     const body = await request.json() as {
       title:  string

@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
+
+function checkAuth(req: NextRequest) {
+  const cookie = req.cookies.get('admin_session')?.value
+  return cookie && cookie === process.env.ADMIN_PASSWORD
+}
 
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!checkAuth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const { id } = await params
-
-  // Auth check
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
   const admin = createAdminClient()
-  const { data: adminUser } = await admin.from('admin_users').select('role').eq('id', user.id).single()
-  if (!adminUser) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const body = await req.json() as { plan?: string }
   const plan = body.plan
@@ -37,7 +36,7 @@ export async function POST(
     user_id:    id,
     event_type: 'plan.override',
     plan,
-    metadata:   { changed_by: user.id, changed_by_email: user.email },
+    metadata:   { changed_by: 'admin_panel' },
   })
 
   return NextResponse.json({ ok: true, plan })
