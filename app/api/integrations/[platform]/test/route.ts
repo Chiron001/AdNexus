@@ -79,17 +79,25 @@ export async function POST(
       accountsFound = 1
       message = 'Google Ads credentials saved — account will sync on next cycle'
 
-      await supabase.from('ad_accounts').upsert(
-        {
+      // Only create the ad_accounts row if it doesn't exist yet — never overwrite
+      // the OAuth access_token that was stored by the /api/auth/google OAuth flow
+      const { data: existing } = await supabase
+        .from('ad_accounts')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('platform', 'google')
+        .eq('account_id', cleanId)
+        .single()
+
+      if (!existing) {
+        await supabase.from('ad_accounts').insert({
           user_id: user.id,
           platform: 'google',
           account_id: cleanId,
           account_name: `Google Ads (${customer_id})`,
-          access_token: developer_token,
           status: 'active',
-        },
-        { onConflict: 'user_id,platform,account_id' }
-      )
+        })
+      }
     }
 
     if (platform === 'amazon') {

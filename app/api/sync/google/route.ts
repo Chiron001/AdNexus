@@ -62,9 +62,19 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      const devToken = process.env.GOOGLE_DEVELOPER_TOKEN!
+      // Read developer token: prefer user's saved credentials, fall back to env var
+      const { data: credRow } = await (supabase as AnyClient)
+        .from('platform_credentials')
+        .select('credentials')
+        .eq('user_id', user.id)
+        .eq('platform', 'google')
+        .single()
+      const devToken: string =
+        credRow?.credentials?.developer_token || process.env.GOOGLE_DEVELOPER_TOKEN || ''
       if (!devToken) {
-        return Response.json({ error: 'GOOGLE_DEVELOPER_TOKEN is not configured on the server.' }, { status: 503 })
+        return Response.json({
+          error: 'No Google Ads developer token found. Please save your Developer Token in Settings → Integrations → Google Ads.',
+        }, { status: 503 })
       }
       const customerId = account.account_id
 
