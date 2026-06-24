@@ -10,16 +10,16 @@ interface PlatformRow { name: string; spend: number; revenue: number; roas: numb
 
 const fmt = (v: number) => v >= 1000000 ? `$${(v / 1000000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k`
 
-export function TrendChart({ data }: { data: TrendPoint[] }) {
+export function TrendChart({ data, prefix = 'g', height = 220 }: { data: TrendPoint[]; prefix?: string; height?: number }) {
   return (
-    <ResponsiveContainer width="100%" height={220}>
+    <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data}>
         <defs>
-          <linearGradient id="gRev" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={`${prefix}Rev`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#34d399" stopOpacity={0.15}/>
             <stop offset="95%" stopColor="#34d399" stopOpacity={0}/>
           </linearGradient>
-          <linearGradient id="gSpend" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={`${prefix}Spend`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.15}/>
             <stop offset="95%" stopColor="#60a5fa" stopOpacity={0}/>
           </linearGradient>
@@ -28,8 +28,8 @@ export function TrendChart({ data }: { data: TrendPoint[] }) {
         <XAxis dataKey="day" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false}/>
         <YAxis tickFormatter={fmt} tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false}/>
         <Tooltip contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => [fmt(v)]}/>
-        <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#34d399" fill="url(#gRev)" strokeWidth={2}/>
-        <Area type="monotone" dataKey="spend" name="Spend" stroke="#60a5fa" fill="url(#gSpend)" strokeWidth={2}/>
+        <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#34d399" fill={`url(#${prefix}Rev)`} strokeWidth={2}/>
+        <Area type="monotone" dataKey="spend" name="Spend" stroke="#60a5fa" fill={`url(#${prefix}Spend)`} strokeWidth={2}/>
       </AreaChart>
     </ResponsiveContainer>
   )

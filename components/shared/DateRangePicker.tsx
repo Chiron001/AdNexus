@@ -78,6 +78,9 @@ export function DateRangePicker() {
     apply(from, to, compareMode, localCmpFrom, localCmpTo)
   }
 
+  const activePreset = PRESETS.find(p => p.from() === currentFrom && p.to() === currentTo)
+  const dateLabel    = activePreset?.label ?? `${display(currentFrom)} – ${display(currentTo)}`
+
   const compareLabel = COMPARE_OPTIONS.find(o => o.value === currentCompare)?.label ?? 'No comparison'
   const hasCompare = currentCompare !== 'none'
 
@@ -88,7 +91,7 @@ export function DateRangePicker() {
         className="flex items-center gap-2 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 rounded-xl px-4 py-2.5 text-sm text-white transition-colors"
       >
         <Calendar className="w-4 h-4 text-zinc-400" />
-        <span className="font-mono">{display(currentFrom)} – {display(currentTo)}</span>
+        <span>{dateLabel}</span>
         {hasCompare && (
           <span className="text-xs text-blue-400 bg-blue-400/10 border border-blue-400/20 rounded-full px-2 py-0.5">
             {compareLabel}
@@ -103,15 +106,22 @@ export function DateRangePicker() {
           <div>
             <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Quick select</p>
             <div className="grid grid-cols-4 gap-1.5">
-              {PRESETS.map(p => (
-                <button
-                  key={p.label}
-                  onClick={() => applyPreset(p)}
-                  className="text-xs px-2 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-600 transition-colors text-center"
-                >
-                  {p.label}
-                </button>
-              ))}
+              {PRESETS.map(p => {
+                const isActive = p.label === activePreset?.label
+                return (
+                  <button
+                    key={p.label}
+                    onClick={() => applyPreset(p)}
+                    className={`text-xs px-2 py-1.5 rounded-lg border transition-colors text-center ${
+                      isActive
+                        ? 'bg-blue-500/15 border-blue-500/50 text-blue-300'
+                        : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border-zinc-800 hover:border-zinc-600'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                )
+              })}
             </div>
           </div>
 

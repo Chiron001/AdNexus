@@ -49,8 +49,8 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
 
   if (!accounts || accounts.length === 0) return <NoAccounts section="Performance Analytics" />
 
-  const sp      = await searchParams
-  const { current, comparison, compareMode } = buildDateParams({
+  const sp = await searchParams
+  const { current, comparison } = buildDateParams({
     from:         str(sp.from),
     to:           str(sp.to),
     compare:      str(sp.compare),
@@ -69,16 +69,19 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
   const hasData = metrics.length > 0
 
   function agg(rows: typeof metrics) {
-    return rows.reduce((acc: { spend: number; revenue: number; impressions: number; clicks: number; conversions: number }, m: any) => ({
-      spend:       acc.spend + (m.spend ?? 0),
-      revenue:     acc.revenue + (m.revenue ?? 0),
-      impressions: acc.impressions + (m.impressions ?? 0),
-      clicks:      acc.clicks + (m.clicks ?? 0),
-      conversions: acc.conversions + (m.conversions ?? 0),
-    }), { spend: 0, revenue: 0, impressions: 0, clicks: 0, conversions: 0 })
+    return rows.reduce(
+      (acc: { spend: number; revenue: number; impressions: number; clicks: number; conversions: number }, m: any) => ({
+        spend:       acc.spend + (m.spend ?? 0),
+        revenue:     acc.revenue + (m.revenue ?? 0),
+        impressions: acc.impressions + (m.impressions ?? 0),
+        clicks:      acc.clicks + (m.clicks ?? 0),
+        conversions: acc.conversions + (m.conversions ?? 0),
+      }),
+      { spend: 0, revenue: 0, impressions: 0, clicks: 0, conversions: 0 }
+    )
   }
 
-  const totals = agg(metrics)
+  const totals    = agg(metrics)
   const cmpTotals = comparison ? agg(cmpMetrics) : null
 
   const blendedRoas = totals.spend > 0 ? totals.revenue / totals.spend : 0
@@ -89,35 +92,53 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
   const cmpCpa  = cmpTotals && cmpTotals.conversions > 0 ? cmpTotals.spend / cmpTotals.conversions : 0
   const cmpCtr  = cmpTotals && cmpTotals.impressions > 0 ? (cmpTotals.clicks / cmpTotals.impressions) * 100 : 0
 
-  // Daily trend
+  // ── Blended daily trend ───────────────────────────────────────────────
   const byDate = new Map<string, { spend: number; revenue: number }>()
   for (const m of metrics) {
     const key = m.date.slice(0, 10)
     const prev = byDate.get(key) ?? { spend: 0, revenue: 0 }
     byDate.set(key, { spend: prev.spend + (m.spend ?? 0), revenue: prev.revenue + (m.revenue ?? 0) })
   }
-  const trend = Array.from(byDate.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([date, v]) => ({
-    day: date.slice(5),
-    spend: Math.round(v.spend), revenue: Math.round(v.revenue),
-    roas: v.spend > 0 ? Math.round((v.revenue / v.spend) * 100) / 100 : 0,
-  }))
+  const trend = Array.from(byDate.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, v]) => ({
+      day:     date.slice(5),
+      spend:   Math.round(v.spend),
+      revenue: Math.round(v.revenue),
+      roas:    v.spend > 0 ? Math.round((v.revenue / v.spend) * 100) / 100 : 0,
+    }))
 
-  // Platform breakdown
-  const byPlatform = new Map<string, { spend: number; revenue: number; conversions: number }>()
+  // ── Per-platform aggregates (extended: impressions + clicks) ──────────
+  const byPlatform = new Map<string, { spend: number; revenue: number; conversions: number; impressions: number; clicks: number }>()
   for (const m of metrics) {
-    const prev = byPlatform.get(m.platform) ?? { spend: 0, revenue: 0, conversions: 0 }
+    const prev = byPlatform.get(m.platform) ?? { spend: 0, revenue: 0, conversions: 0, impressions: 0, clicks: 0 }
     byPlatform.set(m.platform, {
       spend:       prev.spend + (m.spend ?? 0),
       revenue:     prev.revenue + (m.revenue ?? 0),
       conversions: prev.conversions + (m.conversions ?? 0),
+      impressions: prev.impressions + (m.impressions ?? 0),
+      clicks:      prev.clicks + (m.clicks ?? 0),
     })
   }
 
-  const platformRows = hasData
-    ? Array.from(byPlatform.entries())
-    : accounts.map(a => [a.platform, { spend: 0, revenue: 0, conversions: 0 }] as [string, { spend: number; revenue: number; conversions: number }])
+  // ── Per-platform daily trends (for per-platform charts) ───────────────
+  const byPlatformDate = new Map<string, Map<string, { spend: number; revenue: number }>>()
+  for (const m of metrics) {
+    if (!byPlatformDate.has(m.platform)) byPlatformDate.set(m.platform, new Map())
+    const platMap = byPlatformDate.get(m.platform)!
+    const key  = m.date.slice(0, 10)
+    const prev = platMap.get(key) ?? { spend: 0, revenue: 0 }
+    platMap.set(key, { spend: prev.spend + (m.spend ?? 0), revenue: prev.revenue + (m.revenue ?? 0) })
+  }
 
-  const platforms = platformRows.map(([platform, v]) => ({
+  // ── Platform contribution chart data ──────────────────────────────────
+  const uniquePlatforms = [...new Set(accounts.map(a => a.platform))]
+
+  const platformChartRows = hasData
+    ? Array.from(byPlatform.entries())
+    : uniquePlatforms.map(p => [p, { spend: 0, revenue: 0, conversions: 0, impressions: 0, clicks: 0 }] as [string, { spend: number; revenue: number; conversions: number; impressions: number; clicks: number }])
+
+  const platformChartData = platformChartRows.map(([platform, v]) => ({
     name:    PLATFORM_LABELS[platform] ?? platform,
     spend:   Math.round(v.spend),
     revenue: Math.round(v.revenue),
@@ -127,19 +148,57 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
     pct:     totals.spend > 0 ? Math.round((v.spend / totals.spend) * 100) : 0,
   }))
 
-  const fmtINR = (v: number) => v >= 1000000 ? `$${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `$${(v / 1000).toFixed(0)}k` : v > 0 ? `$${v}` : '$0'
+  // ── Per-platform section data ─────────────────────────────────────────
+  const platformSections = uniquePlatforms.map(platform => {
+    const v   = byPlatform.get(platform) ?? { spend: 0, revenue: 0, conversions: 0, impressions: 0, clicks: 0 }
+    const acc = accounts.find(a => a.platform === platform)
+    const ctr = v.impressions > 0 ? (v.clicks / v.impressions) * 100 : 0
+    const dateMap  = byPlatformDate.get(platform)
+    const platTrend = dateMap
+      ? Array.from(dateMap.entries())
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([date, d]) => ({
+            day:     date.slice(5),
+            spend:   Math.round(d.spend),
+            revenue: Math.round(d.revenue),
+            roas:    d.spend > 0 ? Math.round((d.revenue / d.spend) * 100) / 100 : 0,
+          }))
+      : []
+    return {
+      platform,
+      label:        PLATFORM_LABELS[platform] ?? platform,
+      color:        PLATFORM_COLORS[platform] ?? '#6b7280',
+      accountName:  acc?.account_name ?? PLATFORM_LABELS[platform] ?? platform,
+      lastSyncedAt: acc?.last_synced_at as string | null,
+      spend:        Math.round(v.spend),
+      revenue:      Math.round(v.revenue),
+      conversions:  v.conversions,
+      roas:         v.spend > 0 ? Math.round((v.revenue / v.spend) * 100) / 100 : 0,
+      cpa:          v.conversions > 0 ? Math.round(v.spend / v.conversions) : 0,
+      ctr:          parseFloat(ctr.toFixed(2)),
+      trend:        platTrend,
+      hasData:      platTrend.length > 0,
+    }
+  })
 
-  const kpis = [
-    { label: 'Total Spend',   value: fmtINR(totals.spend),      cmp: cmpTotals ? deltaPercent(totals.spend, cmpTotals.spend) : null, invert: true },
-    { label: 'Total Revenue', value: fmtINR(totals.revenue),    cmp: cmpTotals ? deltaPercent(totals.revenue, cmpTotals.revenue) : null },
+  const fmtMoney = (v: number) =>
+    v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` :
+    v >= 1_000     ? `$${(v / 1_000).toFixed(0)}k` :
+    v > 0          ? `$${v}` : '$0'
+
+  const blendedKpis = [
+    { label: 'Total Spend',   value: fmtMoney(totals.spend),      cmp: cmpTotals ? deltaPercent(totals.spend, cmpTotals.spend) : null, invert: true },
+    { label: 'Total Revenue', value: fmtMoney(totals.revenue),    cmp: cmpTotals ? deltaPercent(totals.revenue, cmpTotals.revenue) : null },
     { label: 'Blended ROAS',  value: `${blendedRoas.toFixed(2)}x`, cmp: cmpTotals ? deltaPercent(blendedRoas, cmpRoas) : null },
     { label: 'Conversions',   value: totals.conversions.toLocaleString('en-US'), cmp: cmpTotals ? deltaPercent(totals.conversions, cmpTotals.conversions) : null },
     { label: 'Avg CPA',       value: totals.conversions > 0 ? `$${Math.round(avgCpa).toLocaleString('en-US')}` : '—', cmp: cmpTotals ? deltaPercent(avgCpa, cmpCpa) : null, invert: true },
-    { label: 'Blended CTR',   value: `${avgCtr.toFixed(2)}%`,   cmp: cmpTotals ? deltaPercent(avgCtr, cmpCtr) : null },
+    { label: 'Blended CTR',   value: `${avgCtr.toFixed(2)}%`, cmp: cmpTotals ? deltaPercent(avgCtr, cmpCtr) : null },
   ]
 
   return (
     <div className="p-6 space-y-6">
+
+      {/* ── Header ──────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Performance Analytics</h1>
@@ -153,114 +212,168 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
         </div>
       </div>
 
+      {/* ── No-data banner ──────────────────────────────────────────── */}
       {!hasData && (
         <div className="flex items-start gap-3 bg-amber-500/[0.08] border border-amber-500/25 rounded-xl px-4 py-3.5">
           <RefreshCw className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-semibold text-amber-300">
-              {neverSynced ? 'Sync your account to populate this dashboard' : 'No campaign activity in selected date range'}
+              {neverSynced ? 'Sync your accounts to populate this dashboard' : 'No campaign activity in selected date range'}
             </p>
             <p className="text-xs text-amber-400/70 mt-0.5">
               {neverSynced
-                ? 'Click "Sync" to pull your campaign data from Meta, Google, or Amazon.'
-                : 'Try a wider date range or sync to pull more historical data.'}
+                ? 'Click "Sync Meta" / "Sync Google" above to pull your campaign data.'
+                : 'Try a wider date range or click Sync to pull more historical data.'}
             </p>
           </div>
         </div>
       )}
 
+      {/* ── Comparison banner ───────────────────────────────────────── */}
       {comparison && (
         <div className="text-xs text-blue-300 bg-blue-400/5 border border-blue-400/15 rounded-lg px-3 py-2">
           Comparing <span className="font-mono">{current.from} → {current.to}</span> vs <span className="font-mono">{comparison.from} → {comparison.to}</span>
         </div>
       )}
 
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-        {kpis.map(k => (
-          <div key={k.label} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-            <p className="text-xs text-zinc-500 mb-1">{k.label}</p>
-            <p className={`text-2xl font-bold font-mono ${hasData ? 'text-white' : 'text-zinc-600'}`}>{k.value}</p>
-            {k.cmp !== null && k.cmp !== undefined && <div className="mt-1.5"><Delta pct={k.invert ? (k.cmp !== null ? -k.cmp : null) : k.cmp} /></div>}
+      {/* ══════════════════════════════════════════════════════════════
+          BLENDED OVERVIEW — all accounts combined
+      ══════════════════════════════════════════════════════════════ */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-2">
+          <span className="w-1 h-5 rounded-full bg-blue-500 shrink-0" />
+          <p className="text-sm font-bold text-white">Blended Overview</p>
+          <p className="text-xs text-zinc-500">All connected accounts · {current.from} to {current.to}</p>
+        </div>
+
+        {/* 6 Blended KPI cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+          {blendedKpis.map(k => (
+            <div key={k.label} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+              <p className="text-xs text-zinc-500 mb-1">{k.label}</p>
+              <p className={`text-2xl font-bold font-mono ${hasData ? 'text-white' : 'text-zinc-600'}`}>{k.value}</p>
+              {k.cmp !== null && k.cmp !== undefined && (
+                <div className="mt-1.5">
+                  <Delta pct={k.invert ? (k.cmp !== null ? -k.cmp : null) : k.cmp} />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Revenue vs Spend — blended */}
+        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-sm font-semibold text-white">Revenue vs Spend</p>
+              <p className="text-xs text-zinc-500 mt-0.5">Daily · All platforms blended</p>
+            </div>
+            <div className="flex gap-4 text-xs">
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />Revenue</span>
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-400 inline-block" />Spend</span>
+            </div>
+          </div>
+          {hasData ? <TrendChart data={trend} prefix="blend" /> : (
+            <div className="h-48 flex items-center justify-center border border-dashed border-zinc-800 rounded-lg">
+              <p className="text-sm text-zinc-600">Sync your accounts to see the trend chart</p>
+            </div>
+          )}
+        </div>
+
+        {/* ROAS trend + Platform contribution */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
+            <p className="text-sm font-semibold text-white mb-1">ROAS Trend</p>
+            <p className="text-xs text-zinc-500 mb-4">Daily blended ROAS · All platforms</p>
+            {hasData ? <RoasTrendChart data={trend} /> : (
+              <div className="h-[180px] flex items-center justify-center border border-dashed border-zinc-800 rounded-lg">
+                <p className="text-sm text-zinc-600">No data yet</p>
+              </div>
+            )}
+          </div>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
+            <p className="text-sm font-semibold text-white mb-1">Platform Contribution</p>
+            <p className="text-xs text-zinc-500 mb-4">Spend & Revenue split by platform</p>
+            {hasData ? <PlatformBarChart data={platformChartData} /> : (
+              <div className="h-[180px] flex items-center justify-center border border-dashed border-zinc-800 rounded-lg">
+                <p className="text-sm text-zinc-600">No data yet</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════
+          PER-PLATFORM ANALYSIS — one section per connected account
+      ══════════════════════════════════════════════════════════════ */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-2">
+          <span className="w-1 h-5 rounded-full bg-purple-500 shrink-0" />
+          <p className="text-sm font-bold text-white">Platform Analysis</p>
+          <p className="text-xs text-zinc-500">Drill into each connected account separately</p>
+        </div>
+
+        {platformSections.map(p => (
+          <div key={p.platform} className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+
+            {/* Platform card header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800/80">
+              <div className="flex items-center gap-3">
+                <span className="w-3 h-3 rounded-full shrink-0" style={{ background: p.color }} />
+                <div>
+                  <p className="text-sm font-semibold text-white">{p.label}</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">{p.accountName}</p>
+                </div>
+              </div>
+              {p.lastSyncedAt && (
+                <p className="text-xs text-zinc-600">
+                  Last synced&nbsp;
+                  {new Date(p.lastSyncedAt).toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                  })}
+                </p>
+              )}
+            </div>
+
+            {/* Per-platform KPI row */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px bg-zinc-800/50">
+              {[
+                { label: 'Spend',       value: fmtMoney(p.spend) },
+                { label: 'Revenue',     value: fmtMoney(p.revenue) },
+                { label: 'ROAS',        value: `${p.roas.toFixed(2)}x` },
+                { label: 'Conversions', value: p.conversions.toLocaleString('en-US') },
+                { label: 'Avg CPA',     value: p.cpa > 0 ? `$${p.cpa.toLocaleString('en-US')}` : '—' },
+              ].map(kpi => (
+                <div key={kpi.label} className="bg-zinc-900 px-4 py-3.5">
+                  <p className="text-xs text-zinc-500 mb-1">{kpi.label}</p>
+                  <p className={`text-xl font-bold font-mono ${p.hasData ? 'text-white' : 'text-zinc-600'}`}>{kpi.value}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Per-platform Revenue vs Spend chart */}
+            <div className="px-5 pt-4 pb-5">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs text-zinc-500">Revenue vs Spend — daily</p>
+                <div className="flex gap-3 text-xs">
+                  <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />Revenue</span>
+                  <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block" />Spend</span>
+                </div>
+              </div>
+              {p.hasData ? (
+                <TrendChart data={p.trend} prefix={p.platform} height={160} />
+              ) : (
+                <div className="h-28 flex items-center justify-center border border-dashed border-zinc-800 rounded-lg">
+                  <p className="text-sm text-zinc-600">
+                    {p.lastSyncedAt ? 'No data for this period — try widening the date range' : 'Click Sync to pull data'}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         ))}
-      </div>
+      </section>
 
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-sm font-semibold text-white">Revenue vs Spend</p>
-            <p className="text-xs text-zinc-500 mt-0.5">Daily · All platforms</p>
-          </div>
-          <div className="flex gap-4 text-xs font-mono">
-            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />Revenue</span>
-            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-400 inline-block" />Spend</span>
-          </div>
-        </div>
-        {hasData ? <TrendChart data={trend} /> : (
-          <div className="h-48 flex items-center justify-center border border-dashed border-zinc-800 rounded-lg">
-            <p className="text-sm text-zinc-600">Sync your account to see the trend chart</p>
-          </div>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-          <p className="text-sm font-semibold text-white mb-1">ROAS Trend</p>
-          <p className="text-xs text-zinc-500 mb-4">Daily blended ROAS</p>
-          {hasData ? <RoasTrendChart data={trend} /> : (
-            <div className="h-48 flex items-center justify-center border border-dashed border-zinc-800 rounded-lg">
-              <p className="text-sm text-zinc-600">No data yet</p>
-            </div>
-          )}
-        </div>
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-          <p className="text-sm font-semibold text-white mb-1">Platform Contribution</p>
-          <p className="text-xs text-zinc-500 mb-4">Spend & Revenue by platform</p>
-          {hasData ? <PlatformBarChart data={platforms} /> : (
-            <div className="h-48 flex items-center justify-center border border-dashed border-zinc-800 rounded-lg">
-              <p className="text-sm text-zinc-600">No data yet</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-        <p className="text-sm font-semibold text-white mb-4">Platform Breakdown</p>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-xs text-zinc-500 uppercase tracking-wider border-b border-zinc-800">
-              <th className="text-left pb-3 font-medium">Platform</th>
-              <th className="text-right pb-3 font-medium">Spend</th>
-              <th className="text-right pb-3 font-medium">Revenue</th>
-              <th className="text-right pb-3 font-medium">ROAS</th>
-              <th className="text-right pb-3 font-medium">CPA</th>
-              <th className="text-right pb-3 font-medium">Share</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-zinc-800">
-            {platforms.map(p => (
-              <tr key={p.name} className="hover:bg-zinc-800/40 transition-colors">
-                <td className="py-3 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: p.color }} />
-                  <span className={`font-medium ${hasData ? 'text-white' : 'text-zinc-500'}`}>{p.name}</span>
-                </td>
-                <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>{fmtINR(p.spend)}</td>
-                <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>{fmtINR(p.revenue)}</td>
-                <td className={`py-3 text-right font-mono ${hasData ? 'text-emerald-400' : 'text-zinc-600'}`}>{p.roas}x</td>
-                <td className={`py-3 text-right font-mono ${hasData ? 'text-zinc-300' : 'text-zinc-600'}`}>{p.cpa > 0 ? `$${p.cpa.toLocaleString('en-US')}` : '—'}</td>
-                <td className="py-3 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${p.pct}%`, background: p.color }} />
-                    </div>
-                    <span className="text-zinc-400 text-xs font-mono">{p.pct}%</span>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
     </div>
   )
 }
