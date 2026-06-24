@@ -52,7 +52,7 @@ export async function getGoogleCustomers(
   developerToken: string
 ): Promise<Array<{ id: string; descriptiveName: string }>> {
   const res = await fetch(
-    'https://googleads.googleapis.com/v17/customers:listAccessibleCustomers',
+    'https://googleads.googleapis.com/v21/customers:listAccessibleCustomers',
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

@@ -46,13 +46,26 @@ export async function POST(request: NextRequest) {
 
     try {
       let accessToken = account.access_token
+      const tokenExpiresAt = account.token_expires_at ? new Date(account.token_expires_at).getTime() : 0
+      const tokenExpired = tokenExpiresAt < Date.now() + 60_000 // treat as expired if < 1 min left
+
       if (account.refresh_token) {
-        const refreshed = await refreshAccessToken(account.refresh_token)
-        accessToken = refreshed.access_token
-        await supabase.from('ad_accounts').update({
-          access_token: refreshed.access_token,
-          token_expires_at: new Date(Date.now() + refreshed.expires_in * 1000).toISOString(),
-        }).eq('id', account.id)
+        try {
+          const refreshed = await refreshAccessToken(account.refresh_token)
+          accessToken = refreshed.access_token
+          await supabase.from('ad_accounts').update({
+            access_token: refreshed.access_token,
+            token_expires_at: new Date(Date.now() + refreshed.expires_in * 1000).toISOString(),
+          }).eq('id', account.id)
+        } catch {
+          return Response.json({
+            error: 'Your Google Ads session has expired. Please disconnect and reconnect your Google Ads account from the Accounts page.',
+          }, { status: 401 })
+        }
+      } else if (tokenExpired) {
+        return Response.json({
+          error: 'Your Google Ads session has expired. Please disconnect and reconnect your Google Ads account from the Accounts page.',
+        }, { status: 401 })
       }
 
       const devToken = process.env.GOOGLE_DEVELOPER_TOKEN!
