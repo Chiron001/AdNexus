@@ -72,6 +72,44 @@ const PLANS = [
   },
 ]
 
+const PRICING_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'AdNexus',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  url: 'https://adnexusone.com/pricing',
+  offers: [
+    {
+      '@type': 'Offer',
+      name: 'Basic',
+      description: 'For D2C brands getting started with ad diagnostics. 1 ad account, Meta Ads, 30-day issue history.',
+      price: '19',
+      priceCurrency: 'USD',
+      priceSpecification: { '@type': 'UnitPriceSpecification', price: '19', priceCurrency: 'USD', unitText: 'month' },
+      url: 'https://adnexusone.com/pricing',
+    },
+    {
+      '@type': 'Offer',
+      name: 'Growth',
+      description: 'For brands running serious budgets across multiple platforms. 5 ad accounts, Meta + Google + Amazon.',
+      price: '99',
+      priceCurrency: 'USD',
+      priceSpecification: { '@type': 'UnitPriceSpecification', price: '99', priceCurrency: 'USD', unitText: 'month' },
+      url: 'https://adnexusone.com/pricing',
+    },
+    {
+      '@type': 'Offer',
+      name: 'Professional',
+      description: 'For agencies managing multiple client ad accounts at scale. 50 ad accounts, AI Engine included.',
+      price: '499',
+      priceCurrency: 'USD',
+      priceSpecification: { '@type': 'UnitPriceSpecification', price: '499', priceCurrency: 'USD', unitText: 'month' },
+      url: 'https://adnexusone.com/pricing',
+    },
+  ],
+}
+
 type Val = boolean | string | null
 const CHECK = <CheckCircle2 className="w-4 h-4 text-emerald-400 mx-auto" />
 const CROSS = <X className="w-4 h-4 text-zinc-600 mx-auto" />
@@ -205,6 +243,10 @@ function Val({ v }: { v: Val }) {
 export default function PricingPage() {
   return (
     <div className="min-h-screen bg-[#080808] text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(PRICING_SCHEMA) }}
+      />
       <LandingNav />
 
       {/* ── Hero ──────────────────────────────────────────────────── */}

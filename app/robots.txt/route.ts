@@ -22,7 +22,13 @@ Disallow: /billing
 Disallow: /settings
 Disallow: /onboarding
 Disallow: /auth/
-Disallow: /_next/
+Disallow: /*?*utm_
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
 
 User-agent: GPTBot
 Allow: /

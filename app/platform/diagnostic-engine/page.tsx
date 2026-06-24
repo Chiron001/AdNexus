@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { getPageMetadata } from '@/lib/seo'
 import DiagnosticClient from './_client'
+import { BreadcrumbJsonLD } from '@/components/seo/BreadcrumbJsonLD'
 
 export const revalidate = 60
 
@@ -12,5 +13,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function Page() {
-  return <DiagnosticClient />
+  return (
+    <>
+      <BreadcrumbJsonLD items={[
+        { name: 'Home', href: '/' },
+        { name: 'Platform', href: '/platform' },
+        { name: 'Diagnostic Engine', href: '/platform/diagnostic-engine' },
+      ]} />
+      <DiagnosticClient />
+    </>
+  )
 }

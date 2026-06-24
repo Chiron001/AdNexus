@@ -53,6 +53,29 @@ export async function proxy(request: NextRequest) {
   const hostname = request.headers.get('host') || ''
   const { pathname } = request.nextUrl
 
+  // ── URL normalization — 301 redirects for canonical URL shape ──────────
+  if (!pathname.startsWith('/api/') && !pathname.startsWith('/auth/')) {
+    if (pathname !== '/' && pathname.endsWith('/')) {
+      const url = request.nextUrl.clone()
+      url.pathname = pathname.slice(0, -1)
+      return NextResponse.redirect(url, { status: 301 })
+    }
+    if (pathname !== pathname.toLowerCase()) {
+      const url = request.nextUrl.clone()
+      url.pathname = pathname.toLowerCase()
+      return NextResponse.redirect(url, { status: 301 })
+    }
+  }
+  // Legacy path redirects (product renames — add DB url_redirects for others)
+  const LEGACY: Record<string, string> = {
+    '/platform/facebook':  '/platform/meta',
+    '/platform/ads-health': '/platform/health-scoring',
+  }
+  if (LEGACY[pathname]) {
+    return NextResponse.redirect(new URL(LEGACY[pathname], request.url), { status: 301 })
+  }
+  // ──────────────────────────────────────────────────────────────────────
+
   // ── Subdomain routing (production only) ───────────────────────────────
   if (!hostname.includes('localhost') && !hostname.endsWith('.vercel.app')) {
     const parts     = hostname.split('.')
