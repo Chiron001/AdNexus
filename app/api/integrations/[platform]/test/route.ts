@@ -81,7 +81,7 @@ export async function POST(
 
       // Only create the ad_accounts row if it doesn't exist yet — never overwrite
       // the OAuth access_token that was stored by the /api/auth/google OAuth flow
-      const { data: existing } = await supabase
+      const { data: existing } = await (supabase as AnyClient)
         .from('ad_accounts')
         .select('id')
         .eq('user_id', user.id)
@@ -90,11 +90,12 @@ export async function POST(
         .single()
 
       if (!existing) {
-        await supabase.from('ad_accounts').insert({
+        await (supabase as AnyClient).from('ad_accounts').insert({
           user_id: user.id,
           platform: 'google',
           account_id: cleanId,
           account_name: `Google Ads (${customer_id})`,
+          access_token: '',
           status: 'active',
         })
       }
