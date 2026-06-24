@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
 
     try {
       let accessToken = account.access_token
-      const tokenExpiresAt = account.token_expires_at ? new Date(account.token_expires_at).getTime() : 0
-      const tokenExpired = tokenExpiresAt < Date.now() + 60_000 // treat as expired if < 1 min left
+      const tokenExpiresAt = account.token_expires_at ? new Date(account.token_expires_at).getTime() : null
+      const tokenExpired = tokenExpiresAt !== null && tokenExpiresAt < Date.now() + 60_000
 
       if (tokenExpired) {
         if (!account.refresh_token) {
