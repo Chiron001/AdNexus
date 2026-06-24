@@ -45,37 +45,44 @@ export async function POST(request: NextRequest) {
     const syncLogId = syncLog?.id ?? null
 
     try {
-      let accessToken = account.access_token
-
-      // Always refresh when we have a refresh_token — Google access tokens expire in 1 hour
-      if (account.refresh_token) {
-        try {
-          const refreshed = await refreshAccessToken(account.refresh_token)
-          accessToken = refreshed.access_token
-          await supabase.from('ad_accounts').update({
-            access_token: refreshed.access_token,
-            token_expires_at: new Date(Date.now() + refreshed.expires_in * 1000).toISOString(),
-          }).eq('id', account.id)
-        } catch (refreshErr) {
-          console.error('[google sync] token refresh failed:', refreshErr)
-          // Fall through and try the stored access_token — Google will 401 if it's expired
-        }
-      }
-
-      // Read developer token: prefer user's saved credentials, fall back to env var
+      // Read user's stored OAuth + developer credentials
       const { data: credRow } = await (supabase as AnyClient)
         .from('platform_credentials')
         .select('credentials')
         .eq('user_id', user.id)
         .eq('platform', 'google')
         .single()
+      const savedCreds   = credRow?.credentials ?? {}
+      const clientId     = savedCreds.client_id     || undefined
+      const clientSecret = savedCreds.client_secret || undefined
       const devToken: string =
-        credRow?.credentials?.developer_token || process.env.GOOGLE_DEVELOPER_TOKEN || ''
+        savedCreds.developer_token || process.env.GOOGLE_DEVELOPER_TOKEN || ''
+
       if (!devToken) {
         return Response.json({
           error: 'No Google Ads developer token found. Please save your Developer Token in Settings → Integrations → Google Ads.',
         }, { status: 503 })
       }
+
+      let accessToken = account.access_token
+
+      // Always refresh when we have a refresh_token — Google access tokens expire in 1 hour
+      if (account.refresh_token) {
+        try {
+          const refreshed = await refreshAccessToken(account.refresh_token, clientId, clientSecret)
+          accessToken = refreshed.access_token
+          await supabase.from('ad_accounts').update({
+            access_token:     refreshed.access_token,
+            token_expires_at: new Date(Date.now() + (refreshed.expires_in ?? 3600) * 1000).toISOString(),
+          }).eq('id', account.id)
+        } catch (refreshErr) {
+          console.error('[google sync] token refresh failed:', refreshErr)
+          return Response.json({
+            error: `Google token refresh failed — please reconnect your Google Ads account. Detail: ${refreshErr instanceof Error ? refreshErr.message : String(refreshErr)}`,
+          }, { status: 401 })
+        }
+      }
+
       const customerId = account.account_id
 
       const [campaigns, adGroups, ads, keywords, conversions] = await Promise.all([
