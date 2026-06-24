@@ -1,7 +1,7 @@
 import type { GoogleCampaignRow, GoogleKeywordRow, GoogleConversionAction } from '@/types/google'
 import { withRetry } from '@/lib/utils/errors'
 
-const GOOGLE_ADS_API = 'https://googleads.googleapis.com/v17'
+const GOOGLE_ADS_API = 'https://googleads.googleapis.com/v21'
 
 function defaultRange() {
   const until = new Date().toISOString().split('T')[0]
