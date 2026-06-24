@@ -15,9 +15,10 @@ async function gaqlSearch<T>(
   developerToken: string,
   query: string
 ): Promise<T[]> {
+  const cleanId = customerId.replace(/-/g, '') // API requires no dashes; UI shows 223-129-7631 but endpoint needs 2231297631
   return withRetry(async () => {
     const res = await fetch(
-      `${GOOGLE_ADS_API}/customers/${customerId}/googleAds:search`,
+      `${GOOGLE_ADS_API}/customers/${cleanId}/googleAds:search`,
       {
         method: 'POST',
         headers: {
