@@ -1,6 +1,9 @@
+import type { Metadata } from 'next'
 import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
+
+export const metadata: Metadata = { robots: 'noindex, nofollow' }
 
 export default async function AdminLayout({
   children,

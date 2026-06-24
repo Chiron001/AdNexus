@@ -103,7 +103,9 @@ export async function proxy(request: NextRequest) {
         url.pathname = `/admin${pathname === '/' ? '' : pathname}`
         const reqHeaders = new Headers(request.headers)
         reqHeaders.set('x-pathname', url.pathname)
-        return NextResponse.rewrite(url, { request: { headers: reqHeaders } })
+        const rw = NextResponse.rewrite(url, { request: { headers: reqHeaders } })
+        rw.headers.set('X-Robots-Tag', 'noindex, nofollow')
+        return rw
       }
     }
 
@@ -208,6 +210,14 @@ export async function proxy(request: NextRequest) {
       const expireUrl = new URL('/api/billing/expire', request.url)
       expireUrl.searchParams.set('next', pathname)
       return NextResponse.redirect(expireUrl)
+    }
+  }
+
+  // Suppress indexing on app subdomains — belt-and-suspenders alongside robots.txt
+  if (!hostname.includes('localhost') && !hostname.endsWith('.vercel.app')) {
+    const _sub = hostname.split('.').length >= 3 ? hostname.split('.')[0] : null
+    if (_sub === 'admin' || _sub === 'user') {
+      supabaseResponse.headers.set('X-Robots-Tag', 'noindex, nofollow')
     }
   }
 

@@ -65,7 +65,17 @@ Disallow: /
 
 Sitemap: https://adnexusone.com/sitemap.xml`
 
-export async function GET() {
+export async function GET(request: Request) {
+  const host = request.headers.get('host') || ''
+  if (host.startsWith('admin.') || host.startsWith('user.')) {
+    return new NextResponse('User-agent: *\nDisallow: /', {
+      headers: {
+        'Content-Type':  'text/plain; charset=utf-8',
+        'Cache-Control': 'public, max-age=3600',
+      },
+    })
+  }
+
   let content = FALLBACK
 
   try {
