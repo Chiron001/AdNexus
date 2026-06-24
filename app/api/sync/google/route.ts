@@ -46,15 +46,9 @@ export async function POST(request: NextRequest) {
 
     try {
       let accessToken = account.access_token
-      const tokenExpiresAt = account.token_expires_at ? new Date(account.token_expires_at).getTime() : null
-      const tokenExpired = tokenExpiresAt !== null && tokenExpiresAt < Date.now() + 60_000
 
-      if (tokenExpired) {
-        if (!account.refresh_token) {
-          return Response.json({
-            error: 'Your Google Ads session has expired. Please disconnect and reconnect your Google Ads account from the Accounts page.',
-          }, { status: 401 })
-        }
+      // Always refresh when we have a refresh_token — Google access tokens expire in 1 hour
+      if (account.refresh_token) {
         try {
           const refreshed = await refreshAccessToken(account.refresh_token)
           accessToken = refreshed.access_token
@@ -62,14 +56,16 @@ export async function POST(request: NextRequest) {
             access_token: refreshed.access_token,
             token_expires_at: new Date(Date.now() + refreshed.expires_in * 1000).toISOString(),
           }).eq('id', account.id)
-        } catch {
-          return Response.json({
-            error: 'Your Google Ads session has expired. Please disconnect and reconnect your Google Ads account from the Accounts page.',
-          }, { status: 401 })
+        } catch (refreshErr) {
+          console.error('[google sync] token refresh failed:', refreshErr)
+          // Fall through and try the stored access_token — Google will 401 if it's expired
         }
       }
 
       const devToken = process.env.GOOGLE_DEVELOPER_TOKEN!
+      if (!devToken) {
+        return Response.json({ error: 'GOOGLE_DEVELOPER_TOKEN is not configured on the server.' }, { status: 503 })
+      }
       const customerId = account.account_id
 
       const [campaigns, adGroups, ads, keywords, conversions] = await Promise.all([
