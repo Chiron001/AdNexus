@@ -33,17 +33,17 @@ function checkConversionTrackingBroken(
   const issues: DiagnosticIssue[] = []
 
   const hasConversionActions = conversionActions.some(
-    (ca) => ca.conversion_action.status === 'ENABLED'
+    (ca) => ca.conversion_action?.status === 'ENABLED'
   )
   if (!hasConversionActions) return issues
 
   const totalConversions = conversionActions.reduce(
-    (sum, ca) => sum + parseFloat(ca.metrics.all_conversions || '0'),
+    (sum, ca) => sum + parseFloat(ca.metrics?.all_conversions || '0'),
     0
   )
 
   const totalSpend = campaigns.reduce(
-    (sum, c) => sum + microsToCost(c.metrics.cost_micros),
+    (sum, c) => sum + microsToCost(c.metrics?.cost_micros ?? 0),
     0
   )
 
@@ -67,15 +67,15 @@ function checkConversionTrackingBroken(
 
 function checkLowQualityScoreKeywords(keywords: GoogleKeywordRow[]): DiagnosticIssue[] {
   const lowQsKeywords = keywords.filter((kw) => {
-    const qs = kw.ad_group_criterion.quality_info?.quality_score ?? 10
-    const spend = microsToCost(kw.metrics.cost_micros)
+    const qs = kw.ad_group_criterion?.quality_info?.quality_score ?? 10
+    const spend = microsToCost(kw.metrics?.cost_micros ?? 0)
     return qs <= 4 && spend > 2000
   })
 
   if (lowQsKeywords.length === 0) return []
 
   const totalWasted = lowQsKeywords.reduce(
-    (sum, kw) => sum + microsToCost(kw.metrics.cost_micros),
+    (sum, kw) => sum + microsToCost(kw.metrics?.cost_micros ?? 0),
     0
   )
 
@@ -87,16 +87,16 @@ function checkLowQualityScoreKeywords(keywords: GoogleKeywordRow[]): DiagnosticI
       title: `${lowQsKeywords.length} keywords with poor Quality Score draining budget`,
       description: `${lowQsKeywords.length} keywords have a Quality Score of 4 or below and have spent $${Math.round(totalWasted).toLocaleString('en-US')}. Low Quality Scores mean you pay more per click than competitors for the same position.`,
       affected_entity_type: 'keyword',
-      affected_entity_id: lowQsKeywords[0].ad_group_criterion.keyword.text,
-      affected_entity_name: lowQsKeywords.map((k) => k.ad_group_criterion.keyword.text).slice(0, 5).join(', '),
+      affected_entity_id: lowQsKeywords[0].ad_group_criterion?.keyword?.text ?? '',
+      affected_entity_name: lowQsKeywords.map((k) => k.ad_group_criterion?.keyword?.text ?? '').filter(Boolean).slice(0, 5).join(', '),
       estimated_impact_inr: Math.round(totalWasted * 0.3),
       raw_data: {
         keyword_count: lowQsKeywords.length,
         total_spend: totalWasted,
         keywords: lowQsKeywords.slice(0, 10).map((k) => ({
-          text: k.ad_group_criterion.keyword.text,
-          qs: k.ad_group_criterion.quality_info?.quality_score,
-          spend: microsToCost(k.metrics.cost_micros),
+          text: k.ad_group_criterion?.keyword?.text,
+          qs: k.ad_group_criterion?.quality_info?.quality_score,
+          spend: microsToCost(k.metrics?.cost_micros ?? 0),
         })),
       },
     },
@@ -108,9 +108,9 @@ function checkImpressionShareLostToBudget(campaigns: GoogleCampaignRow[]): Diagn
 
   for (const campaign of campaigns) {
     const lostShare = parseFloat(
-      campaign.metrics.search_budget_lost_impression_share || '0'
+      campaign.metrics?.search_budget_lost_impression_share || '0'
     )
-    const spend = microsToCost(campaign.metrics.cost_micros)
+    const spend = microsToCost(campaign.metrics?.cost_micros ?? 0)
 
     if (lostShare > 0.3 && spend > 5000) {
       issues.push({
@@ -136,11 +136,12 @@ function checkKeywordCannibalization(keywords: GoogleKeywordRow[]): DiagnosticIs
   const kwToCampaigns = new Map<string, Set<string>>()
 
   for (const kw of keywords) {
-    const text = kw.ad_group_criterion.keyword.text.toLowerCase().trim()
+    const text = (kw.ad_group_criterion?.keyword?.text ?? '').toLowerCase().trim()
+    if (!text) continue
     if (!kwToCampaigns.has(text)) {
       kwToCampaigns.set(text, new Set())
     }
-    kwToCampaigns.get(text)!.add(kw.campaign.name)
+    kwToCampaigns.get(text)!.add(kw.campaign?.name ?? 'Unknown')
   }
 
   for (const [kwText, campaigns] of kwToCampaigns) {
@@ -166,15 +167,15 @@ function checkKeywordCannibalization(keywords: GoogleKeywordRow[]): DiagnosticIs
 
 function checkHighSpendZeroConversionKeywords(keywords: GoogleKeywordRow[]): DiagnosticIssue[] {
   const wastedKeywords = keywords.filter((kw) => {
-    const spend = microsToCost(kw.metrics.cost_micros)
-    const conversions = parseFloat(kw.metrics.conversions || '0')
+    const spend = microsToCost(kw.metrics?.cost_micros ?? 0)
+    const conversions = parseFloat(kw.metrics?.conversions || '0')
     return spend > 5000 && conversions === 0
   })
 
   if (wastedKeywords.length === 0) return []
 
   const totalWasted = wastedKeywords.reduce(
-    (sum, kw) => sum + microsToCost(kw.metrics.cost_micros),
+    (sum, kw) => sum + microsToCost(kw.metrics?.cost_micros ?? 0),
     0
   )
 
@@ -186,16 +187,16 @@ function checkHighSpendZeroConversionKeywords(keywords: GoogleKeywordRow[]): Dia
       title: `${wastedKeywords.length} keywords spending $${Math.round(totalWasted).toLocaleString('en-US')} with zero conversions`,
       description: `${wastedKeywords.length} keywords have each spent over $60 in the last 30 days but generated zero conversions. These keywords need to be paused or have their match types tightened.`,
       affected_entity_type: 'keyword',
-      affected_entity_id: wastedKeywords[0].ad_group_criterion.keyword.text,
-      affected_entity_name: wastedKeywords.map((k) => k.ad_group_criterion.keyword.text).slice(0, 3).join(', '),
+      affected_entity_id: wastedKeywords[0].ad_group_criterion?.keyword?.text ?? '',
+      affected_entity_name: wastedKeywords.map((k) => k.ad_group_criterion?.keyword?.text ?? '').filter(Boolean).slice(0, 3).join(', '),
       estimated_impact_inr: Math.round(totalWasted),
       raw_data: {
         keyword_count: wastedKeywords.length,
         total_wasted: totalWasted,
         keywords: wastedKeywords.slice(0, 10).map((k) => ({
-          text: k.ad_group_criterion.keyword.text,
-          spend: microsToCost(k.metrics.cost_micros),
-          campaign: k.campaign.name,
+          text: k.ad_group_criterion?.keyword?.text,
+          spend: microsToCost(k.metrics?.cost_micros ?? 0),
+          campaign: k.campaign?.name,
         })),
       },
     },
@@ -206,24 +207,22 @@ function checkLowRoasCampaigns(campaigns: GoogleCampaignRow[]): DiagnosticIssue[
   const issues: DiagnosticIssue[] = []
 
   for (const campaign of campaigns) {
-    const spend = microsToCost(campaign.metrics.cost_micros)
+    const spend = microsToCost(campaign.metrics?.cost_micros ?? 0)
     if (spend < 20000) continue
 
-    const conversions = parseFloat(campaign.metrics.conversions || '0')
-    // Approximate ROAS from conversions (can't get revenue from GAQL directly)
-    // Flag campaigns with 0 conversions and high spend as low ROAS risk
+    const conversions = parseFloat(campaign.metrics?.conversions || '0')
     if (conversions === 0) {
       issues.push({
         platform: 'google',
         issue_type: 'low_roas_campaign',
         severity: 'high',
-        title: `Campaign ROAS critically low — $${Math.round(spend).toLocaleString('en-US')} at risk: "${campaign.campaign.name}"`,
+        title: `Campaign ROAS critically low — $${Math.round(spend).toLocaleString('en-US')} at risk: "${campaign.campaign?.name}"`,
         description: `This campaign has spent $${Math.round(spend).toLocaleString('en-US')} in the last 30 days with zero recorded conversions. The return on ad spend is effectively zero.`,
         affected_entity_type: 'campaign',
-        affected_entity_id: campaign.campaign.id,
-        affected_entity_name: campaign.campaign.name,
+        affected_entity_id: campaign.campaign?.id ?? '',
+        affected_entity_name: campaign.campaign?.name ?? '',
         estimated_impact_inr: Math.round(spend),
-        raw_data: { spend, conversions, impressions: campaign.metrics.impressions, ctr: campaign.metrics.ctr },
+        raw_data: { spend, conversions, impressions: campaign.metrics?.impressions, ctr: campaign.metrics?.ctr },
       })
     }
   }
@@ -239,9 +238,9 @@ function checkBroadMatchOveruse(keywords: GoogleKeywordRow[]): DiagnosticIssue[]
   if (total === 0) return []
 
   const lowPerformers = keywords.filter((kw) => {
-    const clicks = parseInt(kw.metrics.clicks || '0')
-    const conversions = parseFloat(kw.metrics.conversions || '0')
-    const spend = microsToCost(kw.metrics.cost_micros)
+    const clicks = parseInt(kw.metrics?.clicks || '0')
+    const conversions = parseFloat(kw.metrics?.conversions || '0')
+    const spend = microsToCost(kw.metrics?.cost_micros ?? 0)
     return spend > 1000 && clicks > 100 && conversions === 0
   })
 
@@ -259,7 +258,7 @@ function checkBroadMatchOveruse(keywords: GoogleKeywordRow[]): DiagnosticIssue[]
       affected_entity_id: 'account',
       affected_entity_name: 'Google Ads Account',
       estimated_impact_inr: Math.round(
-        lowPerformers.reduce((sum, k) => sum + microsToCost(k.metrics.cost_micros), 0) * 0.4
+        lowPerformers.reduce((sum, k) => sum + microsToCost(k.metrics?.cost_micros ?? 0), 0) * 0.4
       ),
       raw_data: {
         low_performing_keywords: lowPerformers.length,
@@ -274,21 +273,21 @@ function checkLowCtrCampaigns(campaigns: GoogleCampaignRow[]): DiagnosticIssue[]
   const issues: DiagnosticIssue[] = []
 
   for (const campaign of campaigns) {
-    const impressions = parseInt(campaign.metrics.impressions || '0')
-    const ctr = parseFloat(campaign.metrics.ctr || '0')
+    const impressions = parseInt(campaign.metrics?.impressions || '0')
+    const ctr = parseFloat(campaign.metrics?.ctr || '0')
 
     if (impressions > 10000 && ctr < 0.02) {
       issues.push({
         platform: 'google',
         issue_type: 'low_ctr',
         severity: 'medium',
-        title: `Below-average CTR — ad copy needs improvement: "${campaign.campaign.name}"`,
+        title: `Below-average CTR — ad copy needs improvement: "${campaign.campaign?.name}"`,
         description: `This search campaign has a CTR of ${(ctr * 100).toFixed(2)}% (industry average: 2-5%). Poor ad copy or irrelevant keywords are causing users to scroll past your ads.`,
         affected_entity_type: 'campaign',
-        affected_entity_id: campaign.campaign.id,
-        affected_entity_name: campaign.campaign.name,
+        affected_entity_id: campaign.campaign?.id ?? '',
+        affected_entity_name: campaign.campaign?.name ?? '',
         estimated_impact_inr: 0,
-        raw_data: { ctr, impressions, clicks: campaign.metrics.clicks },
+        raw_data: { ctr, impressions, clicks: campaign.metrics?.clicks },
       })
     }
   }
