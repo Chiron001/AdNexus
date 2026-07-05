@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { refreshAccessToken } from '@/lib/google/auth'
 
 const ALLOWED_PLATFORMS = ['meta', 'google', 'amazon']
 
@@ -68,37 +69,41 @@ export async function POST(
     }
 
     if (platform === 'google') {
-      const { developer_token, customer_id } = creds
+      const { developer_token, customer_id, client_id, client_secret, refresh_token } = creds
       if (!developer_token) throw new Error('Developer token is required')
       if (!customer_id) throw new Error('Customer ID is required')
+      if (!refresh_token) throw new Error('Refresh token is required — see the guide below to get one from Google OAuth Playground')
 
       const cleanId = customer_id.replace(/-/g, '')
       if (!/^\d{10}$/.test(cleanId)) throw new Error('Customer ID must be a 10-digit number (e.g. 123-456-7890)')
 
+      // Exchange refresh token for a fresh access token to validate credentials
+      let accessToken = ''
+      try {
+        const tokens = await refreshAccessToken(refresh_token, client_id || undefined, client_secret || undefined)
+        accessToken = tokens.access_token
+      } catch (e) {
+        throw new Error(`Could not get access token from refresh token: ${e instanceof Error ? e.message : String(e)}`)
+      }
+
       isValid = true
       accountsFound = 1
-      message = 'Google Ads credentials saved — account will sync on next cycle'
+      message = 'Google Ads connected successfully — your account is ready to sync'
 
-      // Only create the ad_accounts row if it doesn't exist yet — never overwrite
-      // the OAuth access_token that was stored by the /api/auth/google OAuth flow
-      const { data: existing } = await (supabase as AnyClient)
-        .from('ad_accounts')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('platform', 'google')
-        .eq('account_id', cleanId)
-        .single()
-
-      if (!existing) {
-        await (supabase as AnyClient).from('ad_accounts').insert({
-          user_id: user.id,
-          platform: 'google',
-          account_id: cleanId,
-          account_name: `Google Ads (${customer_id})`,
-          access_token: '',
-          status: 'active',
-        })
-      }
+      // Upsert ad_accounts with real OAuth tokens
+      await (supabase as AnyClient).from('ad_accounts').upsert(
+        {
+          user_id:          user.id,
+          platform:         'google',
+          account_id:       cleanId,
+          account_name:     `Google Ads (${customer_id})`,
+          access_token:     accessToken,
+          refresh_token:    refresh_token,
+          token_expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
+          status:           'active',
+        },
+        { onConflict: 'user_id,platform,account_id' }
+      )
     }
 
     if (platform === 'amazon') {
