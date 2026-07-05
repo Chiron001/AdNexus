@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Target, Plus, Trash2, CheckCircle, AlertCircle, XCircle } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
+import { useCurrency } from '@/components/providers/CurrencyProvider'
 
 interface CurrentMetrics { roas: number; revenue: number; cpa: number; spend: number; ctr: number; conversions: number }
 interface PrevSummary    { roas: number; revenue: number; cpa: number }
@@ -10,11 +11,11 @@ interface DayPoint       { day: string; revenue: number; roas: number }
 interface Goal           { id: string; metric: string; target: number; unit: string; direction: 'above' | 'below' }
 
 const METRIC_OPTIONS = [
-  { label: 'Blended ROAS', key: 'roas', unit: 'x', direction: 'above' as const },
-  { label: 'Monthly Revenue', key: 'revenue', unit: '$', direction: 'above' as const },
-  { label: 'Avg CPA', key: 'cpa', unit: '$', direction: 'below' as const },
-  { label: 'Total Spend', key: 'spend', unit: '$', direction: 'below' as const },
-  { label: 'CTR', key: 'ctr', unit: '%', direction: 'above' as const },
+  { label: 'Blended ROAS',    key: 'roas',    unit: 'x',        direction: 'above' as const },
+  { label: 'Monthly Revenue', key: 'revenue', unit: 'currency', direction: 'above' as const },
+  { label: 'Avg CPA',         key: 'cpa',     unit: 'currency', direction: 'below' as const },
+  { label: 'Total Spend',     key: 'spend',   unit: 'currency', direction: 'below' as const },
+  { label: 'CTR',             key: 'ctr',     unit: '%',        direction: 'above' as const },
 ]
 
 function pct(current: number, target: number, direction: 'above' | 'below') {
@@ -44,11 +45,11 @@ const STATUS_BAR: Record<string, string> = {
   'off-track': 'bg-red-500',
 }
 
-function fmtVal(v: number, unit: string) {
-  if (unit === '$') {
-    if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`
-    if (v >= 1000)    return `$${(v / 1000).toFixed(0)}k`
-    return `$${v}`
+function fmtVal(v: number, unit: string, sym: string) {
+  if (unit === 'currency') {
+    if (v >= 1000000) return `${sym}${(v / 1000000).toFixed(1)}M`
+    if (v >= 1000)    return `${sym}${(v / 1000).toFixed(0)}k`
+    return `${sym}${Math.round(v)}`
   }
   return `${v}${unit}`
 }
@@ -59,6 +60,7 @@ export function GoalsClient({ current, prevSummary, progression, monthLabel }: {
   progression: DayPoint[]
   monthLabel: string
 }) {
+  const sym = useCurrency()
   const [goals, setGoals] = useState<Goal[]>([])
   const [showAdd, setShowAdd] = useState(false)
   const [newMetric, setNewMetric] = useState('roas')
@@ -136,7 +138,7 @@ export function GoalsClient({ current, prevSummary, progression, monthLabel }: {
           return (
             <div key={opt.key} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
               <p className="text-xs text-zinc-500 mb-1">{opt.label}</p>
-              <p className="text-2xl font-bold text-white font-mono">{fmtVal(curr, opt.unit)}</p>
+              <p className="text-2xl font-bold text-white font-mono">{fmtVal(curr, opt.unit, sym)}</p>
               {delta !== null && (
                 <p className={`text-xs font-mono mt-1 ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
                   {delta > 0 ? '+' : ''}{delta}% vs last month
@@ -162,7 +164,7 @@ export function GoalsClient({ current, prevSummary, progression, monthLabel }: {
                     {STATUS_ICON[s]}
                     <div>
                       <p className="text-sm font-semibold text-white">{metricLabel[g.metric] ?? g.metric}</p>
-                      <p className="text-xs text-zinc-500">Target: {fmtVal(g.target, g.unit)} · Current: {fmtVal(curr, g.unit)}</p>
+                      <p className="text-xs text-zinc-500">Target: {fmtVal(g.target, g.unit, sym)} · Current: {fmtVal(curr, g.unit)}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">

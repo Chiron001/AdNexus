@@ -1,9 +1,5 @@
-export function formatINR(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(amount)
+export function formatINR(amount: number, symbol = '$'): string {
+  return `${symbol}${new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Math.round(amount))}`
 }
 
 export function formatNumber(value: number, decimals = 0): string {

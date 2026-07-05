@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Loader2, CheckCircle2, Mail, Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { COUNTRY_NAMES } from '@/lib/utils/currency'
 
 const STARS = [
   { top: '4%',  left: '80%', delay: '0.5s', dur: '8.5s', w: 120 },
@@ -52,6 +53,7 @@ function SignupForm() {
   const [view,        setView]        = useState<'options' | 'email'>('options')
   const [fullName,    setFullName]    = useState('')
   const [companyName, setCompanyName] = useState('')
+  const [country,     setCountry]     = useState('')
   const [email,       setEmail]       = useState('')
   const [password,    setPassword]    = useState('')
   const [showPw,      setShowPw]      = useState(false)
@@ -87,6 +89,7 @@ function SignupForm() {
         id: data.user.id, email,
         full_name: fullName,
         company_name: companyName || null,
+        country: country || null,
         plan: 'free',
       })
     }
@@ -236,6 +239,22 @@ function SignupForm() {
                       className="w-full bg-zinc-800/60 border border-zinc-700/60 text-white placeholder:text-zinc-600 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/40 transition-all"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="country" className="text-xs font-semibold text-zinc-400 uppercase tracking-wide">Country</label>
+                  <select
+                    id="country"
+                    value={country}
+                    onChange={e => setCountry(e.target.value)}
+                    required
+                    className="w-full bg-zinc-800/60 border border-zinc-700/60 text-white rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/40 transition-all"
+                  >
+                    <option value="" disabled className="bg-zinc-900">Select country…</option>
+                    {Object.entries(COUNTRY_NAMES).sort(([, a], [, b]) => a.localeCompare(b)).map(([code, name]) => (
+                      <option key={code} value={code} className="bg-zinc-900">{name}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="space-y-1.5">

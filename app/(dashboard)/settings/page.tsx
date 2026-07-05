@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { Loader2, CheckCircle2, Plug, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
+import { COUNTRY_NAMES } from '@/lib/utils/currency'
 
 const PLAN_BADGE: Record<string, string> = {
   free:   'bg-zinc-800 text-zinc-400 border border-zinc-700',
@@ -38,6 +39,7 @@ function DarkInput({
 export default function SettingsPage() {
   const [fullName,     setFullName]     = useState('')
   const [companyName,  setCompanyName]  = useState('')
+  const [country,      setCountry]      = useState('')
   const [plan,         setPlan]         = useState('free')
   const [loading,      setLoading]      = useState(false)
   const [fetching,     setFetching]     = useState(true)
@@ -51,7 +53,7 @@ export default function SettingsPage() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name, company_name, plan')
+        .select('full_name, company_name, plan, country')
         .eq('id', user.id)
         .single()
 
@@ -59,6 +61,7 @@ export default function SettingsPage() {
         setFullName(profile.full_name ?? '')
         setCompanyName(profile.company_name ?? '')
         setPlan(profile.plan ?? 'free')
+        setCountry((profile as any).country ?? '')
       }
       setFetching(false)
     }
@@ -93,7 +96,7 @@ export default function SettingsPage() {
 
     const { error } = await supabase
       .from('profiles')
-      .update({ full_name: fullName, company_name: companyName, updated_at: new Date().toISOString() })
+      .update({ full_name: fullName, company_name: companyName, country: country || null, updated_at: new Date().toISOString() })
       .eq('id', user.id)
 
     setLoading(false)
@@ -138,6 +141,21 @@ export default function SettingsPage() {
           <div className="space-y-1.5">
             <label htmlFor="companyName" className="text-sm font-medium text-zinc-300">Company name</label>
             <DarkInput id="companyName" value={companyName} onChange={setCompanyName} placeholder="Your Brand / Agency" disabled={fetching} />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="country" className="text-sm font-medium text-zinc-300">Country <span className="text-zinc-600 text-xs font-normal">(sets currency symbol)</span></label>
+            <select
+              id="country"
+              value={country}
+              onChange={e => setCountry(e.target.value)}
+              disabled={fetching}
+              className="w-full bg-zinc-900 border border-zinc-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 transition-colors"
+            >
+              <option value="" className="bg-zinc-900">Select country…</option>
+              {Object.entries(COUNTRY_NAMES).sort(([, a], [, b]) => a.localeCompare(b)).map(([code, name]) => (
+                <option key={code} value={code} className="bg-zinc-900">{name}</option>
+              ))}
+            </select>
           </div>
           <button
             type="submit"

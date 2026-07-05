@@ -13,6 +13,7 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 import { formatINR, formatRelativeTime } from '@/lib/utils/format'
+import { currencySymbol } from '@/lib/utils/currency'
 import { SyncButton } from '@/components/shared/SyncButton'
 
 type RecommendationWithIssue = Tables<'recommendations'> & {
@@ -69,9 +70,10 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, company_name')
+    .select('full_name, company_name, country')
     .eq('id', user.id)
     .single()
+  const sym = currencySymbol((profile as any)?.country)
 
   const { data: adAccounts } = await supabase
     .from('ad_accounts')
@@ -164,7 +166,7 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-zinc-500 font-medium uppercase tracking-wide">Revenue at Risk</p>
-              <p className="text-2xl font-bold text-white mt-1.5">{formatINR(totalImpactInr)}</p>
+              <p className="text-2xl font-bold text-white mt-1.5">{formatINR(totalImpactInr, sym)}</p>
               <p className="text-xs text-zinc-600 mt-1">estimated / month</p>
             </div>
             <div className="w-11 h-11 bg-orange-500/10 ring-1 ring-orange-500/25 rounded-xl flex items-center justify-center">

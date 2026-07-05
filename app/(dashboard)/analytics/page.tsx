@@ -6,6 +6,7 @@ import { DateRangePicker } from '@/components/shared/DateRangePicker'
 import { TrendChart, RoasTrendChart, PlatformBarChart } from './AnalyticsCharts'
 import { RefreshCw, TrendingUp, TrendingDown } from 'lucide-react'
 import { buildDateParams, deltaPercent } from '@/lib/utils/dateRange'
+import { currencySymbol, fmtMoney } from '@/lib/utils/currency'
 
 const PLATFORM_COLORS: Record<string, string> = { meta: '#3b82f6', google: '#22c55e', amazon: '#f97316' }
 const PLATFORM_LABELS: Record<string, string>  = { meta: 'Meta Ads', google: 'Google Ads', amazon: 'Amazon Ads' }
@@ -48,6 +49,9 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
     .eq('user_id', user.id).eq('status', 'active')
 
   if (!accounts || accounts.length === 0) return <NoAccounts section="Performance Analytics" />
+
+  const { data: profileRow } = await supabase.from('profiles').select('country').eq('id', user.id).single()
+  const sym = currencySymbol((profileRow as any)?.country)
 
   const sp = await searchParams
   const { current, comparison } = buildDateParams({
@@ -181,14 +185,11 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
     }
   })
 
-  const fmtMoney = (v: number) =>
-    v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` :
-    v >= 1_000     ? `$${(v / 1_000).toFixed(0)}k` :
-    v > 0          ? `$${v}` : '$0'
+  const fmt = (v: number) => fmt(v, sym)
 
   const blendedKpis = [
-    { label: 'Total Spend',   value: fmtMoney(totals.spend),      cmp: cmpTotals ? deltaPercent(totals.spend, cmpTotals.spend) : null, invert: true },
-    { label: 'Total Revenue', value: fmtMoney(totals.revenue),    cmp: cmpTotals ? deltaPercent(totals.revenue, cmpTotals.revenue) : null },
+    { label: 'Total Spend',   value: fmt(totals.spend),      cmp: cmpTotals ? deltaPercent(totals.spend, cmpTotals.spend) : null, invert: true },
+    { label: 'Total Revenue', value: fmt(totals.revenue),    cmp: cmpTotals ? deltaPercent(totals.revenue, cmpTotals.revenue) : null },
     { label: 'Blended ROAS',  value: `${blendedRoas.toFixed(2)}x`, cmp: cmpTotals ? deltaPercent(blendedRoas, cmpRoas) : null },
     { label: 'Conversions',   value: totals.conversions.toLocaleString('en-US'), cmp: cmpTotals ? deltaPercent(totals.conversions, cmpTotals.conversions) : null },
     { label: 'Avg CPA',       value: totals.conversions > 0 ? `$${Math.round(avgCpa).toLocaleString('en-US')}` : '—', cmp: cmpTotals ? deltaPercent(avgCpa, cmpCpa) : null, invert: true },
@@ -338,8 +339,8 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
             {/* Per-platform KPI row */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px bg-zinc-800/50">
               {[
-                { label: 'Spend',       value: fmtMoney(p.spend) },
-                { label: 'Revenue',     value: fmtMoney(p.revenue) },
+                { label: 'Spend',       value: fmt(p.spend) },
+                { label: 'Revenue',     value: fmt(p.revenue) },
                 { label: 'ROAS',        value: `${p.roas.toFixed(2)}x` },
                 { label: 'Conversions', value: p.conversions.toLocaleString('en-US') },
                 { label: 'Avg CPA',     value: p.cpa > 0 ? `$${p.cpa.toLocaleString('en-US')}` : '—' },

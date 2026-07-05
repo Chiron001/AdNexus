@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { Topbar } from '@/components/dashboard/Topbar'
+import { CurrencyProvider } from '@/components/providers/CurrencyProvider'
+import { currencySymbol } from '@/lib/utils/currency'
 
 export const metadata: Metadata = { robots: 'noindex, nofollow' }
 
@@ -18,7 +20,7 @@ export default async function DashboardLayout({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, plan')
+    .select('full_name, plan, country')
     .eq('id', user.id)
     .single()
 
@@ -30,6 +32,7 @@ export default async function DashboardLayout({
   const userName  = profile.full_name || user.email?.split('@')[0] || 'User'
   const userEmail = user.email ?? ''
   const plan = profile.plan as 'basic' | 'growth' | 'professional' | 'agency' | 'custom'
+  const sym  = currencySymbol((profile as any).country)
 
   return (
     <div
@@ -48,7 +51,9 @@ export default async function DashboardLayout({
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Topbar userName={userName} userEmail={userEmail} plan={plan} />
-        <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 overflow-auto">
+          <CurrencyProvider symbol={sym}>{children}</CurrencyProvider>
+        </main>
       </div>
     </div>
   )
