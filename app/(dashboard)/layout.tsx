@@ -18,9 +18,10 @@ export default async function DashboardLayout({
 
   if (!user) redirect('/login')
 
+  // Critical query — only fields that have always existed; must not fail
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, plan, country')
+    .select('full_name, plan')
     .eq('id', user.id)
     .single()
 
@@ -29,10 +30,17 @@ export default async function DashboardLayout({
   if (!profile) redirect('/onboarding/subscribe')
   if (profile.plan === 'free') redirect('/onboarding/subscribe')
 
+  // Non-critical: fetch country separately so a missing migration never blocks access
+  const { data: countryRow } = await supabase
+    .from('profiles')
+    .select('country')
+    .eq('id', user.id)
+    .single()
+
   const userName  = profile.full_name || user.email?.split('@')[0] || 'User'
   const userEmail = user.email ?? ''
   const plan = profile.plan as 'basic' | 'growth' | 'professional' | 'agency' | 'custom'
-  const sym  = currencySymbol(profile.country)
+  const sym  = currencySymbol(countryRow?.country ?? null)
 
   return (
     <div
