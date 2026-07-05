@@ -97,17 +97,18 @@ export async function POST(request: NextRequest) {
       for (const row of campaigns) {
         const m = googleRowToMetrics(row)
         const date = (row as any).segments?.date ?? new Date().toISOString().split('T')[0]
-        await (supabase as AnyClient).from('campaign_metrics').upsert(
+        const { error: cmErr } = await (supabase as AnyClient).from('campaign_metrics').upsert(
           {
             ad_account_id: account.id,
             platform: 'google',
-            campaign_id: row.campaign.id,
-            campaign_name: row.campaign.name,
+            campaign_id: row.campaign?.id,
+            campaign_name: row.campaign?.name,
             date,
             ...m,
           },
           { onConflict: 'ad_account_id,campaign_id,date' }
         )
+        if (cmErr) console.error('[google sync] campaign_metrics upsert error:', cmErr.message)
       }
 
       // Upsert adset_metrics (ad group level)
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
         const imp      = parseInt(String(row.metrics?.impressions ?? 0))
         const clicks   = parseInt(String(row.metrics?.clicks ?? 0))
         const date     = row.segments?.date ?? new Date().toISOString().split('T')[0]
-        await (supabase as AnyClient).from('adset_metrics').upsert(
+        const { error: asErr } = await (supabase as AnyClient).from('adset_metrics').upsert(
           {
             ad_account_id: account.id,
             platform: 'google',
@@ -143,6 +144,7 @@ export async function POST(request: NextRequest) {
           },
           { onConflict: 'ad_account_id,platform,adset_id,date' }
         )
+        if (asErr) console.error('[google sync] adset_metrics upsert error:', asErr.message)
       }
 
       // Upsert ad_metrics
@@ -153,7 +155,7 @@ export async function POST(request: NextRequest) {
         const imp    = parseInt(String(row.metrics?.impressions ?? 0))
         const clicks = parseInt(String(row.metrics?.clicks ?? 0))
         const date   = row.segments?.date ?? new Date().toISOString().split('T')[0]
-        await (supabase as AnyClient).from('ad_metrics').upsert(
+        const { error: adErr } = await (supabase as AnyClient).from('ad_metrics').upsert(
           {
             ad_account_id: account.id,
             platform: 'google',
@@ -180,6 +182,7 @@ export async function POST(request: NextRequest) {
           },
           { onConflict: 'ad_account_id,platform,ad_id,date' }
         )
+        if (adErr) console.error('[google sync] ad_metrics upsert error:', adErr.message)
       }
 
       const issues = runGoogleDiagnostics({ campaigns, keywords, conversionActions: conversions, accountId: customerId })

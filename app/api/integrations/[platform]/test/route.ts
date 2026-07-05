@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { refreshAccessToken } from '@/lib/google/auth'
+import { testCampaignAccess } from '@/lib/google/api'
 
 const ALLOWED_PLATFORMS = ['meta', 'google', 'amazon']
 
@@ -86,9 +87,20 @@ export async function POST(
         throw new Error(`Could not get access token from refresh token: ${e instanceof Error ? e.message : String(e)}`)
       }
 
+      // Test that GAQL queries can actually reach campaign data
+      let campaignCount = 0
+      try {
+        const access = await testCampaignAccess(accessToken, cleanId, developer_token)
+        campaignCount = access.count
+      } catch (e) {
+        throw new Error(`Credentials valid but cannot query campaigns: ${e instanceof Error ? e.message : String(e)}. Check that your Customer ID is an advertiser account (not a manager/MCC account), and that your developer token has at least Basic access.`)
+      }
+
       isValid = true
-      accountsFound = 1
-      message = 'Google Ads connected successfully — your account is ready to sync'
+      accountsFound = campaignCount
+      message = campaignCount > 0
+        ? `Google Ads connected — ${campaignCount} campaign${campaignCount !== 1 ? 's' : ''} found. Ready to sync.`
+        : 'Google Ads credentials valid, but no campaigns found in this account. Ensure the Customer ID is an advertiser account with active or paused campaigns (not a manager account).'
 
       // Upsert ad_accounts with real OAuth tokens
       await (supabase as AnyClient).from('ad_accounts').upsert(

@@ -157,6 +157,23 @@ export async function fetchKeywordPerformance(
   `)
 }
 
+export async function testCampaignAccess(
+  accessToken: string,
+  customerId: string,
+  developerToken: string
+): Promise<{ count: number; names: string[] }> {
+  const rows = await gaqlSearch<{ campaign: { id: string; name: string } }>(
+    accessToken, customerId, developerToken,
+    `SELECT campaign.id, campaign.name FROM campaign
+     WHERE campaign.status != 'REMOVED'
+     ORDER BY campaign.id LIMIT 20`
+  )
+  return {
+    count: rows.length,
+    names: rows.map(r => r.campaign?.name ?? '').filter(Boolean).slice(0, 5),
+  }
+}
+
 export async function fetchConversionActions(
   accessToken: string,
   customerId: string,
