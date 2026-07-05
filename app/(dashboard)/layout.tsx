@@ -32,7 +32,7 @@ export default async function DashboardLayout({
   const userName  = profile.full_name || user.email?.split('@')[0] || 'User'
   const userEmail = user.email ?? ''
   const plan = profile.plan as 'basic' | 'growth' | 'professional' | 'agency' | 'custom'
-  const sym  = currencySymbol((profile as any).country)
+  const sym  = currencySymbol(profile.country)
 
   return (
     <div

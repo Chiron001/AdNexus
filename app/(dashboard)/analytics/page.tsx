@@ -51,7 +51,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
   if (!accounts || accounts.length === 0) return <NoAccounts section="Performance Analytics" />
 
   const { data: profileRow } = await supabase.from('profiles').select('country').eq('id', user.id).single()
-  const sym = currencySymbol((profileRow as any)?.country)
+  const sym = currencySymbol(profileRow?.country)
 
   const sp = await searchParams
   const { current, comparison } = buildDateParams({

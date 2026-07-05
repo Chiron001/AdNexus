@@ -61,7 +61,7 @@ export default function SettingsPage() {
         setFullName(profile.full_name ?? '')
         setCompanyName(profile.company_name ?? '')
         setPlan(profile.plan ?? 'free')
-        setCountry((profile as any).country ?? '')
+        setCountry(profile.country ?? '')
       }
       setFetching(false)
     }

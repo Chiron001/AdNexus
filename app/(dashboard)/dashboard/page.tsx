@@ -73,7 +73,7 @@ export default async function DashboardPage() {
     .select('full_name, company_name, country')
     .eq('id', user.id)
     .single()
-  const sym = currencySymbol((profile as any)?.country)
+  const sym = currencySymbol(profile?.country)
 
   const { data: adAccounts } = await supabase
     .from('ad_accounts')
