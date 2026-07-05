@@ -164,7 +164,7 @@ export function GoalsClient({ current, prevSummary, progression, monthLabel }: {
                     {STATUS_ICON[s]}
                     <div>
                       <p className="text-sm font-semibold text-white">{metricLabel[g.metric] ?? g.metric}</p>
-                      <p className="text-xs text-zinc-500">Target: {fmtVal(g.target, g.unit, sym)} · Current: {fmtVal(curr, g.unit)}</p>
+                      <p className="text-xs text-zinc-500">Target: {fmtVal(g.target, g.unit, sym)} · Current: {fmtVal(curr, g.unit, sym)}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">

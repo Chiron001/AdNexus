@@ -185,7 +185,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
     }
   })
 
-  const fmt = (v: number) => fmt(v, sym)
+  const fmt = (v: number) => fmtMoney(v, sym)
 
   const blendedKpis = [
     { label: 'Total Spend',   value: fmt(totals.spend),      cmp: cmpTotals ? deltaPercent(totals.spend, cmpTotals.spend) : null, invert: true },
