@@ -8,6 +8,7 @@ import { BudgetCharts } from './BudgetCharts'
 import { RefreshCw } from 'lucide-react'
 import { buildDateParams } from '@/lib/utils/dateRange'
 import { getPlanLimits } from '@/lib/config/plans'
+import { currencySymbol, fmtMoney } from '@/lib/utils/currency'
 import type { PlanTier } from '@/lib/config/plans'
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>
@@ -41,6 +42,10 @@ export default async function BudgetPage({ searchParams }: { searchParams: Searc
       />
     )
   }
+
+  // Non-critical: fetch country for currency symbol
+  const { data: countryRow } = await supabase.from('profiles').select('country').eq('id', user.id).single()
+  const sym = currencySymbol(countryRow?.country ?? null)
 
   const { data: accounts } = await supabase
     .from('ad_accounts')
@@ -134,7 +139,7 @@ export default async function BudgetPage({ searchParams }: { searchParams: Searc
     .slice(0, 5)
 
   const totalWaste = wastedSpend.reduce((s, c) => s + c.spend, 0)
-  const fmtINR = (v: number) => v >= 1000000 ? `$${(v / 1000000).toFixed(1)}M` : `$${(v / 1000).toFixed(1)}k`
+  const fmtINR = (v: number) => fmtMoney(v, sym)
 
   const usedPlatforms = Array.from(byPlatform.keys())
 
@@ -178,7 +183,7 @@ export default async function BudgetPage({ searchParams }: { searchParams: Searc
         ))}
       </div>
 
-      <BudgetCharts dailySpend={dailySpend} cpmTrend={cpmTrend} usedPlatforms={usedPlatforms} />
+      <BudgetCharts dailySpend={dailySpend} cpmTrend={cpmTrend} usedPlatforms={usedPlatforms} sym={sym} />
 
       {/* Allocation */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">

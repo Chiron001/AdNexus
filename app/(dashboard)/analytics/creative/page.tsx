@@ -8,12 +8,19 @@ import { CreativeCharts } from './CreativeCharts'
 import { RefreshCw } from 'lucide-react'
 import { buildDateParams } from '@/lib/utils/dateRange'
 import { getPlanLimits } from '@/lib/config/plans'
+import { currencySymbol, fmtMoney } from '@/lib/utils/currency'
 import type { PlanTier } from '@/lib/config/plans'
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>
 
 function str(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v
+}
+
+const PLATFORM_STYLE: Record<string, string> = {
+  meta:   'bg-blue-500/15 text-blue-300 border border-blue-500/25',
+  google: 'bg-green-500/15 text-green-300 border border-green-500/25',
+  amazon: 'bg-orange-500/15 text-orange-300 border border-orange-500/25',
 }
 
 export default async function CreativeAnalyticsPage({ searchParams }: { searchParams: SearchParams }) {
@@ -70,9 +77,13 @@ export default async function CreativeAnalyticsPage({ searchParams }: { searchPa
     .gte('date', current.from)
     .lte('date', current.to)
 
+  // Non-critical: fetch country for currency symbol
+  const { data: countryRow } = await supabase.from('profiles').select('country').eq('id', user.id).single()
+  const sym = currencySymbol(countryRow?.country ?? null)
+
   const hasData = !!(metrics && metrics.length > 0)
 
-  // Group by campaign (campaigns as proxy until creative-level API is integrated)
+  // Group by campaign
   const byCampaign = new Map<string, {
     name: string; platform: string; spend: number; revenue: number
     impressions: number; clicks: number; conversions: number
@@ -104,7 +115,7 @@ export default async function CreativeAnalyticsPage({ searchParams }: { searchPa
     }))
     .sort((a, b) => b.roas - a.roas)
 
-  // Platform breakdown
+  // Platform breakdown for charts
   const byPlatform = new Map<string, { spend: number; revenue: number; clicks: number; impressions: number }>()
   for (const m of (metrics ?? [])) {
     const prev = byPlatform.get(m.platform) ?? { spend: 0, revenue: 0, clicks: 0, impressions: 0 }
@@ -125,6 +136,11 @@ export default async function CreativeAnalyticsPage({ searchParams }: { searchPa
   const topRoas = campaigns[0]?.roas ?? 0
   const topCtr  = Math.max(...campaigns.map(c => c.ctr), 0)
   const fatigue = campaigns.filter(c => c.ctr < 1 && c.spend > 5000).length
+
+  // Group campaigns by platform for separate sections
+  const platformOrder = ['meta', 'google', 'amazon']
+  const usedPlatforms = Array.from(new Set(campaigns.map(c => c.platform)))
+    .sort((a, b) => platformOrder.indexOf(a) - platformOrder.indexOf(b))
 
   return (
     <div className="p-6 space-y-6">
@@ -158,6 +174,7 @@ export default async function CreativeAnalyticsPage({ searchParams }: { searchPa
         </div>
       )}
 
+      {/* Cross-platform summary KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: 'Active Campaigns', value: String(campaigns.length) },
@@ -172,44 +189,61 @@ export default async function CreativeAnalyticsPage({ searchParams }: { searchPa
         ))}
       </div>
 
-      <CreativeCharts campaigns={campaigns} formatData={formatData} />
+      {/* Cross-platform comparison charts */}
+      <CreativeCharts campaigns={campaigns} formatData={formatData} sym={sym} />
 
-      {/* Campaign Table */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-        <p className="text-sm font-semibold text-white mb-4">All Campaigns</p>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm min-w-[600px]">
-            <thead>
-              <tr className="text-xs text-zinc-500 uppercase tracking-wider border-b border-zinc-800">
-                <th className="text-left pb-3 font-medium">Campaign</th>
-                <th className="text-center pb-3 font-medium">Platform</th>
-                <th className="text-right pb-3 font-medium">Spend</th>
-                <th className="text-right pb-3 font-medium">ROAS</th>
-                <th className="text-right pb-3 font-medium">CTR</th>
-                <th className="text-right pb-3 font-medium">CPA</th>
-                <th className="text-right pb-3 font-medium">Conv.</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-800">
-              {campaigns.map((c, i) => (
-                <tr key={i} className="hover:bg-zinc-800/40 transition-colors">
-                  <td className="py-3 text-white font-medium max-w-[200px] truncate">{c.name}</td>
-                  <td className="py-3 text-center">
-                    <span className="text-xs bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded capitalize">{c.platform}</span>
-                  </td>
-                  <td className="py-3 text-right font-mono text-zinc-300">
-                    {c.spend >= 1000000 ? `$${(c.spend/1000000).toFixed(1)}M` : `$${(c.spend/1000).toFixed(1)}k`}
-                  </td>
-                  <td className={`py-3 text-right font-mono ${c.roas >= 4 ? 'text-emerald-400' : c.roas >= 2 ? 'text-yellow-400' : 'text-red-400'}`}>{c.roas}x</td>
-                  <td className="py-3 text-right font-mono text-zinc-300">{c.ctr}%</td>
-                  <td className="py-3 text-right font-mono text-zinc-300">{c.cpa > 0 ? `$${c.cpa}` : '—'}</td>
-                  <td className="py-3 text-right font-mono text-zinc-300">{c.conversions}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Platform-specific campaign tables */}
+      {usedPlatforms.map(platform => {
+        const platformCampaigns = campaigns.filter(c => c.platform === platform)
+        const platformLabel = platform.charAt(0).toUpperCase() + platform.slice(1)
+        const styleClass = PLATFORM_STYLE[platform] ?? 'bg-zinc-800 text-zinc-300 border border-zinc-700'
+
+        return (
+          <div key={platform} className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${styleClass}`}>
+                {platformLabel}
+              </span>
+              <p className="text-sm font-semibold text-white">
+                {platformCampaigns.length} Campaign{platformCampaigns.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[560px]">
+                <thead>
+                  <tr className="text-xs text-zinc-500 uppercase tracking-wider border-b border-zinc-800">
+                    <th className="text-left pb-3 font-medium">Campaign</th>
+                    <th className="text-right pb-3 font-medium">Spend</th>
+                    <th className="text-right pb-3 font-medium">ROAS</th>
+                    <th className="text-right pb-3 font-medium">CTR</th>
+                    <th className="text-right pb-3 font-medium">CPA</th>
+                    <th className="text-right pb-3 font-medium">Conv.</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800">
+                  {platformCampaigns.map((c, i) => (
+                    <tr key={i} className="hover:bg-zinc-800/40 transition-colors">
+                      <td className="py-3 text-white font-medium max-w-[220px] truncate">{c.name}</td>
+                      <td className="py-3 text-right font-mono text-zinc-300">{fmtMoney(c.spend, sym)}</td>
+                      <td className={`py-3 text-right font-mono ${c.roas >= 4 ? 'text-emerald-400' : c.roas >= 2 ? 'text-yellow-400' : 'text-red-400'}`}>{c.roas}x</td>
+                      <td className="py-3 text-right font-mono text-zinc-300">{c.ctr}%</td>
+                      <td className="py-3 text-right font-mono text-zinc-300">{c.cpa > 0 ? fmtMoney(c.cpa, sym) : '—'}</td>
+                      <td className="py-3 text-right font-mono text-zinc-300">{c.conversions}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )
+      })}
+
+      {/* Fallback if no platform data yet */}
+      {hasData && usedPlatforms.length === 0 && (
+        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 text-center text-sm text-zinc-500">
+          No campaign data found for the selected date range.
         </div>
-      </div>
+      )}
     </div>
   )
 }
