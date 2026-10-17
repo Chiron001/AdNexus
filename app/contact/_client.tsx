@@ -30,7 +30,7 @@ const WHY_US = [
 ]
 
 const CONTACT_POINTS = [
-  { icon: Mail,          label: 'Email us',  value: 'info@nutrisapiens.in',  href: 'mailto:info@nutrisapiens.in' },
+  { icon: Mail,          label: 'Email us',  value: 'adnexusone@gmail.com',  href: 'mailto:adnexusone@gmail.com' },
   { icon: WhatsAppIcon,  label: 'WhatsApp',  value: '+91 93194 14318',       href: 'https://wa.me/919319414318'  },
   { icon: Phone,         label: 'Call us',   value: '+91 84484 53766',       href: 'tel:+918448453766'           },
 ]
