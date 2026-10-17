@@ -439,9 +439,9 @@ export default function AIPage() {
 
               {/* Trust bar */}
               <div className="mt-12 pt-8 border-t border-white/[0.06] stagger-child">
-                <p className="text-[10px] text-gray-600 uppercase tracking-widest mb-4 font-bold">Trusted by D2C brands across India</p>
+                <p className="text-[10px] text-gray-600 uppercase tracking-widest mb-4 font-bold">Built for every D2C category</p>
                 <div className="flex flex-wrap items-center gap-5">
-                  {['Myntra', 'Nykaa', 'Mamaearth', 'Boat', 'Sugar', 'Lenskart', 'Classplus', 'Wakefit'].map(b => (
+                  {['Skincare', 'Fashion', 'Beauty', 'Wellness', 'Supplements', 'Electronics', 'Home & Living', 'Agencies'].map(b => (
                     <span key={b} className="text-xs font-bold text-gray-600 hover:text-gray-400 transition-colors tracking-wide">{b}</span>
                   ))}
                 </div>

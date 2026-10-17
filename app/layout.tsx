@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Poppins, Lato } from 'next/font/google'
+import { Red_Hat_Display, Figtree } from 'next/font/google'
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { Analytics } from '@vercel/analytics/next'
@@ -27,16 +27,17 @@ async function getActiveScripts(): Promise<SiteScript[]> {
   }
 }
 
-const poppins = Poppins({
-  variable: '--font-poppins',
+// Insider One type system — Red Hat Display for headings, Figtree for body
+const redHat = Red_Hat_Display({
+  variable: '--font-display',
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
+  weight: ['400', '500', '600', '700', '900'],
 })
 
-const lato = Lato({
-  variable: '--font-lato',
+const figtree = Figtree({
+  variable: '--font-body',
   subsets: ['latin'],
-  weight: ['400', '700'],
+  weight: ['400', '500', '600', '700'],
 })
 
 export const metadata: Metadata = {
@@ -121,7 +122,7 @@ export default async function RootLayout({
   const bodyEndScripts  = scripts.filter(s => s.position === 'body_end')
 
   return (
-    <html lang="en" className={`${poppins.variable} ${lato.variable} h-full antialiased`}>
+    <html lang="en" className={`${redHat.variable} ${figtree.variable} h-full antialiased`}>
       <head>
         <script
           type="application/ld+json"
