@@ -12,5 +12,7 @@ export async function GET(request: Request) {
     if (!error) return NextResponse.redirect(`${origin}${next}`)
   }
 
-  return NextResponse.redirect(`${origin}/login?error=oauth_error`)
+  // Pass Supabase's reason (e.g. otp_expired) through so the login page can explain it
+  const reason = searchParams.get('error_code') ?? 'oauth_error'
+  return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(reason)}`)
 }

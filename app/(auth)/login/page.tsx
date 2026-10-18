@@ -40,6 +40,16 @@ function readStore(key: string) {
   try { return localStorage.getItem(key) } catch { return null }
 }
 
+/* Supabase reports failures in the query (?error=) or the hash (#error_code=) */
+function callbackError() {
+  const q = new URLSearchParams(window.location.search)
+  const h = new URLSearchParams(window.location.hash.slice(1))
+  const code = h.get('error_code') ?? q.get('error')
+  if (!code) return null
+  if (code === 'otp_expired') return 'That email link has expired or was already used. Enter your email to get a fresh one.'
+  return 'That sign-in didn’t go through. Please try again.'
+}
+
 function greeting() {
   const h = new Date().getHours()
   if (h < 5)  return 'Burning the midnight oil?'
@@ -172,8 +182,7 @@ export default function LoginPage() {
   const hello      = mounted ? greeting() : 'Welcome back'
   const lastMethod = mounted ? readStore(LAST_METHOD) as Method | null : null
   const email      = typedEmail ?? (mounted ? readStore(LAST_EMAIL) ?? '' : '')
-  const error      = rawError !== undefined ? rawError
-    : mounted && new URLSearchParams(window.location.search).has('error') ? 'That sign-in didn’t go through. Please try again.' : null
+  const error      = rawError !== undefined ? rawError : mounted ? callbackError() : null
 
   const emailValid = EMAIL_RE.test(email.trim())
 

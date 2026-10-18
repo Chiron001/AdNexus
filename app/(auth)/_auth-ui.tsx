@@ -50,7 +50,7 @@ export function MicrosoftIcon() {
 export function ErrorBox({ error, shakeKey }: { error: string | null; shakeKey: number }) {
   if (!error) return null
   return (
-    <div key={shakeKey} role="alert" className="io-shake flex items-start gap-2.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-[13px] px-4 py-3">
+    <div key={shakeKey} role="alert" className="io-shake flex items-start gap-2.5 text-left rounded-2xl bg-red-50 border border-red-200 text-red-700 text-[13px] px-4 py-3">
       <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" /><span>{error}</span>
     </div>
   )
