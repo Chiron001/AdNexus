@@ -1,10 +1,49 @@
 import Link from 'next/link'
+import {
+  IndianRupee, Users, BadgeCheck, Link2, RefreshCw, AlertTriangle, ArrowRight, ArrowUpRight,
+} from 'lucide-react'
+import { SiMeta, SiGoogleads } from 'react-icons/si'
+import { FaAmazon } from 'react-icons/fa'
 import { createAdminClient } from '@/lib/supabase/server'
 
-const PLAN_PRICE = { free: 0, growth: 99, agency: 499, custom: 0 }
+// List price per month in INR (lib/razorpay.ts). 'agency' is the legacy name for
+// Professional; 'custom' plans are set by hand and have no list price.
+const PLAN_PRICE_INR: Record<string, number> = { basic: 1800, growth: 8999, professional: 46999, agency: 46999 }
 
-function fmt(n: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
+const PLANS = [
+  { key: 'professional', label: 'Professional', color: '#7C3AED' },
+  { key: 'growth',       label: 'Growth',       color: '#3B5BFD' },
+  { key: 'basic',        label: 'Basic',        color: '#22D3EE' },
+  { key: 'custom',       label: 'Custom',       color: '#10B981' },
+  { key: 'free',         label: 'Free',         color: 'rgba(255,255,255,.22)' },
+] as const
+
+const PLAN_BADGE: Record<string, { label: string; cls: string }> = {
+  free:         { label: 'Free',   cls: 'bg-white/[0.08] text-white/60' },
+  basic:        { label: 'Basic',  cls: 'bg-cyan-400/15 text-cyan-300' },
+  growth:       { label: 'Growth', cls: 'bg-blue-500/15 text-blue-300' },
+  professional: { label: 'Pro',    cls: 'bg-violet-500/15 text-violet-300' },
+  agency:       { label: 'Pro',    cls: 'bg-violet-500/15 text-violet-300' },
+  custom:       { label: 'Custom', cls: 'bg-emerald-500/15 text-emerald-300' },
+}
+
+const PLATFORMS = [
+  { key: 'meta',   label: 'Meta Ads',   icon: SiMeta,      color: '#0081FB' },
+  { key: 'google', label: 'Google Ads', icon: SiGoogleads, color: '#4285F4' },
+  { key: 'amazon', label: 'Amazon Ads', icon: FaAmazon,    color: '#FF9900' },
+] as const
+
+const EVENT_META: Record<string, { label: string; cls: string }> = {
+  'subscription.charged':   { label: 'Charged',    cls: 'bg-emerald-500/15 text-emerald-300' },
+  'subscription.cancelled': { label: 'Cancelled',  cls: 'bg-yellow-500/15 text-yellow-300'   },
+  'payment.failed':         { label: 'Failed',     cls: 'bg-red-500/15 text-red-300'         },
+  'plan.upgraded':          { label: 'Upgraded',   cls: 'bg-blue-500/15 text-blue-300'       },
+  'plan.downgraded':        { label: 'Downgraded', cls: 'bg-orange-500/15 text-orange-300'   },
+  'plan.override':          { label: 'Override',   cls: 'bg-violet-500/15 text-violet-300'   },
+}
+
+function inr(n: number) {
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n)
 }
 
 function timeAgo(iso: string) {
@@ -16,24 +55,28 @@ function timeAgo(iso: string) {
   return `${Math.floor(h / 24)}d ago`
 }
 
-const EVENT_META: Record<string, { label: string; cls: string }> = {
-  'subscription.charged':   { label: 'Charged',    cls: 'bg-emerald-500/20 text-emerald-400'  },
-  'subscription.cancelled': { label: 'Cancelled',  cls: 'bg-yellow-500/20 text-yellow-400'    },
-  'payment.failed':         { label: 'Failed',     cls: 'bg-red-500/20 text-red-400'          },
-  'plan.upgraded':          { label: 'Upgraded',   cls: 'bg-blue-500/20 text-blue-400'        },
-  'plan.downgraded':        { label: 'Downgraded', cls: 'bg-orange-500/20 text-orange-400'    },
-  'plan.override':          { label: 'Override',   cls: 'bg-purple-500/20 text-purple-400'    },
-}
+const CARD = 'rounded-2xl bg-white/[0.035] border border-white/[0.08]'
 
-// Tailwind-only card — no inline styles needed for hover states
-const CARD = 'rounded-xl p-5 bg-white/[0.04] border border-white/[0.08] transition-all'
+function CardHeader({ title, href }: { title: string; href?: string }) {
+  return (
+    <div className="flex items-center justify-between px-5 pt-5 pb-4">
+      <h2 className="io-display text-[15px] font-semibold text-white">{title}</h2>
+      {href && (
+        <Link href={href} className="flex items-center gap-1 text-xs font-semibold text-violet-300 hover:text-violet-200 transition-colors">
+          View all <ArrowRight className="w-3 h-3" />
+        </Link>
+      )}
+    </div>
+  )
+}
 
 export default async function AdminDashboardPage() {
   const admin = createAdminClient()
 
   const todayStart = new Date()
   todayStart.setHours(0, 0, 0, 0)
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  const sevenDaysAgo = new Date()
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
   const [
     { data: profiles },
@@ -52,23 +95,15 @@ export default async function AdminDashboardPage() {
   ])
 
   const allProfiles = profiles ?? []
-  const byPlan = {
-    free:   allProfiles.filter(p => p.plan === 'free').length,
-    growth: allProfiles.filter(p => p.plan === 'growth').length,
-    agency: allProfiles.filter(p => p.plan === 'agency').length,
-    custom: allProfiles.filter(p => p.plan === 'custom').length,
-  }
-  const total      = allProfiles.length
-  const activePaid = byPlan.growth + byPlan.agency + byPlan.custom
-  const mrr        = byPlan.growth * PLAN_PRICE.growth + byPlan.agency * PLAN_PRICE.agency
-  const newThis7d  = allProfiles.filter(p => new Date(p.created_at) > sevenDaysAgo).length
+  const planOf      = (p: string) => (p === 'agency' ? 'professional' : p)
+  const byPlan      = Object.fromEntries(PLANS.map(p => [p.key, allProfiles.filter(u => planOf(u.plan) === p.key).length])) as Record<string, number>
+  const total       = allProfiles.length
+  const paid        = total - byPlan.free
+  const mrr         = allProfiles.reduce((sum, u) => sum + (PLAN_PRICE_INR[u.plan] ?? 0), 0)
+  const newThis7d   = allProfiles.filter(p => new Date(p.created_at) > sevenDaysAgo).length
 
   const allAccounts    = accounts ?? []
-  const byPlatform     = {
-    meta:   allAccounts.filter(a => a.platform === 'meta').length,
-    google: allAccounts.filter(a => a.platform === 'google').length,
-    amazon: allAccounts.filter(a => a.platform === 'amazon').length,
-  }
+  const byPlatform     = Object.fromEntries(PLATFORMS.map(p => [p.key, allAccounts.filter(a => a.platform === p.key).length])) as Record<string, number>
   const activeAccounts = allAccounts.filter(a => a.status === 'active').length
 
   const syncs            = todayLogs ?? []
@@ -80,116 +115,124 @@ export default async function AdminDashboardPage() {
   const highCount     = allIssues.filter(i => i.severity === 'high').length
 
   const STATS = [
-    { label: 'Est. MRR',    value: fmt(mrr),                  sub: 'monthly recurring revenue',              accent: 'text-emerald-400', href: '/admin/billing'  },
-    { label: 'Total Users', value: String(total),             sub: `+${newThis7d} this week`,                accent: 'text-blue-400',    href: '/admin/users'    },
-    { label: 'Paid Users',  value: String(activePaid),        sub: 'growth + agency + custom',               accent: 'text-indigo-400',  href: '/admin/users'    },
-    { label: 'Ad Accounts', value: String(allAccounts.length),sub: `${activeAccounts} active`,              accent: 'text-purple-400',  href: '/admin/accounts' },
-    { label: 'Syncs Today', value: String(syncs.length),      sub: `${syncsOk} ok · ${issuesFoundToday} issues`, accent: 'text-orange-400', href: '/admin/activity' },
-    { label: 'Open Issues', value: String(allIssues.length),  sub: `${criticalCount} critical · ${highCount} high`, accent: criticalCount > 0 ? 'text-red-400' : 'text-zinc-600', href: '/admin/activity' },
+    { label: 'Est. MRR',    value: inr(mrr),                   sub: 'list price of active plans',               icon: IndianRupee,   href: '/admin/billing'  },
+    { label: 'Total users', value: String(total),              sub: `+${newThis7d} in the last 7 days`,         icon: Users,         href: '/admin/users'    },
+    { label: 'Paid users',  value: String(paid),               sub: total ? `${Math.round((paid / total) * 100)}% of all users` : 'no users yet', icon: BadgeCheck, href: '/admin/users' },
+    { label: 'Ad accounts', value: String(allAccounts.length), sub: `${activeAccounts} active`,                 icon: Link2,         href: '/admin/accounts' },
+    { label: 'Syncs today', value: String(syncs.length),       sub: `${syncsOk} ok · ${issuesFoundToday} issues found`, icon: RefreshCw, href: '/admin/activity' },
+    { label: 'Open issues', value: String(allIssues.length),   sub: `${criticalCount} critical · ${highCount} high`, icon: AlertTriangle, href: '/admin/activity', alert: criticalCount > 0 },
   ]
 
+  const today = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+
   return (
-    <div className="p-8 max-w-6xl">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Overview</h1>
-        <p className="text-sm text-zinc-500 mt-1">Platform snapshot — refreshes on every page load</p>
+    <div className="px-8 py-8 max-w-[1240px]">
+      {/* Header */}
+      <div className="flex items-end justify-between gap-4 mb-8">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] io-grad-text" style={{ backgroundImage: 'linear-gradient(90deg,#8FA6FF,#C4B5FD)' }}>Admin console</p>
+          <h1 className="io-display text-[2rem] font-semibold text-white leading-tight mt-1">Overview</h1>
+          <p className="text-sm text-white/50 mt-1">{today} · live data, refreshed on every load</p>
+        </div>
+        <Link href="/admin/users" className="io-btn io-btn-primary !py-2.5 !text-[13px]">
+          Manage users <ArrowRight className="io-arrow w-3.5 h-3.5" />
+        </Link>
       </div>
 
-      {/* 6-stat grid */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        {STATS.map(s => (
-          <Link
-            key={s.label}
-            href={s.href}
-            className={`${CARD} hover:bg-white/[0.07] hover:border-white/[0.14]`}
-          >
-            <p className="text-xs text-zinc-500 mb-1">{s.label}</p>
-            <p className={`text-3xl font-bold ${s.accent}`}>{s.value}</p>
-            <p className="text-[11px] text-zinc-600 mt-1">{s.sub}</p>
+      {/* KPI grid */}
+      <div className="grid grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+        {STATS.map(({ label, value, sub, icon: Icon, href, alert }) => (
+          <Link key={label} href={href}
+            className={`${CARD} group p-5 flex items-start gap-4 transition-colors hover:bg-white/[0.06] hover:border-white/[0.14]`}>
+            <span className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${alert ? 'bg-red-500/15 text-red-300' : 'text-white'}`}
+              style={alert ? undefined : { background: 'linear-gradient(135deg, var(--io-accent), var(--io-accent-2))' }}>
+              <Icon className="w-[18px] h-[18px]" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-medium text-white/50">{label}</p>
+              <p className={`io-display text-[1.75rem] font-semibold leading-tight tabular-nums mt-0.5 ${alert ? 'text-red-300' : 'text-white'}`}>{value}</p>
+              <p className="text-xs text-white/40 mt-0.5 truncate">{sub}</p>
+            </div>
+            <ArrowUpRight className="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors shrink-0" />
           </Link>
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-6">
         {/* Plan breakdown */}
         <div className={CARD}>
-          <h2 className="text-sm font-semibold text-zinc-300 mb-4">Users by Plan</h2>
-          {(['agency', 'growth', 'custom', 'free'] as const).map(plan => {
-            const count = byPlan[plan]
-            const pct   = total > 0 ? Math.round((count / total) * 100) : 0
-            const bar   = { agency: 'bg-purple-500', growth: 'bg-blue-500', custom: 'bg-emerald-500', free: 'bg-zinc-600' }[plan]
-            const lbl   = { agency: 'Agency', growth: 'Growth', custom: 'Custom', free: 'Free' }[plan]
-            return (
-              <div key={plan} className="mb-3 last:mb-0">
-                <div className="flex justify-between text-xs mb-1.5">
-                  <span className="text-zinc-400 font-medium">{lbl}</span>
-                  <span className="text-zinc-500">{count} ({pct}%)</span>
-                </div>
-                <div className="h-1.5 rounded-full bg-white/[0.08] overflow-hidden">
-                  <div className={`h-full ${bar} rounded-full`} style={{ width: `${pct}%` }} />
-                </div>
-              </div>
-            )
-          })}
+          <CardHeader title="Users by plan" />
+          <div className="px-5 pb-5">
+            <div className="flex h-2.5 rounded-full overflow-hidden bg-white/[0.06] mb-5">
+              {total > 0 && PLANS.map(p => byPlan[p.key] > 0 && (
+                <span key={p.key} style={{ width: `${(byPlan[p.key] / total) * 100}%`, background: p.color }} />
+              ))}
+            </div>
+            <ul className="space-y-3">
+              {PLANS.map(p => (
+                <li key={p.key} className="flex items-center gap-3 text-[13px]">
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: p.color }} />
+                  <span className="flex-1 text-white/75">{p.label}</span>
+                  <span className="text-white font-semibold tabular-nums">{byPlan[p.key]}</span>
+                  <span className="w-11 text-right text-white/40 tabular-nums">{total ? Math.round((byPlan[p.key] / total) * 100) : 0}%</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {/* Accounts by platform */}
         <div className={CARD}>
-          <h2 className="text-sm font-semibold text-zinc-300 mb-4">Connected Accounts</h2>
-          {(['meta', 'google', 'amazon'] as const).map(platform => {
-            const count = byPlatform[platform]
-            const pct   = allAccounts.length > 0 ? Math.round((count / allAccounts.length) * 100) : 0
-            const bar   = { meta: 'bg-blue-500', google: 'bg-red-500', amazon: 'bg-orange-500' }[platform]
-            const lbl   = { meta: 'Meta Ads', google: 'Google Ads', amazon: 'Amazon Ads' }[platform]
-            return (
-              <div key={platform} className="mb-3 last:mb-0">
-                <div className="flex justify-between text-xs mb-1.5">
-                  <span className="text-zinc-400 font-medium">{lbl}</span>
-                  <span className="text-zinc-500">{count} ({pct}%)</span>
+          <CardHeader title="Connected ad accounts" href="/admin/accounts" />
+          <div className="px-5 pb-5 space-y-4">
+            {PLATFORMS.map(({ key, label, icon: Icon, color }) => {
+              const count = byPlatform[key]
+              const pct   = allAccounts.length ? Math.round((count / allAccounts.length) * 100) : 0
+              return (
+                <div key={key}>
+                  <div className="flex items-center gap-3 text-[13px] mb-2">
+                    <span className="w-7 h-7 rounded-lg bg-white flex items-center justify-center shrink-0"><Icon className="w-3.5 h-3.5" style={{ color }} /></span>
+                    <span className="flex-1 text-white/75">{label}</span>
+                    <span className="text-white font-semibold tabular-nums">{count}</span>
+                    <span className="w-11 text-right text-white/40 tabular-nums">{pct}%</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: `${pct}%`, background: color }} />
+                  </div>
                 </div>
-                <div className="h-1.5 rounded-full bg-white/[0.08] overflow-hidden">
-                  <div className={`h-full ${bar} rounded-full`} style={{ width: `${pct}%` }} />
-                </div>
-              </div>
-            )
-          })}
-          <div className="mt-4 pt-4 flex justify-between text-xs border-t border-white/[0.07]">
-            <span className="text-zinc-500">Active accounts</span>
-            <span className="font-semibold text-emerald-400">{activeAccounts} / {allAccounts.length}</span>
+              )
+            })}
+            <div className="pt-4 flex justify-between text-[13px] border-t border-white/[0.07]">
+              <span className="text-white/50">Active accounts</span>
+              <span className="font-semibold text-emerald-300 tabular-nums">{activeAccounts} / {allAccounts.length}</span>
+            </div>
           </div>
         </div>
 
         {/* Recent signups */}
         <div className={CARD}>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-zinc-300">Recent Signups</h2>
-            <Link href="/admin/users" className="text-xs text-purple-400 hover:text-purple-300 transition-colors">View all →</Link>
-          </div>
-          <div className="space-y-1">
+          <CardHeader title="Recent signups" href="/admin/users" />
+          <div className="px-3 pb-3">
             {(recentSignups ?? []).map(u => {
-              const name     = u.full_name ?? u.email.split('@')[0]
-              const initials = name.slice(0, 2).toUpperCase()
-              const planCls  = ({ free: 'bg-zinc-700 text-zinc-400', basic: 'bg-teal-500/20 text-teal-400', growth: 'bg-blue-500/20 text-blue-400', professional: 'bg-purple-500/20 text-purple-400', agency: 'bg-purple-500/20 text-purple-400', custom: 'bg-emerald-500/20 text-emerald-400' } as Record<string,string>)[u.plan] ?? 'bg-zinc-700 text-zinc-400'
-              const planLbl  = ({ free: 'Free', basic: 'Basic', growth: 'Growth', professional: 'Pro', agency: 'Pro', custom: 'Custom' } as Record<string,string>)[u.plan] ?? u.plan
+              const name  = u.full_name?.trim() || u.email.split('@')[0]
+              const badge = PLAN_BADGE[u.plan] ?? { label: u.plan, cls: 'bg-white/[0.08] text-white/60' }
               return (
-                <Link
-                  key={u.id}
-                  href={`/admin/users/${u.id}`}
-                  className="flex items-center gap-3 -mx-2 px-2 py-1.5 rounded-lg transition-colors hover:bg-white/[0.05]"
-                >
-                  <div className="w-7 h-7 rounded-full bg-purple-500/20 flex items-center justify-center text-xs font-bold text-purple-400 shrink-0">
-                    {initials}
-                  </div>
+                <Link key={u.id} href={`/admin/users/${u.id}`}
+                  className="flex items-center gap-3 px-2 py-2 rounded-xl transition-colors hover:bg-white/[0.05]">
+                  <span className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white uppercase shrink-0"
+                    style={{ background: 'linear-gradient(135deg, var(--io-accent), var(--io-accent-2))' }}>
+                    {name.slice(0, 2)}
+                  </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-zinc-300 truncate">{name}</p>
-                    <p className="text-[10px] text-zinc-600">{timeAgo(u.created_at)}</p>
+                    <p className="text-[13px] font-medium text-white truncate capitalize">{name}</p>
+                    <p className="text-[11px] text-white/40 truncate">{u.email} · {timeAgo(u.created_at)}</p>
                   </div>
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${planCls}`}>{planLbl}</span>
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${badge.cls}`}>{badge.label}</span>
                 </Link>
               )
             })}
             {(recentSignups ?? []).length === 0 && (
-              <p className="text-xs text-zinc-600 py-4 text-center">No signups yet</p>
+              <p className="text-sm text-white/40 py-6 text-center">No signups yet</p>
             )}
           </div>
         </div>
@@ -197,32 +240,33 @@ export default async function AdminDashboardPage() {
 
       {/* Recent billing */}
       <div className={CARD}>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-zinc-300">Recent Billing Events</h2>
-          <Link href="/admin/billing" className="text-xs text-purple-400 hover:text-purple-300 transition-colors">View all →</Link>
-        </div>
+        <CardHeader title="Recent billing events" href="/admin/billing" />
         {(billingEvents ?? []).length === 0 ? (
-          <p className="text-sm text-zinc-600">No events yet</p>
+          <p className="text-sm text-white/40 px-5 pb-6">No billing events yet</p>
         ) : (
-          <div className="divide-y divide-white/[0.05]">
-            {(billingEvents ?? []).map((e, i) => {
-              const meta = EVENT_META[e.event_type] ?? { label: e.event_type, cls: 'bg-zinc-700 text-zinc-400' }
-              return (
-                <div key={i} className="flex items-center justify-between py-3">
-                  <div className="flex items-center gap-2.5">
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${meta.cls}`}>{meta.label}</span>
-                    <span className="text-xs text-zinc-500 capitalize">{e.plan ?? '—'}</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    {e.amount_inr != null && (
-                      <span className="text-xs font-semibold text-zinc-300">{fmt(e.amount_inr)}</span>
-                    )}
-                    <span className="text-[11px] text-zinc-600 w-14 text-right">{timeAgo(e.created_at)}</span>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+          <table className="w-full text-[13px]">
+            <thead>
+              <tr className="text-left text-[11px] uppercase tracking-[0.12em] text-white/35 border-y border-white/[0.07]">
+                <th className="font-semibold px-5 py-2.5">Event</th>
+                <th className="font-semibold px-5 py-2.5">Plan</th>
+                <th className="font-semibold px-5 py-2.5 text-right">Amount</th>
+                <th className="font-semibold px-5 py-2.5 text-right">When</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/[0.05]">
+              {(billingEvents ?? []).map((e, i) => {
+                const meta = EVENT_META[e.event_type] ?? { label: e.event_type, cls: 'bg-white/[0.08] text-white/60' }
+                return (
+                  <tr key={i} className="hover:bg-white/[0.03] transition-colors">
+                    <td className="px-5 py-3"><span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${meta.cls}`}>{meta.label}</span></td>
+                    <td className="px-5 py-3 text-white/70 capitalize">{e.plan ?? '—'}</td>
+                    <td className="px-5 py-3 text-right font-semibold text-white tabular-nums">{e.amount_inr != null ? inr(e.amount_inr) : '—'}</td>
+                    <td className="px-5 py-3 text-right text-white/40">{timeAgo(e.created_at)}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         )}
       </div>
     </div>

@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Users, CreditCard, Bell, Shield,
   Link2, Activity, Mail, FileText, Search, Zap,
-  ChevronRight, HardDrive, Bot, ArrowLeftRight, Code2,
+  HardDrive, Bot, ArrowLeftRight, Code2, LogOut, ExternalLink,
 } from 'lucide-react'
 
 interface NavItem {
@@ -74,88 +74,51 @@ function isActive(pathname: string, href: string): boolean {
 export function AdminSidebar({ role }: { role: string }) {
   const pathname = usePathname()
 
+  async function signOut() {
+    await fetch('/api/admin/auth', { method: 'DELETE' })
+    window.location.assign('/admin/login')
+  }
+
   return (
-    <aside
-      className="w-60 min-h-screen flex flex-col fixed left-0 top-0 z-30"
-      style={{
-        background: 'rgba(7, 8, 16, 0.96)',
-        borderRight: '1px solid rgba(255,255,255,0.06)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-      }}
-    >
-      {/* Purple glow top-left */}
-      <div
-        className="pointer-events-none absolute -top-10 -left-10 w-48 h-48 rounded-full"
-        style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)' }}
-      />
+    <aside className="w-60 h-screen flex flex-col fixed left-0 top-0 z-30 border-r border-white/[0.07]"
+      style={{ background: 'linear-gradient(180deg, #0B0A14 0%, #100D24 100%)' }}>
 
       {/* Logo */}
-      <div
-        className="h-12 px-4 flex items-center gap-3 shrink-0"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-      >
-        <div
-          className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 shadow-lg"
-          style={{ background: 'linear-gradient(135deg,#7c3aed,#2563eb)', boxShadow: '0 0 16px rgba(124,58,237,0.4)' }}
-        >
-          <Zap className="w-3.5 h-3.5 text-white" />
-        </div>
+      <div className="h-16 px-5 flex items-center gap-2.5 shrink-0 border-b border-white/[0.07]">
+        <span className="w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/30"
+          style={{ background: 'linear-gradient(135deg, var(--io-accent), var(--io-accent-2))' }}>
+          <Zap className="w-4 h-4 text-white" />
+        </span>
         <div className="min-w-0">
-          <p className="text-[13px] font-bold text-white tracking-tight truncate">AdNexus</p>
-          <div className="flex items-center gap-1 mt-0.5">
-            <Shield className="w-2.5 h-2.5 text-purple-400" />
-            <p className="text-[10px] text-purple-400 font-semibold uppercase tracking-widest truncate">
-              {role.replace(/_/g, ' ')}
-            </p>
-          </div>
+          <p className="io-display text-[15px] font-bold text-white tracking-tight leading-none">
+            Adnexus<span className="font-medium opacity-70">one</span>
+          </p>
+          <p className="flex items-center gap-1 mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-300/80">
+            <Shield className="w-2.5 h-2.5" /> {role.replace(/_/g, ' ')}
+          </p>
         </div>
       </div>
 
       {/* Nav — scrollable so nothing gets cut off */}
-      <nav className="flex-1 py-2 overflow-y-auto px-2" style={{ scrollbarWidth: 'none' }}>
+      <nav className="flex-1 py-3 overflow-y-auto px-3" style={{ scrollbarWidth: 'none' }}>
         {GROUPS.map(group => (
-          <div key={group.label} className="mb-1">
-            <p
-              className="px-3 pt-2.5 pb-1 text-[9px] font-bold uppercase tracking-[0.14em]"
-              style={{ color: 'rgba(255,255,255,0.25)' }}
-            >
+          <div key={group.label} className="mb-2">
+            <p className="px-3 pt-2 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/30">
               {group.label}
             </p>
             {group.items.map(({ href, icon: Icon, label }) => {
               const active = isActive(pathname, href)
               return (
-                <Link
-                  key={href}
-                  href={href}
-                  className="group flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all relative"
-                  style={{
-                    color:      active ? '#ffffff' : 'rgba(255,255,255,0.45)',
-                    background: active ? 'rgba(124,58,237,0.18)' : 'transparent',
-                    border:     active ? '1px solid rgba(124,58,237,0.25)' : '1px solid transparent',
-                  }}
-                  onMouseEnter={e => {
-                    if (!active) {
-                      (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.05)'
-                      ;(e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.8)'
-                    }
-                  }}
-                  onMouseLeave={e => {
-                    if (!active) {
-                      (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'
-                      ;(e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.45)'
-                    }
-                  }}
-                >
+                <Link key={href} href={href}
+                  className={`relative flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors ${
+                    active ? 'bg-white/[0.08] text-white' : 'text-white/55 hover:bg-white/[0.04] hover:text-white/90'
+                  }`}>
                   {active && (
-                    <div
-                      className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-r"
-                      style={{ background: 'linear-gradient(to bottom,#7c3aed,#2563eb)' }}
-                    />
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r"
+                      style={{ background: 'linear-gradient(180deg, var(--io-accent), var(--io-accent-2))' }} />
                   )}
-                  <Icon className="w-4 h-4 shrink-0" style={{ color: active ? '#a78bfa' : 'inherit' }} />
-                  <span className="flex-1 truncate text-[13px]">{label}</span>
-                  {active && <ChevronRight className="w-3 h-3 opacity-40 shrink-0" />}
+                  <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-violet-300' : ''}`} />
+                  <span className="flex-1 truncate">{label}</span>
                 </Link>
               )
             })}
@@ -164,26 +127,15 @@ export function AdminSidebar({ role }: { role: string }) {
       </nav>
 
       {/* Footer */}
-      <div
-        className="px-4 py-2.5 shrink-0"
-        style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
-      >
-        <Link
-          href="https://adnexusone.com"
-          target="_blank"
-          className="flex items-center gap-2 text-[11px] font-medium transition-colors"
-          style={{ color: 'rgba(255,255,255,0.3)' }}
-          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.6)' }}
-          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.3)' }}
-        >
-          <div
-            className="w-5 h-5 rounded-md flex items-center justify-center"
-            style={{ background: 'rgba(255,255,255,0.06)' }}
-          >
-            <Zap className="w-3 h-3" />
-          </div>
-          adnexusone.com
-        </Link>
+      <div className="p-3 shrink-0 border-t border-white/[0.07] space-y-0.5">
+        <a href="https://adnexusone.com" target="_blank" rel="noreferrer"
+          className="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-white/45 hover:bg-white/[0.04] hover:text-white/90 transition-colors">
+          <ExternalLink className="w-4 h-4" /> adnexusone.com
+        </a>
+        <button onClick={signOut}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-white/45 hover:bg-red-500/10 hover:text-red-300 transition-colors">
+          <LogOut className="w-4 h-4" /> Sign out
+        </button>
       </div>
     </aside>
   )

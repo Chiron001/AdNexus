@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import {
   Shield, Eye, EyeOff, Loader2, Lock, ArrowRight, AlertTriangle, Users, CreditCard,
   Activity, Inbox, FileText, Search, KeyRound,
@@ -61,7 +61,6 @@ function AdminPanel() {
 }
 
 export default function AdminLoginPage() {
-  const router       = useRouter()
   const searchParams = useSearchParams()
   const next         = searchParams.get('next') ?? '/admin/dashboard'
 
@@ -85,7 +84,9 @@ export default function AdminLoginPage() {
       })
       const data = await res.json() as { ok?: boolean; error?: string }
       if (res.ok && data.ok) {
-        router.push(next)
+        // Full load, not router.push: the admin layout skips the sidebar for the
+        // login page, and a client-side navigation would keep that bare layout
+        window.location.assign(next)
         return
       }
       setError(data.error ?? 'Incorrect password')
