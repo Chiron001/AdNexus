@@ -98,7 +98,11 @@ export function NightPanel({ id, children }: { id: string; children: React.React
 }
 
 /* ── Page frame + form card ──────────────────────── */
-export function AuthShell({ panel, wide = false, children }: { panel: React.ReactNode; wide?: boolean; children: React.ReactNode }) {
+export function AuthShell({ panel, wide = false, note, children }: {
+  panel: React.ReactNode; wide?: boolean; children: React.ReactNode
+  /* Replaces the Terms line in the footer (the admin login has no terms to agree to) */
+  note?: React.ReactNode
+}) {
   return (
     <div className="min-h-screen grid lg:grid-cols-[1.08fr_1fr] io-canvas">
       {panel}
@@ -129,12 +133,14 @@ export function AuthShell({ panel, wide = false, children }: { panel: React.Reac
 
         <footer className="relative flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[var(--io-ink-soft)]">
           <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Secure, encrypted sign-in</span>
-          <span>
-            By continuing you agree to our{' '}
-            <a href="https://adnexusone.com/terms" className="underline-offset-2 hover:underline hover:text-[var(--io-ink)]">Terms</a>
-            {' '}&amp;{' '}
-            <a href="https://adnexusone.com/privacy" className="underline-offset-2 hover:underline hover:text-[var(--io-ink)]">Privacy</a>
-          </span>
+          {note ?? (
+            <span>
+              By continuing you agree to our{' '}
+              <a href="https://adnexusone.com/terms" className="underline-offset-2 hover:underline hover:text-[var(--io-ink)]">Terms</a>
+              {' '}&amp;{' '}
+              <a href="https://adnexusone.com/privacy" className="underline-offset-2 hover:underline hover:text-[var(--io-ink)]">Privacy</a>
+            </span>
+          )}
         </footer>
       </main>
     </div>
