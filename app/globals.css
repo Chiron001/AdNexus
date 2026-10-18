@@ -908,3 +908,105 @@ section, footer, nav { position: relative; z-index: 1; }
   [data-depth] { translate: none !important; }
   .io-btn-primary::after { display: none; }
 }
+
+/* ── Auth pages (login) ─────────────────────────────────────── */
+
+/* Slowly rotating gradient rim around the sign-in card */
+@property --io-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes ioSpin { to { --io-angle: 360deg; } }
+.io-auth-ring { position: relative; isolation: isolate; }
+.io-auth-ring::before {
+  content: ''; position: absolute; inset: -1px; border-radius: inherit; z-index: -1;
+  background: conic-gradient(from var(--io-angle), rgba(59,91,253,.0) 0deg, rgba(59,91,253,.55) 70deg, rgba(124,58,237,.55) 140deg, rgba(124,58,237,0) 210deg, rgba(59,91,253,0) 360deg);
+  animation: ioSpin 8s linear infinite;
+}
+.io-auth-ring::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; z-index: -1; background: #fff;
+}
+
+/* Inputs */
+.io-field {
+  display: flex; align-items: center; gap: .6rem;
+  border-radius: 14px; background: #fff; border: 1px solid var(--io-line);
+  padding: 0 .9rem; height: 48px;
+  transition: border-color .25s ease, box-shadow .3s var(--io-ease);
+}
+.io-field:hover { border-color: rgba(28,24,48,.22); }
+.io-field:focus-within { border-color: var(--io-accent); box-shadow: 0 0 0 4px rgba(59,91,253,.12); }
+.io-field[data-invalid="true"] { border-color: #EF4444; box-shadow: 0 0 0 4px rgba(239,68,68,.10); }
+.io-field input { flex: 1; min-width: 0; height: 100%; background: transparent; outline: none; color: var(--io-ink); font-size: .9rem; }
+.io-field input::placeholder { color: #9A96AB; }
+
+/* Provider buttons */
+.io-oauth {
+  position: relative; display: flex; align-items: center; justify-content: center; gap: .7rem; width: 100%;
+  height: 48px; border-radius: 999px; background: #fff; border: 1px solid var(--io-line);
+  font-size: .875rem; font-weight: 600; color: var(--io-ink);
+  transition: transform .35s var(--io-ease), box-shadow .35s var(--io-ease), border-color .25s ease;
+}
+.io-oauth:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(28,24,48,.2); box-shadow: 0 14px 28px -16px rgba(28,24,48,.35); }
+.io-oauth:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Step transitions */
+@keyframes ioStepIn { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: none; } }
+.io-step { animation: ioStepIn .55s var(--io-ease) both; }
+
+@keyframes ioShake { 10%,90% { transform: translateX(-1px); } 20%,80% { transform: translateX(3px); } 30%,50%,70% { transform: translateX(-6px); } 40%,60% { transform: translateX(6px); } }
+.io-shake { animation: ioShake .5s cubic-bezier(.36,.07,.19,.97) both; }
+
+/* Success check — circle then tick draw in */
+@keyframes ioDraw { to { stroke-dashoffset: 0; } }
+.io-check circle { stroke-dasharray: 160; stroke-dashoffset: 160; animation: ioDraw .7s var(--io-ease) forwards; }
+.io-check path { stroke-dasharray: 40; stroke-dashoffset: 40; animation: ioDraw .45s var(--io-ease) .5s forwards; }
+
+/* Insight feed rows on the brand panel */
+@keyframes ioFeedIn { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
+.io-feed-in { animation: ioFeedIn .7s var(--io-ease) both; }
+
+/* Twinkling stars */
+@keyframes ioTwinkle { 0%,100% { opacity: .15; } 50% { opacity: .9; } }
+.io-twinkle { position: absolute; width: 2px; height: 2px; border-radius: 999px; background: #fff; animation: ioTwinkle 4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .io-auth-ring::before, .io-step, .io-shake, .io-feed-in, .io-twinkle { animation: none !important; }
+  .io-check circle, .io-check path { animation: none !important; stroke-dashoffset: 0; }
+}
+
+/* Selectable chips (signup: role, spend, platforms) */
+.io-choice {
+  display: flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: 44px; padding: .55rem .9rem; border-radius: 14px;
+  background: #fff; border: 1px solid var(--io-line);
+  font-size: .8125rem; font-weight: 600; color: var(--io-ink-soft); text-align: center;
+  transition: border-color .25s ease, background .25s ease, color .25s ease, box-shadow .3s var(--io-ease), transform .3s var(--io-ease);
+}
+.io-choice:hover { border-color: rgba(28,24,48,.22); color: var(--io-ink); transform: translateY(-1px); }
+.io-choice[data-on="true"] {
+  color: var(--io-ink); border-color: var(--io-accent);
+  background: linear-gradient(135deg, rgba(59,91,253,.07), rgba(124,58,237,.07));
+  box-shadow: 0 0 0 3px rgba(59,91,253,.10);
+}
+
+/* Toggle switch */
+.io-switch {
+  position: relative; width: 36px; height: 20px; border-radius: 999px; flex-shrink: 0;
+  background: rgba(28,24,48,.18); transition: background .3s ease;
+}
+.io-switch::after {
+  content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 999px;
+  background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .35s var(--io-ease);
+}
+.io-switch[data-on="true"] { background: linear-gradient(90deg, var(--io-accent), var(--io-accent-2)); }
+.io-switch[data-on="true"]::after { transform: translateX(16px); }
+
+/* Checkbox */
+.io-check-box {
+  appearance: none; width: 18px; height: 18px; flex-shrink: 0; border-radius: 6px; cursor: pointer;
+  border: 1.5px solid rgba(28,24,48,.25); background: #fff center / 12px no-repeat;
+  transition: background-color .2s ease, border-color .2s ease;
+}
+.io-check-box:checked {
+  border-color: var(--io-accent); background-color: var(--io-accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+.io-check-box:focus-visible { outline: 2px solid var(--io-accent); outline-offset: 2px; }
