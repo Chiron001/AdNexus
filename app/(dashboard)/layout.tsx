@@ -44,11 +44,12 @@ export default async function DashboardLayout({
 
   return (
     <div
-      className="flex h-screen overflow-hidden bg-zinc-950"
+      className="flex h-screen overflow-hidden"
       style={{
+        background: 'var(--io-night)',
         backgroundImage: `
-          radial-gradient(ellipse at top right, rgba(139,92,246,0.07) 0%, transparent 55%),
-          radial-gradient(ellipse at bottom left,  rgba(59,130,246,0.04) 0%, transparent 50%)
+          radial-gradient(60% 50% at 100% 0%, rgba(124,58,237,0.10) 0%, transparent 60%),
+          radial-gradient(50% 40% at 0% 100%, rgba(59,91,253,0.07) 0%, transparent 60%)
         `,
       }}
     >
@@ -59,7 +60,7 @@ export default async function DashboardLayout({
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Topbar userName={userName} userEmail={userEmail} plan={plan} />
-        <main className="flex-1 p-4 sm:p-6 overflow-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
           <CurrencyProvider symbol={sym}>{children}</CurrencyProvider>
         </main>
       </div>
