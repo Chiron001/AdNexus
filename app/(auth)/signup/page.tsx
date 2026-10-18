@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useEffectEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -210,6 +210,7 @@ export default function SignupPage() {
   const [loading,  setLoading]  = useState(false)
   const [oauthLoading, setOauthLoading] = useState<'google' | 'azure' | null>(null)
   const [cooldown, setCooldown] = useState(0)
+  const [sentAt,   setSentAt]   = useState<string | null>(null)
 
   // The homepage hero posts ?email=…, pricing links add ?plan=…; country is guessed from the timezone
   const query    = mounted ? new URLSearchParams(window.location.search) : null
@@ -269,6 +270,17 @@ export default function SignupPage() {
     go('ads')
   }
 
+  function profileFields() {
+    return {
+      full_name: fullName.trim(),
+      company_name: company.trim(),
+      industry,
+      country,
+      phone_number: phone.trim() || null,
+      whatsapp_opted_in: !!phone.trim() && whatsapp,
+    }
+  }
+
   async function submitAds(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!platforms.length) return fail('Pick at least one ad platform.')
@@ -278,14 +290,7 @@ export default function SignupPage() {
     setError(null)
     setLoading(true)
     const supabase = createClient()
-    const profile = {
-      full_name: fullName.trim(),
-      company_name: company.trim(),
-      industry,
-      country,
-      phone_number: phone.trim() || null,
-      whatsapp_opted_in: !!phone.trim() && whatsapp,
-    }
+    const profile = profileFields()
 
     const { data, error: err } = await supabase.auth.signUp({
       email: email.trim(),
@@ -315,15 +320,42 @@ export default function SignupPage() {
       return fail('An account with this email already exists. Sign in instead.')
     }
 
+    try { localStorage.setItem('adn:last-auth', 'email'); localStorage.setItem('adn:last-email', email.trim()) } catch {}
+
     if (!data.session) { setLoading(false); setCooldown(60); return go('verify') }
 
-    await supabase.from('profiles').update(profile).eq('id', data.user!.id)
+    await finish(data.user!.id)
+  }
+
+  async function finish(userId: string) {
+    const supabase = createClient()
+    await supabase.from('profiles').update(profileFields()).eq('id', userId)
     setStep('success')
     setTimeout(() => { router.push('/onboarding/subscribe'); router.refresh() }, 1300)
   }
 
+  /* Confirmation may have happened in another tab, browser or phone — signing in
+     with the password they just chose tells us. Silent when run on tab focus. */
+  async function tryContinue(silent: boolean) {
+    if (!silent) { setError(null); setSentAt(null); setLoading(true) }
+    const supabase = createClient()
+    const { data, error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+    if (!err && data.user) { await finish(data.user.id); return true }
+    if (!silent) {
+      setLoading(false)
+      fail(/not confirmed/i.test(err?.message ?? '')
+        ? 'Not confirmed yet — click the link in the email we sent, then come back here.'
+        : err?.message ?? 'Something went wrong. Please try again.')
+    }
+    return false
+  }
+
   async function resend() {
+    setError(null)
+    setSentAt(null)
     setLoading(true)
+    // Supabase silently skips the email for an already-confirmed account
+    if (await tryContinue(true)) return
     const supabase = createClient()
     const { error: err } = await supabase.auth.resend({
       type: 'signup',
@@ -331,9 +363,23 @@ export default function SignupPage() {
       options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding/subscribe` },
     })
     setLoading(false)
-    if (err) return fail(err.message)
+    if (err) {
+      return fail(/rate limit|security purposes/i.test(err.message)
+        ? 'We’ve sent a few emails already. Please wait a minute before requesting another one.'
+        : err.message)
+    }
+    setSentAt(new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }))
     setCooldown(60)
   }
+
+  // Back from the inbox tab → check whether they've confirmed
+  const onReturn = useEffectEvent(() => { if (!loading) tryContinue(true) })
+  useEffect(() => {
+    if (step !== 'verify') return
+    const onVisible = () => { if (document.visibilityState === 'visible') onReturn() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [step])
 
   const togglePlatform = (p: Platform) =>
     setPlatforms(list => list.includes(p) ? list.filter(x => x !== p) : [...list, p])
@@ -604,7 +650,19 @@ export default function SignupPage() {
             <a href="https://mail.google.com" target="_blank" rel="noreferrer" className="io-oauth"><GoogleIcon /> Gmail</a>
             <a href="https://outlook.office.com/mail" target="_blank" rel="noreferrer" className="io-oauth"><MicrosoftIcon /> Outlook</a>
           </div>
-          <div className="w-full mt-3"><ErrorBox error={error} shakeKey={shakeKey} /></div>
+          <button onClick={() => tryContinue(false)} disabled={loading}
+            className="io-btn io-btn-primary w-full !py-[15px] mt-3 disabled:opacity-60 disabled:pointer-events-none">
+            {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Checking…</> : <>I&apos;ve confirmed my email <ArrowRight className="io-arrow w-4 h-4" /></>}
+          </button>
+          <div className="w-full mt-3 space-y-3">
+            <ErrorBox error={error} shakeKey={shakeKey} />
+            {sentAt && (
+              <div role="status" className="io-fade flex items-start gap-2.5 text-left rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-[13px] px-4 py-3">
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span>Sent again at {sentAt}. It can take a minute — check Spam and Promotions too.</span>
+              </div>
+            )}
+          </div>
 
           <p className="text-sm text-[var(--io-ink-soft)] mt-auto pt-7">
             Didn&apos;t get it?{' '}
